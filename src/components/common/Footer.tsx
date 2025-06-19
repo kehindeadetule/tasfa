@@ -1,0 +1,103 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import logo from "@/assets/t-logo.png";
+import Image from "next/image";
+
+export default function Footer() {
+  const pathname = usePathname();
+
+  return (
+    <footer className="bg-white text-[#1B1464] pt-16 pb-8">
+      <div
+        className="h-1 mb-8 bg-gradient-to-r from-[#ED1C24] via-[#C6007E] via-[#005B96] via-[#1B1464] via-[#FFD200] to-[#F37021]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #ED1C24, #C6007E, #005B96, #1B1464, #FFD200, #F37021)",
+          borderStyle: "dashed",
+          borderWidth: "2px 0",
+          borderImage:
+            "linear-gradient(to right, #ED1C24, #C6007E, #005B96, #1B1464, #FFD200, #F37021) 1",
+        }}
+      />
+      <div className="container mx-auto px-4 md:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-10 lg:gap-28 md:gap-16 gap-8">
+          {/* Company Info */}
+          <div className="md:col-span-6">
+            <Image
+              src={logo}
+              alt="TASFA Logo"
+              className="md:h-14 h-10 w-auto mb-4"
+            />
+            <p className="text-[#1B1464] text-sm mb-4">
+              Theatre Art Students Festival and Awards
+            </p>
+            <a
+              href="mailto:hello.tasfa@gmail.com"
+              className="text-sm hover:text-[#005B96]"
+            >
+              hello.tasfa@gmail.com
+            </a>
+          </div>
+
+          {/* Company */}
+          <div className="col-span-2">
+            <h3 className="font-medium mb-4">Company</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/contact" className="text-sm hover:text-[#005B96]">
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-sm hover:text-[#005B96]">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/awards" className="text-sm hover:text-[#005B96]">
+                  Awards
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Connect */}
+          <div className="col-span-2">
+            <h3 className="font-medium mb-4">Connect</h3>
+            <ul className="space-y-2">
+              <li>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm hover:text-[#005B96]"
+                >
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://twitter.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm hover:text-[#005B96]"
+                >
+                  Twitter
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-8 pt-8 text-center text-xs text-[#1B1464] ">
+          <p>
+            © {new Date().getFullYear()} Theatre Art Students Festival and
+            Awards. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
