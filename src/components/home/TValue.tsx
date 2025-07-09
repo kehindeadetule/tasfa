@@ -3,15 +3,15 @@ import Image from "next/image";
 
 export default function About() {
   return (
-    <section className="py-12 md:py-16 relative bg-white px-1 md:px-0">
+    <section className="py-8 md:py-12 relative bg-white px-1 md:px-0">
       <div className="container mx-auto px-4.5 md:px-0">
         <div className="flex flex-col items-center md:mb-12 mb-6 mt-6">
-          <div className="inline-block bg-[#E7FBFE] text-[#1B1464] px-4 py-2 text-sm md:text-xs rounded-2xl mb-4 font-medium shadow-sm">
-            TASFA VALUE PROPOSITION
+          <div className="inline-block bg-[#E7FBFE] text-[#1B1464] px-4 py-2 text-sm rounded-2xl mb-4 font-semibold shadow-sm">
+            OUR VALUE
           </div>
           <h2 className="text-3xl md:text-4xl md:tracking-normal md:leading-14 md:font-bold font-medium text-center md:mb-6 mb-3">
             <span className="text-[#1B1464] sm:text-center">
-              Empowering Nigeria&apos;s Creative Future
+              TASFA VALUE PROPOSITION
             </span>
           </h2>
         </div>
