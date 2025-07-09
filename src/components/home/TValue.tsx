@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function About() {
   return (
-    <section className="py-16 md:py-24 relative bg-white">
+    <section className="py-12 md:py-16 relative bg-white px-1 md:px-0">
       <div className="container mx-auto px-4.5 md:px-0">
         <div className="flex flex-col items-center md:mb-12 mb-6 mt-6">
           <div className="inline-block bg-[#E7FBFE] text-[#1B1464] px-4 py-2 text-sm md:text-xs rounded-2xl mb-4 font-medium shadow-sm">
@@ -17,9 +17,9 @@ export default function About() {
         </div>
 
         <div className="w-[98%] mx-auto md:w-full">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Value Proposition 1 */}
-            <div className=" bg-[#1B1464] p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className=" bg-[#1B1464] md:p-6 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
               <h3 className="text-xl font-bold text-white mb-4">
                 Skills Development for Students
               </h3>
@@ -34,22 +34,7 @@ export default function About() {
             </div>
 
             {/* Value Proposition 2 */}
-            <div className="bg-[#C6007E] p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-xl font-bold text-white mb-4">
-                Promoting Nigeria&apos;s Culture & Art
-              </h3>
-              <p className="text-white text-lg pt-4 leading-relaxed">
-                The festival is a vibrant celebration of Nigeria&apos;s diverse
-                cultural heritage, using exhibitions, costume parades, academic
-                presentations, and performances to educate and inspire. TASFA
-                promotes cultural pride and artistic excellence, helping
-                preserve traditional practices while exploring new artistic
-                expressions.
-              </p>
-            </div>
-
-            {/* Value Proposition 3 */}
-            <div className="bg-[#F37021] p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-[#F37021] md:p-6 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
               <h3 className="text-xl font-bold text-white mb-4">
                 Promoting Cultural Integration
               </h3>
@@ -63,9 +48,26 @@ export default function About() {
             </div>
           </div>
 
+          {/* Value Proposition middle */}
+          <div className="flex justify-center my-8">
+            <div className="bg-[#C6007E] md:p-6 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 w-full md:w-1/2">
+              <h3 className="text-xl font-bold text-white mb-4">
+                Promoting Nigeria&apos;s Culture & Art
+              </h3>
+              <p className="text-white text-lg pt-4 leading-relaxed">
+                The festival is a vibrant celebration of Nigeria&apos;s diverse
+                cultural heritage, using exhibitions, costume parades, academic
+                presentations, and performances to educate and inspire. TASFA
+                promotes cultural pride and artistic excellence, helping
+                preserve traditional practices while exploring new artistic
+                expressions.
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
             {/* Value Proposition 4 */}
-            <div className="bg-[#005B96] p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-[#005B96] md:p-8 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
               <h3 className="text-xl font-bold text-white mb-4">
                 Empowering Female Creative Arts Students
               </h3>
@@ -80,7 +82,7 @@ export default function About() {
             </div>
 
             {/* Value Proposition 5 */}
-            <div className="bg-[#ED1C24] p-8 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 md:col-span">
+            <div className="bg-[#ED1C24] md:p-8 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 md:col-span">
               <h3 className="text-xl font-bold text-white mb-4">
                 Developing Leaders in the Creative Economy
               </h3>
@@ -95,14 +97,6 @@ export default function About() {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="absolute top-0 right-0 bg-none max-w-sm">
-        <Image
-          src={aIcon}
-          alt="TASFA Festival Icon"
-          className="w-24 md:w-36 overflow-x-hidden object-contain"
-        />
       </div>
     </section>
   );
