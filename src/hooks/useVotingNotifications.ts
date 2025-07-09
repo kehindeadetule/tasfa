@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useVotingStatus } from "./useVotingStatus";
 
 interface NotificationOptions {
@@ -11,10 +11,16 @@ export const useVotingNotifications = (options: NotificationOptions = {}) => {
   const { getPendingCategories } = useVotingStatus();
   const permissionGranted = useRef(false);
   const notifiedCategories = useRef(new Set<string>());
+  const [isSupported, setIsSupported] = useState(false);
+
+  // Check notification support on client side only
+  useEffect(() => {
+    setIsSupported(typeof window !== "undefined" && "Notification" in window);
+  }, []);
 
   // Request notification permission
   const requestPermission = async (): Promise<boolean> => {
-    if (!("Notification" in window)) {
+    if (typeof window === "undefined" || !("Notification" in window)) {
       console.warn("This browser does not support notifications");
       return false;
     }
@@ -56,14 +62,16 @@ export const useVotingNotifications = (options: NotificationOptions = {}) => {
 
     notification.onclick = () => {
       // Focus the window and navigate to the category page
-      window.focus();
-      const categorySlug = categoryName
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/\(/g, "")
-        .replace(/\)/g, "");
+      if (typeof window !== "undefined") {
+        window.focus();
+        const categorySlug = categoryName
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/\(/g, "")
+          .replace(/\)/g, "");
 
-      window.location.href = `/awards/category/${categorySlug}`;
+        window.location.href = `/awards/category/${categorySlug}`;
+      }
       notification.close();
     };
 
@@ -82,6 +90,8 @@ export const useVotingNotifications = (options: NotificationOptions = {}) => {
   };
 
   const playNotificationSound = () => {
+    if (typeof window === "undefined") return;
+
     try {
       // Create a simple notification sound using Web Audio API
       const audioContext = new (window.AudioContext ||
@@ -156,6 +166,6 @@ export const useVotingNotifications = (options: NotificationOptions = {}) => {
     showNotification,
     clearNotifiedCategories,
     permissionGranted: permissionGranted.current,
-    isSupported: "Notification" in window,
+    isSupported,
   };
 };
