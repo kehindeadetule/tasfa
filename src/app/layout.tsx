@@ -3,6 +3,8 @@ import { Montserrat } from "next/font/google";
 import "./global.css";
 import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const montserrat = Montserrat({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -59,6 +61,18 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </body>
     </html>
   );

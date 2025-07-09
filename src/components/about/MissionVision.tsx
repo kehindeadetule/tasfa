@@ -7,7 +7,7 @@ export default function MissionVision() {
   return (
     <section
       id="mission"
-      className="relative min-h-screen bg-[#005B96] overflow-hidden"
+      className="relative min-h-screen bg-[#005B96] overflow-hidden "
     >
       {/* Background Elements */}
       <div className="absolute inset-0">

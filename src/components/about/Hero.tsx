@@ -18,7 +18,7 @@ export default function AboutHero() {
       <div className="container relative z-10 mx-auto px-4 md:px-8 h-full">
         <div className="w-11/12 md:w-2/3 lg:w-1/2 text-white text-right mx-auto absolute lg:inset-y-75 md:inset-y-60 inset-y-48 md:right-2 lg:right-14 xl:right-8">
           <AnimatedSection animation="fadeInUp">
-            <h1 className="text-3xl md:text-5xl font-semibold mb-8 md:leading-16 leading-13 md:tracking-normal tracking-wide [text-shadow:_0_4px_8px_rgba(0,0,0,0.8)] ">
+            <h1 className="text-3xl md:text-5xl font-semibold mb-8 md:tracking-normal tracking-wide [text-shadow:_0_4px_8px_rgba(0,0,0,0.8)] leading-16 ">
               Showcasing <br className="md:hidden" /> Cultural{" "}
               <br className="hidden md:block" />
               Heritage <br className="md:hidden" />

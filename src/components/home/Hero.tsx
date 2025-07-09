@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import AnimatedSection from "../common/AnimatedSection";
 import Slider from "react-slick";
@@ -149,7 +148,7 @@ function PrevArrow(props: any) {
   return (
     <button
       onClick={onClick}
-      className="absolute left-8 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all"
+      className="absolute left-8 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all hidden md:block"
       aria-label="Previous slide"
     >
       <svg
@@ -200,7 +199,7 @@ export default function Hero() {
               <div className="absolute inset-0 bg-black/60" />
             </div>
 
-            <div className="container relative z-10 mx-auto px-4 h-full flex flex-col items-start justify-center">
+            <div className="container relative z-10 mx-auto mt-6 md:mt-0 px-4 h-full flex flex-col items-start justify-center">
               <AnimatedSection animation="fadeInUp">
                 <h2 className="text-lg md:text-xl text-white/90 font-medium mb-6 [text-shadow:_0_2px_4px_rgba(0,0,0,0.8)]">
                   {event.date}

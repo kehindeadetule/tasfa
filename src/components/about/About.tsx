@@ -6,7 +6,7 @@ import Partners from "../home/Partners";
 
 export default function About() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ">
       <AboutHero />
       <AboutInfo />
       <MissionVision />

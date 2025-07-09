@@ -6,7 +6,7 @@ import AnimatedSection from "../common/AnimatedSection";
 export default function Advantage() {
   return (
     <section className="py-16 md:py-20 bg-gray-50">
-      <div className="container mx-auto px-4.5 md:px-0">
+      <div className="container mx-auto px-5 md:px-0">
         <div className="text-center mb-12">
           <AnimatedSection animation="fadeIn">
             <span className="md:text-xs text-sm bg-[#E7FBFE] text-[#1B1464] py-2 px-4 rounded-full">
@@ -16,7 +16,7 @@ export default function Advantage() {
           <AnimatedSection animation="fadeInUp" delay={0.2}>
             <h2 className="text-3xl md:text-4xl text-[#1B1464] tracking-wide md:leading-12 leading-10 md:font-bold font-semibold mt-8 md:mt-6 mb-6">
               <span className="">Theatre Reimagined:</span>
-              <br className="hidden md:block" />
+              <br />
               Celebrating Roots, Creating Futures
             </h2>
           </AnimatedSection>
@@ -93,7 +93,7 @@ export default function Advantage() {
         <AnimatedSection animation="fadeIn" delay={0.9}>
           <div className="flex justify-center w-full mx-auto mt-15">
             <Link
-              href="/contact"
+              href="/awards"
               className="bg-[#005B96] md:text-lg text-center text-base hover:bg-[#344a6e] text-white py-2.5 px-20 rounded-full"
             >
               Vote Now
