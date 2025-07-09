@@ -9,7 +9,7 @@ export default function Advantage() {
       <div className="container mx-auto px-5 md:px-0">
         <div className="text-center mb-12">
           <AnimatedSection animation="fadeIn">
-            <span className="md:text-xs text-sm bg-[#E7FBFE] text-[#1B1464] py-2 px-4 rounded-full">
+            <span className=" text-sm bg-[#E7FBFE] font-semibold text-[#1B1464] py-2 px-4 rounded-full">
               TASFA 2025 THEME
             </span>
           </AnimatedSection>
