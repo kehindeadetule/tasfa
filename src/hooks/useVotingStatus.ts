@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_ENDPOINTS } from '@/config/api';
 
 interface VotingStatus {
   votedCategories: string[];
@@ -16,7 +17,7 @@ export const useVotingStatus = () => {
   const fetchVotingStatus = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://172.20.10.2:3001/api/votes/voting-status');
+      const response = await fetch(API_ENDPOINTS.votingStatus);
       const data = await response.json();
       
       if (data.success) {
