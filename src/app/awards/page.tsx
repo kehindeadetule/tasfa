@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import AnimatedSection from "@/components/common/AnimatedSection";
 import VotingStatusIndicator from "@/components/VotingStatusIndicator";
-import NotificationSettings from "@/components/NotificationSettings";
+// import NotificationSettings from "@/components/NotificationSettings";
 
 export const metadata: Metadata = {
   title: "Awards - TASFA 2025",
@@ -77,7 +77,7 @@ export default function AwardsPage() {
       <div className="container mx-auto px-4 py-6">
         {/* Hero Section */}
         <AnimatedSection animation="fadeInUp">
-          <div className="text-center mb-16">
+          <div className="text-center md:mb-16 mb-8">
             <div className="inline-block bg-[#E7FBFE] text-[#1B1464] px-4 py-2 text-sm font-medium rounded-full">
               TASFA 2025 AWARDS
             </div>
@@ -86,9 +86,9 @@ export default function AwardsPage() {
 
         {/* Voting Status and Notifications */}
         <div className="max-w-4xl mx-auto mb-12">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-1 gap-6">
             <VotingStatusIndicator />
-            <NotificationSettings />
+            {/* <NotificationSettings /> */}
           </div>
         </div>
 
