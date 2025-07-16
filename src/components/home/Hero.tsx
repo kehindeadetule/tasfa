@@ -154,7 +154,7 @@ export default function Hero() {
               <div className="absolute inset-0 bg-black/60" />
             </div>
 
-            <div className="container relative z-10 mx-auto mt-6 md:mt-0 px-4 h-full flex flex-col items-start justify-center">
+            <div className="container relative z-10 mx-auto mt-6 md:mt-0 px-4 h-full flex flex-col items-stArts justify-center">
               <AnimatedSection animation="fadeInUp">
                 {/* <h2 className="text-lg md:text-xl text-white/90 font-medium mb-6 [text-shadow:_0_2px_4px_rgba(0,0,0,0.8)]">
                   {event.date}

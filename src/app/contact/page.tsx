@@ -3,10 +3,10 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "TASFA - Contact",
-  description: "Theatre Art Students Festival and Awards",
+  description: "Theatre Arts Students Festival and Awards",
   openGraph: {
     title: "TASFA - Contact",
-    description: "Theatre Art Students Festival and Awards",
+    description: "Theatre Arts Students Festival and Awards",
     url: "https://dga0m8ap1tk9g.cloudfront.net/contact",
     siteName: "TASFA",
     images: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "TASFA - Contact",
-    description: "Theatre Art Students Festival and Awards",
+    description: "Theatre Arts Students Festival and Awards",
     images: ["/hero-bg-m.png"],
   },
   alternates: {
