@@ -1,4 +1,4 @@
-import homeOne from "@/assets/home-one.png";
+import homeOne from "@/assets/activity.webp";
 import Image from "next/image";
 import Link from "next/link";
 import AnimatedSection from "../common/AnimatedSection";
@@ -23,11 +23,11 @@ export default function Advantage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-12 gap-10 items-center mb-10">
-          <div className="">
+          <div className="h-full w-full">
             <Image
               src={homeOne}
               alt="Theatre performance"
-              className="rounded-lg w-full"
+              className="rounded-lg h-full w-full"
             />
           </div>
 

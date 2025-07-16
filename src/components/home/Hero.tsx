@@ -5,70 +5,79 @@ import AnimatedSection from "../common/AnimatedSection";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import bgImg1 from "@/assets/bg-img-1.jpg";
+// import bgImg1 from "@/assets/bg-img-1.jpg";
 import bgImg2 from "@/assets/bg-img-2.jpg";
-import bgImg3 from "@/assets/bg-img-3.jpg";
+import OpeningCeremony from "@/assets/opening-ceremony-1.webp";
+import Carnival from "@/assets/costume-parade-1.jpg";
+import StagePerformance from "@/assets/stage-performance-2.jpeg";
+import Workshops from "@/assets/master-class.jpg";
+import OldSkoolNight from "@/assets/os-2.jpeg";
+import AcademicPaperPresentations from "@/assets/costume-parade-2.jpeg";
+import MeetGreetConnect from "@/assets/meet-greet.webp";
+// import FemaleCreativesLeadershipTraining from "@/assets/female-creatives-leadership-training-1.webp";
+import AwardNight from "@/assets/opening-ceremony-2.png";
+import Gyration from "@/assets/costume-parade-2.jpeg";
 
 const events = [
   {
     title: "Opening Ceremony",
     description:
       "A grand launch to set the tone, featuring welcome addresses, karaoke, DJ rave, and formal introductions of participating schools and dignitaries.",
-    image: bgImg3,
+    image: OpeningCeremony,
   },
   {
     title: "Carnival / Costume Parade",
     description:
       "A vibrant display of cultural pride through costumes, music, dance, and theatrical showcases.",
-    image: bgImg2,
+    image: Carnival,
   },
   {
     title: "Stage Performances",
     description:
       "Competing schools present original or adapted plays or choreographed works, showcasing creativity and stagecraft while reflecting cultural and social themes.",
-    image: bgImg3,
+    image: StagePerformance,
   },
   {
     title: "Old Skool Night",
     description:
       "A nostalgic evening honoring theatre legends with throwback music, performances, and vintage fashion.",
-    image: bgImg1,
+    image: OldSkoolNight,
   },
   {
     title: "Workshops / Masterclasses",
     description:
       "Hands-on sessions with theatre experts on acting, directing, playwriting, stage design, and other areas of the art.",
-    image: bgImg3,
+    image: Workshops,
   },
   {
     title: "Academic Paper Presentations",
     description:
       "A platform for students to share research on theatre, performance, and cultural studies.",
-    image: bgImg1,
+    image: AcademicPaperPresentations,
   },
   {
     title: "Meet, Greet & Connect",
     description:
       "Networking session to foster connections between students, professionals, and participants.",
-    image: bgImg2,
+    image: MeetGreetConnect,
   },
   {
     title: "Female Creatives Leadership Training",
     description:
       "The second and final session of the Female Creatives Leadership Training will focus on practical activities and teamwork. At the end of the session, grants will be awarded to 40 outstanding female students to support their creative projects.",
-    image: bgImg3,
+    image: bgImg2,
   },
   {
     title: "Award Night / Closing Gala",
     description:
       "The festival's climax, celebrating excellence in performance and scholarship with awards and festivities.",
-    image: bgImg1,
+    image: AwardNight,
   },
   {
     title: "Gyration! Gyration!! Gyration!!!",
     description:
       "A high-energy post-gala celebration with music and dance to close the night.",
-    image: bgImg2,
+    image: Gyration,
   },
 ];
 
@@ -148,7 +157,7 @@ export default function Hero() {
                 src={event.image}
                 alt=""
                 fill
-                className="object-cover object-center"
+                className="object-cover object-top"
                 priority
               />
               <div className="absolute inset-0 bg-black/60" />
