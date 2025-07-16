@@ -64,9 +64,9 @@ const categories = {
     "Best Media Student (Female)",
   ],
   institutional: [
-    "Creative Art Institution of the Year",
-    "Creative Art Institution of the Year (1st Runner-Up)",
-    "Creative Art Institution of the Year (2nd Runner-Up)",
+    "Creative Arts Institution of the Year",
+    "Creative Arts Institution of the Year (1st Runner-Up)",
+    "Creative Arts Institution of the Year (2nd Runner-Up)",
   ],
   honorary: ["Theatre Legend of the Year"],
 };
@@ -97,7 +97,7 @@ export default function AwardsPage() {
           <section>
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold text-[#1B1464] mb-4">
-                🌟 Student Excellence Awards
+                🌟 Students Excellence Awards
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Recognizing the rising stars who are redefining creativity and
@@ -157,7 +157,7 @@ export default function AwardsPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm text-blue-200">
               <span className="flex items-center">🎭 Theatre Excellence</span>
-              <span className="flex items-center">🏆 Merit Recognition</span>
+              <span className="flex items-center">🏆 Talent Recognition</span>
               <span className="flex items-center">🤝 Community Unity</span>
               <span className="flex items-center">🎨 Cultural Heritage</span>
             </div>

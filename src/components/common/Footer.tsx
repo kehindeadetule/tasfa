@@ -31,7 +31,7 @@ export default function Footer() {
               className="md:h-14 h-10 w-auto mb-4"
             />
             <p className="text-[#1B1464] text-sm mb-4">
-              Theatre Art Students Festival and Awards
+              Theatre Arts Students Festival and Awards
             </p>
             <a
               href="mailto:hello.tasfa@gmail.com"
@@ -93,7 +93,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-8 text-center text-xs text-[#1B1464] ">
           <p>
-            © {new Date().getFullYear()} Theatre Art Students Festival and
+            © {new Date().getFullYear()} Theatre Arts Students Festival and
             Awards. All rights reserved.
           </p>
         </div>

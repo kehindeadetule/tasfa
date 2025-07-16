@@ -32,7 +32,7 @@ export default function AboutInfo() {
           <AnimatedSection animation="fadeInUp" delay={0.3}>
             <p className="text-lg leading-relaxed mb-6">
               <span className="text-[#005B96]">
-                THE THEATRE ART STUDENTS FESTIVAL AND AWARDS (TASFA)
+                THE THEATRE Arts STUDENTS FESTIVAL AND AWARDS (TASFA)
               </span>{" "}
               is a premier platform that unites theatre arts students from
               universities and colleges of education across Nigeria. Through
