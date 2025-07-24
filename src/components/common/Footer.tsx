@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-// import { usePathname } from "next/navigation";
 import logo from "@/assets/t-logo.png";
+import poweredBy from "@/assets/i560.jpg";
 import Image from "next/image";
 
 export default function Footer() {
-  // const pathname = usePathname();
-
   return (
     <footer id="contact" className="bg-white text-[#1B1464] pt-16 pb-8">
       <div
@@ -24,12 +22,8 @@ export default function Footer() {
       <div className="container mx-auto px-4 md:px-0">
         <div className="grid grid-cols-1 md:grid-cols-10 lg:gap-28 md:gap-16 gap-8">
           {/* Company Info */}
-          <div className="md:col-span-6">
-            <Image
-              src={logo}
-              alt="TASFA Logo"
-              className="md:h-14 h-10 w-auto mb-4"
-            />
+          <div className="md:col-span-4">
+            <Image src={logo} alt="TASFA Logo" className="h-14  w-auto mb-4" />
             <p className="text-[#1B1464] text-sm mb-4">
               Theatre Arts Students Festival and Awards
             </p>
@@ -86,6 +80,20 @@ export default function Footer() {
                 >
                   Twitter
                 </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Sponsors */}
+          <div className="col-span-2">
+            <h3 className="font-medium mb-4">Powered by</h3>
+            <ul className="space-y-2">
+              <li>
+                <Image
+                  src={poweredBy}
+                  alt="powered by Logo"
+                  className="h-28 w-auto mb-4"
+                />
               </li>
             </ul>
           </div>

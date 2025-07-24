@@ -1,4 +1,4 @@
-import heroBg from "@/assets/bg-img-3.jpg";
+import heroBg from "@/assets/about-banner2.jpg";
 import AnimatedSection from "../common/AnimatedSection";
 
 export default function AboutHero() {
@@ -8,7 +8,7 @@ export default function AboutHero() {
       style={{
         backgroundImage: `url(${heroBg.src})`,
         backgroundSize: "cover",
-        backgroundPosition: "bottom",
+        backgroundPosition: "top",
         backgroundRepeat: "no-repeat",
       }}
     >
@@ -22,7 +22,7 @@ export default function AboutHero() {
               Showcasing <br className="md:hidden" /> Cultural{" "}
               <br className="hidden md:block" />
               Heritage <br className="md:hidden" />
-              <span className="text-[#005B96]">Through Art</span>
+              <span className="text-[#005B96]">Through Arts</span>
             </h1>
           </AnimatedSection>
           <AnimatedSection animation="fadeInUp" delay={0.2}>
