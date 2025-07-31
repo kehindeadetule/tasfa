@@ -104,13 +104,13 @@ export default function AwardsPage() {
                 pushing the boundaries of theatrical expression.
               </p>
             </div>
-            <AnimatedSection animation="fadeInUp" delay={0.3}>
+            <AnimatedSection animation="fadeInUp" delay={0.1}>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {categories.student.map((category, index) => (
                   <AnimatedSection
                     key={category}
                     animation="fadeInUp"
-                    delay={0.1 * (index % 6)}
+                    delay={0.1}
                   >
                     <Link
                       href={`/awards/category/${category

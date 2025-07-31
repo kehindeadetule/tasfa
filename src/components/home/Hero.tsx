@@ -5,16 +5,15 @@ import AnimatedSection from "../common/AnimatedSection";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import bgImg2 from "@/assets/bg-img-2.jpg";
 import OpeningCeremony from "@/assets/opening-ceremony-1.webp";
 import Carnival from "@/assets/costume-parade-1.jpg";
 import StagePerformance from "@/assets/stage-performance-2.jpeg";
 import Workshops from "@/assets/master-class.jpg";
 import OldSkoolNight from "@/assets/os-2.jpeg";
-import AcademicPaperPresentations from "@/assets/costume-parade-2.jpeg";
+import AcademicPaperPresentations from "@/assets/academic.jpg";
 import MeetGreetConnect from "@/assets/meet-greet.webp";
-import AwardNight from "@/assets/opening-ceremony-2.png";
-import Gyration from "@/assets/costume-parade-2.jpeg";
+import AwardNight from "@/assets/award1.jpg";
+import Gyration from "@/assets/GYRATION.jpg";
 
 const events = [
   {
