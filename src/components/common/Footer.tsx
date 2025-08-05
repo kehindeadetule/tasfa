@@ -106,6 +106,17 @@ export default function Footer() {
             © {new Date().getFullYear()} Theatre Arts Students Festival and
             Awards. All rights reserved.
           </p>
+          <p>
+            designed by{" "}
+            <a
+              href="https://www.areshtechub.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className=" font-semibold hover:text-[#005B96]"
+            >
+              Arestechub
+            </a>
+          </p>
         </div>
       </div>
     </footer>
