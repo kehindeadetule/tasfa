@@ -40,11 +40,6 @@ export default function Footer() {
             <h3 className="font-medium mb-4">Company</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#contact" className="text-sm hover:text-[#005B96]">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
                 <Link href="/about" className="text-sm hover:text-[#005B96]">
                   About Us
                 </Link>
@@ -63,7 +58,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/t.a.s.f.a?igsh=MWd3eHYzZ2JtZnAzbA%3D%3D&utm_source=qr"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm hover:text-[#005B96]"
@@ -73,7 +68,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://twitter.com"
+                  href="#"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm hover:text-[#005B96]"
@@ -89,11 +84,18 @@ export default function Footer() {
             <h3 className="font-medium mb-4">Powered by</h3>
             <ul className="space-y-2">
               <li>
-                <Image
-                  src={poweredBy}
-                  alt="powered by Logo"
-                  className="h-28 w-auto mb-4"
-                />
+                <Link
+                  href="https://www.instagram.com/1560_productions/profilecard/?igsh=MW9yYjBnMWxwYTd4ag=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className=""
+                >
+                  <Image
+                    src={poweredBy}
+                    alt="powered by Logo"
+                    className="h-28 w-auto mb-4"
+                  />
+                </Link>
               </li>
             </ul>
           </div>
