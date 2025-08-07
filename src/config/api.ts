@@ -12,7 +12,7 @@ const API_CONFIG = {
 const getEnvironment = (): 'development' | 'production' | 'staging' => {
   // Force use of Lambda API Gateway for testing
   // Change this to 'development' when you want to use local backend
-  return 'production';
+  return 'development';
   
   // Original logic (commented out for now):
   /*

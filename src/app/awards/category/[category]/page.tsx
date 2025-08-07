@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useVotingStatus } from "@/hooks/useVotingStatus";
 import { API_ENDPOINTS } from "@/config/api";
 import { categorySlugToName } from "@/utils/categoryMapping";
@@ -154,7 +155,22 @@ export default function CategoryPage({
         </h1>
         {participants.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No participants found for this category.</p>
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white rounded-lg shadow-xl p-8 mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  No Participants Yet
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Be the first to nominate someone for the "{categoryName}" category!
+                </p>
+                <Link
+                  href={`/voting-form?category=${encodeURIComponent(categoryName)}`}
+                  className="inline-flex items-center px-6 py-3 bg-[#005B96] text-white rounded-lg hover:bg-[#004080] transition-colors font-medium"
+                >
+                  🎭 Submit Nomination
+                </Link>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -215,6 +231,24 @@ export default function CategoryPage({
             ))}
           </div>
         )}
+        
+        {/* Submit Nomination Button */}
+        <div className="text-center mt-12">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              Know someone deserving?
+            </h3>
+            <p className="text-gray-600 mb-4 text-sm">
+              Nominate a candidate for the "{categoryName}" category
+            </p>
+            <Link
+              href={`/voting-form?category=${encodeURIComponent(categoryName)}`}
+              className="inline-flex items-center px-6 py-3 bg-[#005B96] text-white rounded-lg hover:bg-[#004080] transition-colors font-medium"
+            >
+              🎭 Submit Nomination
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );

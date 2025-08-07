@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '@/config/api';
 
 interface Submission {
   _id: string;
@@ -10,6 +11,7 @@ interface Submission {
   school: string;
   awardCategory: string;
   image?: string;
+  voteCount: number;
   createdAt: string;
 }
 
@@ -35,7 +37,7 @@ const AdminSubmissions: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/voting-form/categories');
+      const response = await fetch(`${API_BASE_URL}/api/voting-form/categories`);
       const data = await response.json();
       if (data.success) {
         setCategories(data.data);
@@ -48,7 +50,7 @@ const AdminSubmissions: React.FC = () => {
   const fetchSubmissions = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/voting-form/submissions');
+      const response = await fetch(`${API_BASE_URL}/api/voting-form/submissions`);
       const data = await response.json();
       if (data.success) {
         setSubmissions(data.data);
@@ -64,7 +66,7 @@ const AdminSubmissions: React.FC = () => {
   const fetchSubmissionsByCategory = async (category: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/voting-form/submissions/category/${encodeURIComponent(category)}`);
+      const response = await fetch(`${API_BASE_URL}/api/voting-form/submissions/category/${encodeURIComponent(category)}`);
       const data = await response.json();
       if (data.success) {
         setSubmissions(data.data);
@@ -83,7 +85,7 @@ const AdminSubmissions: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`/api/voting-form/submissions/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/voting-form/submissions/${id}`, {
         method: 'DELETE'
       });
       const data = await response.json();
@@ -203,26 +205,41 @@ const AdminSubmissions: React.FC = () => {
                           <img
                             src={submission.image}
                             alt={`${submission.firstName} ${submission.lastName}`}
-                            className="w-12 h-12 object-cover rounded-full"
+                            className="w-12 h-12 object-cover rounded-full border-2 border-gray-200"
+                            onError={(e) => {
+                              // Fallback to initials if image fails to load
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const nextSibling = target.nextSibling as HTMLElement;
+                              if (nextSibling) {
+                                nextSibling.style.display = 'flex';
+                              }
+                            }}
                           />
-                        ) : (
-                          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                            <span className="text-gray-500 text-sm">
-                              {submission.firstName.charAt(0)}{submission.lastName.charAt(0)}
-                            </span>
-                          </div>
-                        )}
+                        ) : null}
+                        <div className={`w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center ${submission.image ? 'hidden' : ''}`}>
+                          <span className="text-white text-sm font-semibold">
+                            {submission.firstName.charAt(0)}{submission.lastName.charAt(0)}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
                           {submission.firstName} {submission.lastName}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {submission.school}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{submission.school}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{submission.awardCategory}</div>
+                        <div className="text-sm text-gray-900">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {submission.awardCategory}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">
@@ -230,12 +247,17 @@ const AdminSubmissions: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => handleDelete(submission._id)}
-                          className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleDelete(submission._id)}
+                            className="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors"
+                          >
+                            Delete
+                          </button>
+                          <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                            {submission.voteCount} votes
+                          </span>
+                        </div>
                       </td>
                     </motion.tr>
                   ))}

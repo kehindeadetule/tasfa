@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
+import { API_BASE_URL } from '@/config/api';
 
 interface Category {
   id: string;
@@ -17,34 +19,24 @@ interface FormData {
 }
 
 const VotingForm: React.FC = () => {
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get('category');
+  
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
     school: '',
-    awardCategory: '',
+    awardCategory: categoryFromUrl || '',
     picture: null
   });
   
-  const [categories, setCategories] = useState<string[]>([]);
+  // Categories are hardcoded in the select element
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/voting-form/categories');
-      const data = await response.json();
-      if (data.success) {
-        setCategories(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
+  // Categories are now hardcoded in the select element for better performance
+  // No need to fetch from API
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -84,7 +76,7 @@ const VotingForm: React.FC = () => {
         formDataToSend.append('picture', formData.picture);
       }
 
-      const response = await fetch('/api/voting-form/submit', {
+      const response = await fetch(`${API_BASE_URL}/api/voting-form/submit`, {
         method: 'POST',
         body: formDataToSend
       });
@@ -101,6 +93,12 @@ const VotingForm: React.FC = () => {
           picture: null
         });
         setPreviewUrl(null);
+        
+        // Clear the file input
+        const fileInput = document.getElementById('picture') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
       } else {
         setMessage({ type: 'error', text: data.error || 'Something went wrong' });
       }
@@ -112,7 +110,7 @@ const VotingForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8 mt-24">
       <div className="max-w-2xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -207,11 +205,45 @@ const VotingForm: React.FC = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               >
                 <option value="">Select a category</option>
-                {categories.map((category, index) => (
-                  <option key={index} value={category}>
-                    {category}
-                  </option>
-                ))}
+                
+                {/* Student Categories */}
+                <optgroup label="Student Categories">
+                  <option value="Best Actor">Best Actor</option>
+                  <option value="Best Actress">Best Actress</option>
+                  <option value="Best Supporting Actor">Best Supporting Actor</option>
+                  <option value="Best Supporting Actress">Best Supporting Actress</option>
+                  <option value="Revelation of the Year (Male)">Revelation of the Year (Male)</option>
+                  <option value="Revelation of the Year (Female)">Revelation of the Year (Female)</option>
+                  <option value="Best Director">Best Director</option>
+                  <option value="Best Stage Manager">Best Stage Manager</option>
+                  <option value="Best Playwright">Best Playwright</option>
+                  <option value="Best Set Designer">Best Set Designer</option>
+                  <option value="Best Light Designer">Best Light Designer</option>
+                  <option value="Best Props Designer">Best Props Designer</option>
+                  <option value="Best Costumier">Best Costumier</option>
+                  <option value="Best Makeup Artist">Best Makeup Artist</option>
+                  <option value="Best Publicity Manager">Best Publicity Manager</option>
+                  <option value="Best Dancer (Male)">Best Dancer (Male)</option>
+                  <option value="Best Dancer (Female)">Best Dancer (Female)</option>
+                  <option value="Best Drummer (Male)">Best Drummer (Male)</option>
+                  <option value="Best Drummer (Female)">Best Drummer (Female)</option>
+                  <option value="Best Choreographer">Best Choreographer</option>
+                  <option value="Best Music Director">Best Music Director</option>
+                  <option value="Best Media Student (Male)">Best Media Student (Male)</option>
+                  <option value="Best Media Student (Female)">Best Media Student (Female)</option>
+                </optgroup>
+                
+                {/* Institutional Categories */}
+                <optgroup label="Institutional Categories">
+                  <option value="Creative Art Institution of the Year">Creative Art Institution of the Year</option>
+                  <option value="Creative Art Institution of the Year (1st Runner-Up)">Creative Art Institution of the Year (1st Runner-Up)</option>
+                  <option value="Creative Art Institution of the Year (2nd Runner-Up)">Creative Art Institution of the Year (2nd Runner-Up)</option>
+                </optgroup>
+                
+                {/* Honorary Categories */}
+                <optgroup label="Honorary Categories">
+                  <option value="Theatre Legend of the Year">Theatre Legend of the Year</option>
+                </optgroup>
               </select>
             </div>
 

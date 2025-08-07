@@ -90,11 +90,18 @@ export default function Navbar() {
               >
                 Facilitators
               </Link>
+
             </div>
           </div>
 
           <div className="flex-shrink-0">
-            <div className="hidden md:block">
+            <div className="hidden md:block flex items-center space-x-4">
+              <Link
+                href="/voting-form"
+                className="bg-[#005B96] text-white text-sm px-5 py-2 rounded-full font-medium hover:bg-[#004080] transition-colors"
+              >
+                Participant Form
+              </Link>
               <Link
                 href="/contact"
                 className="border-[2px] border-[#005B96] text-sm text-[#005B96] hover:bg-[#005B96] hover:text-white hover:border-none px-5 py-2 rounded-full font-medium transition-colors"
@@ -170,6 +177,15 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Awards
+              </Link>
+              <Link
+                href="/voting-form"
+                className={`text-white text-lg font-medium hover:text-[#016CEE] ${
+                  isActive("/voting-form") ? "!text-[#005B96] font-semibold" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Participant Form
               </Link>
               <Link
                 href="/contact"
