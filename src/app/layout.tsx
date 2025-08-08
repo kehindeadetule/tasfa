@@ -73,18 +73,6 @@ export default function RootLayout({
           pauseOnHover
           theme="light"
         />
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
       </body>
     </html>
   );

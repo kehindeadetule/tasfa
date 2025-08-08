@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import Link from "next/link";
 import { useVotingStatus } from "@/hooks/useVotingStatus";
 import { API_ENDPOINTS } from "@/config/api";
 import { categorySlugToName } from "@/utils/categoryMapping";

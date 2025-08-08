@@ -1,11 +1,11 @@
 // API Configuration
 const API_CONFIG = {
   // Development: Local backend
-  development: 'http://localhost:3001',
+  development: 'https://tasfa.onrender.com',
   // Production: AWS Lambda API Gateway
-  production: 'https://hqxs5bc4j2.execute-api.us-east-1.amazonaws.com/dev',
+  production: 'https://tasfa.onrender.com',
   // Staging: AWS Lambda API Gateway (same as production for now)
-  staging: 'https://hqxs5bc4j2.execute-api.us-east-1.amazonaws.com/dev'
+  staging: 'https://tasfa.onrender.com'
 };
 
 // Get the current environment

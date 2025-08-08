@@ -53,6 +53,7 @@ const AdminSubmissions: React.FC = () => {
       const response = await fetch(`${API_BASE_URL}/api/voting-form/submissions`);
       const data = await response.json();
       if (data.success) {
+        console.log('Fetched submissions:', data.data);
         setSubmissions(data.data);
       }
     } catch (error) {
@@ -194,7 +195,11 @@ const AdminSubmissions: React.FC = () => {
                             src={submission.image}
                             alt={`${submission.firstName} ${submission.lastName}`}
                             className="w-12 h-12 object-cover rounded-full border-2 border-gray-200"
+                            onLoad={() => {
+                              console.log('Image loaded successfully:', submission.image);
+                            }}
                             onError={(e) => {
+                              console.error('Image failed to load:', submission.image);
                               // Fallback to initials if image fails to load
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
