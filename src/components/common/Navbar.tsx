@@ -105,12 +105,12 @@ export default function Navbar() {
 
           <div className="flex-shrink-0">
             <div className="hidden md:flex items-center space-x-4">
-              <Link
+              {/* <Link
                 href="/voting-form"
                 className="bg-[#005B96] text-white text-sm px-5 py-2 rounded-full font-medium hover:bg-[#004080] transition-colors"
               >
                 Participant Form
-              </Link>
+              </Link> */}
               <Link
                 href="#contact"
                 className="border-[2px] border-[#005B96] text-sm text-[#005B96] hover:bg-[#005B96] hover:text-white hover:border-none px-5 py-2 rounded-full font-medium transition-colors"
