@@ -1,5 +1,4 @@
-import values from "@/assets/about-two.png";
-import valuesMobile from "@/assets/about-two-m.png";
+import values from "@/assets/national-theater.jpg";
 import Image from "next/image";
 import AnimatedSection from "../common/AnimatedSection";
 import { Users, Globe, Award, Network } from "lucide-react";

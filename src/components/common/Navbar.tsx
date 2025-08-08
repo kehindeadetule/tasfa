@@ -29,11 +29,7 @@ export default function Navbar() {
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <Image
-                src={logo}
-                alt="Tasfa Logo"
-                className="md:h-14 h-12 w-auto"
-              />
+              <Image src={logo} alt="Tasfa Logo" className="h-14  w-auto" />
             </Link>
           </div>
 

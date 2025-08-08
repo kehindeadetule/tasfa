@@ -1,4 +1,4 @@
-import aboutInfo from "@/assets/bg-img-2.jpg";
+import aboutInfo from "@/assets/about-img.jpg";
 import Image from "next/image";
 import AnimatedSection from "../common/AnimatedSection";
 
@@ -6,7 +6,7 @@ export default function AboutInfo() {
   return (
     <section className="md:py-16 py-12 px-1 md:px-0">
       <div className="container mx-auto px-4 md:px-0">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <AnimatedSection animation="fadeIn">
             <span className="inline-block bg-[#E7FBFE] text-[#1B1464] px-3 py-1.5 text-xs rounded-2xl mb-4">
               ABOUT TASFA
@@ -24,15 +24,15 @@ export default function AboutInfo() {
           <Image
             src={aboutInfo}
             alt="TASFA Festival"
-            className="rounded-xl w-full"
+            className="rounded-xl w-full h-full object-cover object-top"
           />
         </div>
 
-        <div className="mt-12">
+        <div className="mt-8">
           <AnimatedSection animation="fadeInUp" delay={0.3}>
             <p className="text-lg leading-relaxed mb-6">
               <span className="text-[#005B96]">
-                THE THEATRE Arts STUDENTS FESTIVAL AND AWARDS (TASFA)
+                THE THEATRE ARTS STUDENTS FESTIVAL AND AWARDS (TASFA)
               </span>{" "}
               is a premier platform that unites theatre arts students from
               universities and colleges of education across Nigeria. Through

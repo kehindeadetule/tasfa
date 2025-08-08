@@ -5,18 +5,15 @@ import AnimatedSection from "../common/AnimatedSection";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-// import bgImg1 from "@/assets/bg-img-1.jpg";
-import bgImg2 from "@/assets/bg-img-2.jpg";
 import OpeningCeremony from "@/assets/opening-ceremony-1.webp";
 import Carnival from "@/assets/costume-parade-1.jpg";
 import StagePerformance from "@/assets/stage-performance-2.jpeg";
 import Workshops from "@/assets/master-class.jpg";
 import OldSkoolNight from "@/assets/os-2.jpeg";
-import AcademicPaperPresentations from "@/assets/costume-parade-2.jpeg";
+import AcademicPaperPresentations from "@/assets/academic.jpg";
 import MeetGreetConnect from "@/assets/meet-greet.webp";
-// import FemaleCreativesLeadershipTraining from "@/assets/female-creatives-leadership-training-1.webp";
-import AwardNight from "@/assets/opening-ceremony-2.png";
-import Gyration from "@/assets/costume-parade-2.jpeg";
+import AwardNight from "@/assets/award1.jpg";
+import Gyration from "@/assets/GYRATION.jpg";
 
 const events = [
   {
@@ -60,12 +57,6 @@ const events = [
     description:
       "Networking session to foster connections between students, professionals, and participants.",
     image: MeetGreetConnect,
-  },
-  {
-    title: "Female Creatives Leadership Training",
-    description:
-      "The second and final session of the Female Creatives Leadership Training will focus on practical activities and teamwork. At the end of the session, grants will be awarded to 40 outstanding female students to support their creative projects.",
-    image: bgImg2,
   },
   {
     title: "Award Night / Closing Gala",

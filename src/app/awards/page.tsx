@@ -104,43 +104,42 @@ export default function AwardsPage() {
                 pushing the boundaries of theatrical expression.
               </p>
             </div>
-            <AnimatedSection animation="fadeInUp" delay={0.3}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categories.student.map((category, index) => (
-                  <AnimatedSection
-                    key={category}
-                    animation="fadeInUp"
-                    delay={0.1 * (index % 6)}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categories.student.map((category, index) => (
+                <AnimatedSection
+                  key={category}
+                  animation="fadeInUp"
+                  delay={0.1}
+                >
+                  <Link
+                    href={`/awards/category/${category
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")
+                      .replace(/\(/g, "")
+                      .replace(/\)/g, "")}`}
+                    className="group block p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-100 hover:border-[#005B96]/30"
                   >
-                    <Link
-                      href={`/awards/category/${category
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")
-                        .replace(/\(/g, "")
-                        .replace(/\)/g, "")}`}
-                      className="group block p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-100 hover:border-[#005B96]/30"
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-semibold text-gray-800 group-hover:text-[#005B96] transition-colors">
-                          {category}
-                        </h3>
-                        <div className="text-[#005B96] opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">
-                          →
-                        </div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold text-gray-800 group-hover:text-[#005B96] transition-colors">
+                        {category}
+                      </h3>
+                      <div className="text-[#005B96] opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">
+                        →
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500 bg-[#005B96]/10 px-2 py-1 rounded-full">
-                          Category #{index + 1}
-                        </span>
-                        <span className="text-xs text-[#005B96] font-medium">
-                          Vote Now
-                        </span>
-                      </div>
-                    </Link>
-                  </AnimatedSection>
-                ))}
-              </div>
-            </AnimatedSection>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500 bg-[#005B96]/10 px-2 py-1 rounded-full">
+                        Category #{index + 1}
+                      </span>
+                      <span className="text-xs text-[#005B96] font-medium">
+                        Vote Now
+                      </span>
+                    </div>
+                  </Link>
+                </AnimatedSection>
+              ))}
+            </div>
           </section>
         </div>
 
