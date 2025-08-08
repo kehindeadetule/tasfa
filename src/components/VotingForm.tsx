@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
@@ -19,7 +19,7 @@ interface FormData {
   picture: File | null;
 }
 
-const VotingForm: React.FC = () => {
+const VotingFormContent: React.FC = () => {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
 
@@ -352,6 +352,20 @@ const VotingForm: React.FC = () => {
         </motion.div>
       </div>
     </div>
+  );
+};
+
+const VotingForm: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8 mt-24 flex items-center justify-center">
+          <div className="text-lg">Loading...</div>
+        </div>
+      }
+    >
+      <VotingFormContent />
+    </Suspense>
   );
 };
 
