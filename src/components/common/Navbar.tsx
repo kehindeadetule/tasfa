@@ -100,12 +100,11 @@ export default function Navbar() {
               >
                 Facilitators
               </Link>
-
             </div>
           </div>
 
           <div className="flex-shrink-0">
-            <div className="hidden md:block flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-4">
               <Link
                 href="/voting-form"
                 className="bg-[#005B96] text-white text-sm px-5 py-2 rounded-full font-medium hover:bg-[#004080] transition-colors"
@@ -188,15 +187,17 @@ export default function Navbar() {
               >
                 Awards
               </Link>
-              <Link
+              {/* <Link
                 href="/voting-form"
                 className={`text-white text-lg font-medium hover:text-[#016CEE] ${
-                  isActive("/voting-form") ? "!text-[#005B96] font-semibold" : ""
+                  isActive("/voting-form")
+                    ? "!text-[#005B96] font-semibold"
+                    : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Participant Form
-              </Link>
+              </Link> */}
               <Link
                 href="/contact"
                 className={`text-white text-lg font-medium hover:text-[#016CEE] ${

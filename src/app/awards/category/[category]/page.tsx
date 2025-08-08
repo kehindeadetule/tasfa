@@ -53,6 +53,7 @@ export default function CategoryPage({
         const data = await response.json();
         if (data.success) {
           setParticipants(data.data);
+          console.log(data.data);
           // Check voting history
           try {
             const historyResponse = await fetch(API_ENDPOINTS.votingHistory);
@@ -241,14 +242,20 @@ export default function CategoryPage({
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="relative h-64 w-full">
-                  <img
-                    src={
-                      participant.image ||
-                      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=face"
-                    }
-                    alt={`${participant.firstName} ${participant.lastName}`}
-                    className="object-cover w-full h-full"
-                  />
+                  {participant.image ? (
+                    <img
+                      src={participant.image}
+                      alt={`${participant.firstName} ${participant.lastName}`}
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#005B96] to-[#1B1464] flex items-center justify-center">
+                      <div className="text-white text-4xl font-bold">
+                        {participant.firstName.charAt(0).toUpperCase()}
+                        {participant.lastName.charAt(0).toUpperCase()}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="p-6">
                   <h2 className="text-2xl font-semibold mb-2">
@@ -294,24 +301,6 @@ export default function CategoryPage({
             ))}
           </div>
         )}
-        
-        {/* Submit Nomination Button */}
-        <div className="text-center mt-12">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              Know someone deserving?
-            </h3>
-            <p className="text-gray-600 mb-4 text-sm">
-              Nominate a candidate for the "{categoryName}" category
-            </p>
-            <Link
-              href={`/voting-form?category=${encodeURIComponent(categoryName)}`}
-              className="inline-flex items-center px-6 py-3 bg-[#005B96] text-white rounded-lg hover:bg-[#004080] transition-colors font-medium"
-            >
-              🎭 Submit Nomination
-            </Link>
-          </div>
-        </div>
       </div>
     </section>
   );
