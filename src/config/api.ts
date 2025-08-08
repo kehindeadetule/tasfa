@@ -1,19 +1,19 @@
 // API Configuration
 const API_CONFIG = {
   // Development: Local backend
-  development: 'http://localhost:3001',
+  development: "https://tasfa.onrender.com",
   // Production: AWS Lambda API Gateway
-  production: 'https://hqxs5bc4j2.execute-api.us-east-1.amazonaws.com/dev',
+  production: "https://tasfa.onrender.com",
   // Staging: AWS Lambda API Gateway (same as production for now)
-  staging: 'https://hqxs5bc4j2.execute-api.us-east-1.amazonaws.com/dev'
+  staging: "https://tasfa.onrender.com",
 };
 
 // Get the current environment
-const getEnvironment = (): 'development' | 'production' | 'staging' => {
+const getEnvironment = (): "development" | "production" | "staging" => {
   // Force use of Lambda API Gateway for testing
   // Change this to 'development' when you want to use local backend
-  return 'production';
-  
+  return "development";
+
   // Original logic (commented out for now):
   /*
   if (typeof window !== 'undefined') {
@@ -37,16 +37,17 @@ export const API_ENDPOINTS = {
   voteCounts: `${API_BASE_URL}/api/votes/counts`,
   votingStatus: `${API_BASE_URL}/api/votes/voting-status`,
   votingHistory: `${API_BASE_URL}/api/votes/voting-history`,
-  category: (category: string) => `${API_BASE_URL}/api/votes/category/${category}`,
+  category: (category: string) =>
+    `${API_BASE_URL}/api/votes/category/${category}`,
   health: `${API_BASE_URL}/health`,
-  corsTest: `${API_BASE_URL}/cors-test`
+  corsTest: `${API_BASE_URL}/cors-test`,
 };
 
 // Export the environment for debugging
 export const CURRENT_ENV = getEnvironment();
 
-console.log('API Configuration:', {
+console.log("API Configuration:", {
   environment: CURRENT_ENV,
   baseUrl: API_BASE_URL,
-  endpoints: API_ENDPOINTS
-}); 
+  endpoints: API_ENDPOINTS,
+});

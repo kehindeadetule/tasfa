@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import Link from "next/link";
 import { useVotingStatus } from "@/hooks/useVotingStatus";
 import { API_ENDPOINTS } from "@/config/api";
 import { categorySlugToName } from "@/utils/categoryMapping";
@@ -52,6 +53,7 @@ export default function CategoryPage({
         const data = await response.json();
         if (data.success) {
           setParticipants(data.data);
+          console.log(data.data);
           // Check voting history
           try {
             const historyResponse = await fetch(API_ENDPOINTS.votingHistory);
@@ -240,14 +242,20 @@ export default function CategoryPage({
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="relative h-64 w-full">
-                  <img
-                    src={
-                      participant.image ||
-                      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=face"
-                    }
-                    alt={`${participant.firstName} ${participant.lastName}`}
-                    className="object-cover w-full h-full"
-                  />
+                  {participant.image ? (
+                    <img
+                      src={participant.image}
+                      alt={`${participant.firstName} ${participant.lastName}`}
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#005B96] to-[#1B1464] flex items-center justify-center">
+                      <div className="text-white text-4xl font-bold">
+                        {participant.firstName.charAt(0).toUpperCase()}
+                        {participant.lastName.charAt(0).toUpperCase()}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="p-6">
                   <h2 className="text-2xl font-semibold mb-2">
