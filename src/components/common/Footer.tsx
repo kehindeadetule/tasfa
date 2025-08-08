@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import logo from "@/assets/t-logo.png";
 import Image from "next/image";
 
 export default function Footer() {
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   return (
-    <footer className="bg-white text-[#1B1464] pt-16 pb-8">
+    <footer id="contact" className="bg-white text-[#1B1464] pt-16 pb-8">
       <div
         className="h-1 mb-8 bg-gradient-to-r from-[#ED1C24] via-[#C6007E] via-[#005B96] via-[#1B1464] via-[#FFD200] to-[#F37021]"
         style={{
@@ -31,7 +31,7 @@ export default function Footer() {
               className="md:h-14 h-10 w-auto mb-4"
             />
             <p className="text-[#1B1464] text-sm mb-4">
-              Theatre Art Students Festival and Awards
+              Theatre Arts Students Festival and Awards
             </p>
             <a
               href="mailto:hello.tasfa@gmail.com"
@@ -46,7 +46,7 @@ export default function Footer() {
             <h3 className="font-medium mb-4">Company</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/contact" className="text-sm hover:text-[#005B96]">
+                <Link href="#contact" className="text-sm hover:text-[#005B96]">
                   Contact Us
                 </Link>
               </li>
@@ -93,7 +93,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-8 text-center text-xs text-[#1B1464] ">
           <p>
-            © {new Date().getFullYear()} Theatre Art Students Festival and
+            © {new Date().getFullYear()} Theatre Arts Students Festival and
             Awards. All rights reserved.
           </p>
         </div>

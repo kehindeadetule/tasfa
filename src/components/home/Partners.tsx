@@ -1,26 +1,22 @@
 "use client";
-import microsoft from "@/assets/client-logo/mircosoft.png";
-import amazon from "@/assets/client-logo/amazon.png";
-import ibm from "@/assets/client-logo/ibm.png";
-import trimble from "@/assets/client-logo/trimble.png";
-import mercedes from "@/assets/client-logo/benz.png";
-import e2open from "@/assets/client-logo/e2open.png";
-import capitalOne from "@/assets/client-logo/capital-one.png";
+import nantap from "@/assets/client-logo/nantap.png";
+import pawstudios from "@/assets/client-logo/pawstudio.jpeg";
+import sonata from "@/assets/client-logo/sonata.png";
 import Image from "next/image";
 
 const partners = [
-  { logo: microsoft, alt: "Microsoft" },
-  { logo: trimble, alt: "Trimble" },
-  { logo: capitalOne, alt: "Capital One" },
-  { logo: amazon, alt: "Amazon" },
-  { logo: ibm, alt: "IBM" },
-  { logo: mercedes, alt: "Mercedes" },
-  { logo: e2open, alt: "E2open" },
-  { logo: microsoft, alt: "Microsoft" },
-  { logo: trimble, alt: "Trimble" },
-  { logo: capitalOne, alt: "Capital One" },
-  { logo: amazon, alt: "Amazon" },
-  { logo: ibm, alt: "IBM" },
+  { logo: nantap, alt: "Nantap" },
+  { logo: pawstudios, alt: "Paw Studios", className: "bg-[#005B96]" },
+  { logo: sonata, alt: "Sonata" },
+  { logo: pawstudios, alt: "Paw Studios" },
+  { logo: nantap, alt: "Nantap" },
+  { logo: pawstudios, alt: "Paw Studios" },
+  { logo: sonata, alt: "Sonata" },
+  { logo: nantap, alt: "Nantap" },
+  { logo: pawstudios, alt: "Paw Studios" },
+  { logo: sonata, alt: "Sonata" },
+  { logo: pawstudios, alt: "Paw Studios" },
+  { logo: nantap, alt: "Nantap" },
 ];
 
 export default function AboutPartners() {
@@ -70,7 +66,7 @@ export default function AboutPartners() {
                     alt={partner.alt}
                     fill
                     className="object-contain"
-                    sizes="(max-width: 180px) 100vw, 180px"
+                    sizes="(max-width: 160px) 100vw, 160px"
                     priority={index < 7} // Prioritize first set of logos
                   />
                 </div>
@@ -91,7 +87,7 @@ export default function AboutPartners() {
                     alt={partner.alt}
                     fill
                     className="object-contain "
-                    sizes="(max-width: 180px) 100vw, 180px"
+                    sizes="(max-width: 160px) 100vw, 160px"
                     priority={index < 7} // Prioritize first set of logos
                   />
                 </div>

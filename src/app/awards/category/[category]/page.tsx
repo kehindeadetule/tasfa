@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { toast } from "react-toastify";
 import { useVotingStatus } from "@/hooks/useVotingStatus";
 import { API_ENDPOINTS } from "@/config/api";
 import { categorySlugToName } from "@/utils/categoryMapping";
+import VotingTimer from "@/components/VotingTimer";
 
 interface Participant {
   _id: string;
@@ -24,12 +25,20 @@ export default function CategoryPage({
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [votedParticipantId, setVotedParticipantId] = useState<string | null>(null);
-  const [showNotification, setShowNotification] = useState(false);
-  const { canVoteForCategory, updateVotingStatus, votingStatus } = useVotingStatus();
+  const [votedParticipantId, setVotedParticipantId] = useState<string | null>(
+    null
+  );
+  const {
+    canVoteForCategory,
+    updateVotingStatus,
+    votingStatus,
+    getNextVoteTime,
+  } = useVotingStatus();
 
   const slug = params.category;
   const categoryName = categorySlugToName[slug] || slug;
+  const canVote = canVoteForCategory(categoryName);
+  const nextVoteTime = getNextVoteTime(categoryName);
 
   useEffect(() => {
     const fetchParticipants = async () => {
@@ -37,7 +46,7 @@ export default function CategoryPage({
         setLoading(true);
         const response = await fetch(API_ENDPOINTS.category(categoryName));
         if (!response.ok) {
-          setError('Failed to fetch participants');
+          setError("Failed to fetch participants");
           return;
         }
         const data = await response.json();
@@ -49,9 +58,10 @@ export default function CategoryPage({
             if (historyResponse.ok) {
               const historyData = await historyResponse.json();
               if (historyData.success) {
-                const votedParticipant = historyData.data.votedParticipants.find(
-                  (p: any) => p.awardCategory === categoryName
-                );
+                const votedParticipant =
+                  historyData.data.votedParticipants.find(
+                    (p: any) => p.awardCategory === categoryName
+                  );
                 if (votedParticipant) {
                   setVotedParticipantId(votedParticipant._id);
                 } else {
@@ -63,10 +73,10 @@ export default function CategoryPage({
             setVotedParticipantId(null);
           }
         } else {
-          setError('Failed to fetch participants');
+          setError("Failed to fetch participants");
         }
       } catch (err) {
-        setError('Error connecting to server');
+        setError("Error connecting to server");
       } finally {
         setLoading(false);
       }
@@ -75,45 +85,67 @@ export default function CategoryPage({
   }, [categoryName]);
 
   const handleVote = async (participant: Participant) => {
-    if (!canVoteForCategory(categoryName)) {
-      setShowNotification(true);
+    if (!canVote) {
+      toast.info(
+        `You have already voted for ${categoryName} today. Check the countdown timer to see when you can vote again!`,
+        {
+          position: "top-center",
+          autoClose: 6000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
       return;
     }
     if (votedParticipantId !== null) return;
     try {
       const response = await fetch(API_ENDPOINTS.votes, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           firstName: participant.firstName,
           lastName: participant.lastName,
           school: participant.school,
-          awardCategory: categoryName
-        })
+          awardCategory: categoryName,
+        }),
       });
       if (!response.ok) {
-        setError('Failed to submit vote');
+        toast.error("Failed to submit vote. Please try again.");
         return;
       }
       const data = await response.json();
       if (data.success) {
-        setParticipants(prev => 
-          prev.map(p => 
-            p._id === participant._id 
+        setParticipants((prev) =>
+          prev.map((p) =>
+            p._id === participant._id
               ? { ...p, voteCount: data.data.voteCount }
               : p
           )
         );
         setVotedParticipantId(participant._id);
         updateVotingStatus(categoryName);
+        toast.success(
+          `Vote count for ${participant.firstName} ${participant.lastName}!`
+        );
       } else {
-        setError('Failed to submit vote');
+        toast.error("Failed to submit vote. Please try again.");
       }
     } catch (err) {
-      setError('Error submitting vote');
+      toast.error(
+        "Error submitting vote. Please check your connection and try again."
+      );
     }
+  };
+
+  const handleVotingAvailable = () => {
+    toast.success(`Voting is now available for ${categoryName}!`, {
+      position: "top-center",
+      autoClose: 5000,
+    });
   };
 
   if (loading) {
@@ -135,8 +167,8 @@ export default function CategoryPage({
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <p className="text-red-600 mb-4">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="px-6 py-2 bg-[#005B96] text-white rounded-full hover:bg-[#004080]"
             >
               Try Again
@@ -150,27 +182,55 @@ export default function CategoryPage({
   return (
     <section className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-[#1B1464] text-center mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#1B1464] text-center mb-4">
           {categoryName}
         </h1>
+
+        {/* Voting Status Banner */}
+        {!canVote && nextVoteTime && (
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-orange-800">
+                  🗳️ Voting Status for {categoryName}
+                </h3>
+              </div>
+              <div className="flex items-center justify-center mb-3">
+                <VotingTimer
+                  categoryName={categoryName}
+                  nextVoteTime={nextVoteTime}
+                  onVotingAvailable={handleVotingAvailable}
+                  compact={false}
+                />
+              </div>
+              <p className="text-xs text-orange-700 text-center">
+                You can vote again once the countdown reaches zero
+              </p>
+            </div>
+          </div>
+        )}
+
+        {canVote && votedParticipantId === null && (
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <h3 className="text-sm font-medium text-green-800">
+                  ✅ Ready to Vote!
+                </h3>
+              </div>
+              <p className="text-xs text-green-700">
+                Choose your favorite participant below
+              </p>
+            </div>
+          </div>
+        )}
+
         {participants.length === 0 ? (
           <div className="text-center py-12">
-            <div className="max-w-2xl mx-auto">
-              <div className="bg-white rounded-lg shadow-xl p-8 mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  No Participants Yet
-                </h2>
-                <p className="text-gray-600 mb-6">
-                  Be the first to nominate someone for the "{categoryName}" category!
-                </p>
-                <Link
-                  href={`/voting-form?category=${encodeURIComponent(categoryName)}`}
-                  className="inline-flex items-center px-6 py-3 bg-[#005B96] text-white rounded-lg hover:bg-[#004080] transition-colors font-medium"
-                >
-                  🎭 Submit Nomination
-                </Link>
-              </div>
-            </div>
+            <p className="text-gray-600 text-lg">
+              No participants found for this category.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -181,7 +241,10 @@ export default function CategoryPage({
               >
                 <div className="relative h-64 w-full">
                   <img
-                    src={participant.image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=face"}
+                    src={
+                      participant.image ||
+                      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=face"
+                    }
                     alt={`${participant.firstName} ${participant.lastName}`}
                     className="object-cover w-full h-full"
                   />
@@ -205,24 +268,23 @@ export default function CategoryPage({
                     ) : (
                       <button
                         onClick={() => handleVote(participant)}
-                        disabled={votedParticipantId !== null}
+                        disabled={!canVote || votedParticipantId !== null}
                         className={`px-6 py-2 rounded-full font-medium transition-all duration-200 ${
-                          votedParticipantId === participant._id
-                            ? "bg-green-500 text-white cursor-not-allowed"
-                            : !canVoteForCategory(categoryName)
-                            ? "bg-gray-300 text-gray-500 cursor-pointer"
+                          !canVote
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                             : votedParticipantId !== null
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                             : "bg-[#005B96] text-white hover:bg-[#004080] hover:scale-105 active:scale-95"
                         }`}
+                        title={
+                          !canVote
+                            ? "You need to wait before voting again"
+                            : votedParticipantId !== null
+                            ? "You have already voted in this category"
+                            : "Click to vote"
+                        }
                       >
-                        {votedParticipantId === participant._id
-                          ? "✓ Voted"
-                          : !canVoteForCategory(categoryName)
-                          ? "Vote"
-                          : votedParticipantId !== null
-                          ? "Vote"
-                          : "Vote"}
+                        {!canVote ? "⏰ Wait" : "Vote"}
                       </button>
                     )}
                   </div>
@@ -252,4 +314,4 @@ export default function CategoryPage({
       </div>
     </section>
   );
-} 
+}

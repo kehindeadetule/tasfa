@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
+import { toast } from 'react-toastify';
 import { API_BASE_URL } from '@/config/api';
 
 interface Category {
@@ -32,7 +33,6 @@ const VotingForm: React.FC = () => {
   
   // Categories are hardcoded in the select element
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Categories are now hardcoded in the select element for better performance
@@ -63,7 +63,6 @@ const VotingForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
 
     try {
       const formDataToSend = new FormData();
@@ -84,7 +83,7 @@ const VotingForm: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        setMessage({ type: 'success', text: 'Voting form submitted successfully!' });
+        toast.success('Voting form submitted successfully!');
         setFormData({
           firstName: '',
           lastName: '',
@@ -100,10 +99,10 @@ const VotingForm: React.FC = () => {
           fileInput.value = '';
         }
       } else {
-        setMessage({ type: 'error', text: data.error || 'Something went wrong' });
+        toast.error(data.error || 'Something went wrong');
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'Network error. Please try again.' });
+      toast.error('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -127,19 +126,7 @@ const VotingForm: React.FC = () => {
             </p>
           </div>
 
-          {message && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`mb-6 p-4 rounded-lg ${
-                message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}
-            >
-              {message.text}
-            </motion.div>
-          )}
+
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

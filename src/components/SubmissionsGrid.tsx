@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 import { API_BASE_URL } from '@/config/api';
 
 interface Submission {
@@ -56,6 +57,7 @@ const SubmissionsGrid: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching submissions:', error);
+      toast.error('Failed to fetch submissions');
     } finally {
       setLoading(false);
     }
@@ -71,6 +73,7 @@ const SubmissionsGrid: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching submissions by category:', error);
+      toast.error('Failed to fetch submissions');
     } finally {
       setLoading(false);
     }

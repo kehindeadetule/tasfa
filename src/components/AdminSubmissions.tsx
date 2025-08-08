@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 import { API_BASE_URL } from '@/config/api';
 
 interface Submission {
@@ -20,7 +21,6 @@ const AdminSubmissions: React.FC = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -57,7 +57,7 @@ const AdminSubmissions: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching submissions:', error);
-      setMessage({ type: 'error', text: 'Failed to fetch submissions' });
+      toast.error('Failed to fetch submissions');
     } finally {
       setLoading(false);
     }
@@ -73,7 +73,7 @@ const AdminSubmissions: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching submissions by category:', error);
-      setMessage({ type: 'error', text: 'Failed to fetch submissions' });
+      toast.error('Failed to fetch submissions');
     } finally {
       setLoading(false);
     }
@@ -91,13 +91,13 @@ const AdminSubmissions: React.FC = () => {
       const data = await response.json();
       
       if (data.success) {
-        setMessage({ type: 'success', text: 'Submission deleted successfully' });
+        toast.success('Submission deleted successfully');
         fetchSubmissions();
       } else {
-        setMessage({ type: 'error', text: data.error || 'Failed to delete submission' });
+        toast.error(data.error || 'Failed to delete submission');
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'Failed to delete submission' });
+      toast.error('Failed to delete submission');
     }
   };
 
@@ -129,19 +129,7 @@ const AdminSubmissions: React.FC = () => {
             </p>
           </div>
 
-          {message && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`mb-6 p-4 rounded-lg ${
-                message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}
-            >
-              {message.text}
-            </motion.div>
-          )}
+
 
           <div className="mb-6">
             <label htmlFor="categoryFilter" className="block text-sm font-medium text-gray-700 mb-2">

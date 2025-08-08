@@ -1,120 +1,83 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import AnimatedSection from "../common/AnimatedSection";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import bgImg1 from "@/assets/bg-img-1.jpg";
+// import bgImg1 from "@/assets/bg-img-1.jpg";
 import bgImg2 from "@/assets/bg-img-2.jpg";
-import bgImg3 from "@/assets/bg-img-3.jpg";
+import OpeningCeremony from "@/assets/opening-ceremony-1.webp";
+import Carnival from "@/assets/costume-parade-1.jpg";
+import StagePerformance from "@/assets/stage-performance-2.jpeg";
+import Workshops from "@/assets/master-class.jpg";
+import OldSkoolNight from "@/assets/os-2.jpeg";
+import AcademicPaperPresentations from "@/assets/costume-parade-2.jpeg";
+import MeetGreetConnect from "@/assets/meet-greet.webp";
+// import FemaleCreativesLeadershipTraining from "@/assets/female-creatives-leadership-training-1.webp";
+import AwardNight from "@/assets/opening-ceremony-2.png";
+import Gyration from "@/assets/costume-parade-2.jpeg";
 
 const events = [
   {
-    date: "Thursday, October 16th, 2025",
-    title: "Arrival & Registration (2:00 PM – 5:00 PM)",
-    description:
-      "The first step of the festival where participants check in, receive event materials, and are introduced to the festival schedule.",
-    image: bgImg1,
-  },
-  {
-    date: "Thursday, October 16th, 2025",
-    title: "Female Creatives Leadership Training Session 1 (6:00 PM – 7:00 PM)",
-    description:
-      "This is a dedicated platform to empower over 400 female theatre and media students with practical leadership and production skills. This session focuses on mentorship, communication, and creative entrepreneurship to prepare them for impactful roles in the industry.",
-    image: bgImg2,
-  },
-  {
-    date: "Thursday, October 16th, 2025",
-    title: "Opening Ceremony (8:00 PM – 11:00 PM)",
+    title: "Opening Ceremony",
     description:
       "A grand launch to set the tone, featuring welcome addresses, karaoke, DJ rave, and formal introductions of participating schools and dignitaries.",
-    image: bgImg3,
+    image: OpeningCeremony,
   },
   {
-    date: "Thursday, October 16th, 2025",
-    title: "Lights Out (11:30 PM)",
-    description:
-      "End of the day's activities; participants return to their hostels to rest and recharge.",
-    image: bgImg1,
-  },
-  {
-    date: "Friday, October 17th, 2025",
-    title: "Carnival / Costume Parade (10:00 AM – 2:00 PM)",
+    title: "Carnival / Costume Parade",
     description:
       "A vibrant display of cultural pride through costumes, music, dance, and theatrical showcases.",
-    image: bgImg2,
+    image: Carnival,
   },
   {
-    date: "Friday, October 17th, 2025",
-    title: "Stage Performances (3:00 PM – 6:00 PM)",
+    title: "Stage Performances",
     description:
       "Competing schools present original or adapted plays or choreographed works, showcasing creativity and stagecraft while reflecting cultural and social themes.",
-    image: bgImg3,
+    image: StagePerformance,
   },
   {
-    date: "Friday, October 17th, 2025",
-    title: "Old Skool / Tribute Night (7:00 PM – 11:00 PM)",
+    title: "Old Skool Night",
     description:
       "A nostalgic evening honoring theatre legends with throwback music, performances, and vintage fashion.",
-    image: bgImg1,
+    image: OldSkoolNight,
   },
   {
-    date: "Friday, October 17th, 2025",
-    title: "Lights Out (11:30 PM)",
-    description:
-      "End of the day's activities; participants return to their hostels to rest and recharge.",
-    image: bgImg2,
-  },
-  {
-    date: "Saturday, October 18th, 2025",
-    title: "Workshops / Masterclasses (9:00 AM – 10:00 AM)",
+    title: "Workshops / Masterclasses",
     description:
       "Hands-on sessions with theatre experts on acting, directing, playwriting, stage design, and other areas of the art.",
-    image: bgImg3,
+    image: Workshops,
   },
   {
-    date: "Saturday, October 18th, 2025",
-    title: "Academic Paper Presentations (11:00 AM – 2:00 PM)",
+    title: "Academic Paper Presentations",
     description:
       "A platform for students to share research on theatre, performance, and cultural studies.",
-    image: bgImg1,
+    image: AcademicPaperPresentations,
   },
   {
-    date: "Saturday, October 18th, 2025",
-    title: "Meet, Greet & Connect (2:30 PM – 4:00 PM)",
+    title: "Meet, Greet & Connect",
     description:
       "Networking session to foster connections between students, professionals, and participants.",
-    image: bgImg2,
+    image: MeetGreetConnect,
   },
   {
-    date: "Saturday, October 18th, 2025",
-    title: "Female Creatives Leadership Training Session 2 (4:00 PM – 6:00 PM)",
+    title: "Female Creatives Leadership Training",
     description:
       "The second and final session of the Female Creatives Leadership Training will focus on practical activities and teamwork. At the end of the session, grants will be awarded to 40 outstanding female students to support their creative projects.",
-    image: bgImg3,
-  },
-  {
-    date: "Saturday, October 18th, 2025",
-    title: "Award Night / Closing Gala (8:00 PM – 12:00 AM)",
-    description:
-      "The festival's climax, celebrating excellence in performance and scholarship with awards and festivities.",
-    image: bgImg1,
-  },
-  {
-    date: "Saturday, October 18th, 2025",
-    title: "Gyration! Gyration!! Gyration!!! (12:00 AM – 3:00 AM)",
-    description:
-      "A high-energy post-gala celebration with music and dance to close the night.",
     image: bgImg2,
   },
   {
-    date: "Sunday, October 19th, 2025",
-    title: "Departure (8:00 AM – 12:00 PM)",
+    title: "Award Night / Closing Gala",
     description:
-      "Farewells and safe travels as participants head back home after a memorable experience.",
-    image: bgImg3,
+      "The festival's climax, celebrating excellence in performance and scholarship with awards and festivities.",
+    image: AwardNight,
+  },
+  {
+    title: "Gyration! Gyration!! Gyration!!!",
+    description:
+      "A high-energy post-gala celebration with music and dance to close the night.",
+    image: Gyration,
   },
 ];
 
@@ -123,7 +86,7 @@ function NextArrow(props: any) {
   return (
     <button
       onClick={onClick}
-      className="absolute right-8 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all"
+      className="absolute right-8 md:top-1/2 top-3/4 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all "
       aria-label="Next slide"
     >
       <svg
@@ -149,7 +112,7 @@ function PrevArrow(props: any) {
   return (
     <button
       onClick={onClick}
-      className="absolute left-8 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all"
+      className="absolute left-8  md:top-1/2 top-3/4 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all"
       aria-label="Previous slide"
     >
       <svg
@@ -194,17 +157,17 @@ export default function Hero() {
                 src={event.image}
                 alt=""
                 fill
-                className="object-cover object-center"
+                className="object-cover object-top"
                 priority
               />
               <div className="absolute inset-0 bg-black/60" />
             </div>
 
-            <div className="container relative z-10 mx-auto px-4 h-full flex flex-col items-start justify-center">
+            <div className="container relative z-10 mx-auto mt-6 md:mt-0 px-4 h-full flex flex-col items-stArts justify-center">
               <AnimatedSection animation="fadeInUp">
-                <h2 className="text-lg md:text-xl text-white/90 font-medium mb-6 [text-shadow:_0_2px_4px_rgba(0,0,0,0.8)]">
+                {/* <h2 className="text-lg md:text-xl text-white/90 font-medium mb-6 [text-shadow:_0_2px_4px_rgba(0,0,0,0.8)]">
                   {event.date}
-                </h2>
+                </h2> */}
                 <h1 className="text-2xl lg:text-3xl md:leading-12 leading-8 font-bold tracking-wide text-white max-w-4xl mb-8 [text-shadow:_0_4px_8px_rgba(0,0,0,0.8)]">
                   {event.title}
                 </h1>

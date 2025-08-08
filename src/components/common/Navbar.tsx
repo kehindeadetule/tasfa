@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import logo from "@/assets/t-logo.png";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 
@@ -11,6 +11,15 @@ export default function Navbar() {
   const [isAboutDropdownOpen, setIsAboutDropdownOpen] = useState(false);
 
   const isActive = (path: string) => {
+    // For awards section, check if pathname starts with /awards to handle nested routes
+    if (path === "/awards") {
+      return pathname.startsWith("/awards");
+    }
+    // For about section, check if pathname starts with /about to handle nested routes
+    if (path === "/about") {
+      return pathname.startsWith("/about");
+    }
+    // For other paths, use exact matching
     return pathname === path;
   };
 
@@ -23,7 +32,7 @@ export default function Navbar() {
               <Image
                 src={logo}
                 alt="Tasfa Logo"
-                className="md:h-14 h-10 w-auto"
+                className="md:h-14 h-12 w-auto"
               />
             </Link>
           </div>
@@ -68,7 +77,7 @@ export default function Navbar() {
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setIsAboutDropdownOpen(false)}
                       >
-                        Objective
+                        Objectives
                       </Link>
                     </div>
                   )}
@@ -83,9 +92,10 @@ export default function Navbar() {
                 Awards
               </Link>
               <Link
-                href="/facilitator"
+                href="#facilitator"
+                aria-disabled={true}
                 className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors ${
-                  isActive("/contact") ? "font-semibold text-[#005B96]" : ""
+                  isActive("#facilitator") ? "font-semibold text-[#005B96]" : ""
                 }`}
               >
                 Facilitators
@@ -103,7 +113,7 @@ export default function Navbar() {
                 Participant Form
               </Link>
               <Link
-                href="/contact"
+                href="#contact"
                 className="border-[2px] border-[#005B96] text-sm text-[#005B96] hover:bg-[#005B96] hover:text-white hover:border-none px-5 py-2 rounded-full font-medium transition-colors"
               >
                 Contact Us
@@ -115,7 +125,7 @@ export default function Navbar() {
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7.5 w-7.5"
+                className="h-8 w-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -190,7 +200,7 @@ export default function Navbar() {
               <Link
                 href="/contact"
                 className={`text-white text-lg font-medium hover:text-[#016CEE] ${
-                  isActive("/contact") ? "!text-[#005B96] font-semibold" : ""
+                  isActive("#contact") ? "!text-[#005B96] font-semibold" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
