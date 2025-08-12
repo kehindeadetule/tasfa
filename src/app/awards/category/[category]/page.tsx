@@ -257,8 +257,8 @@ export default function CategoryPage({
                     </div>
                   )}
                 </div>
-                <div className="p-6">
-                  <h2 className="text-2xl font-semibold mb-2">
+                <div className="px-5 py-6 md:p-6">
+                  <h2 className="text-lg md:text-xl font-semibold mb-2">
                     {participant.firstName} {participant.lastName}
                   </h2>
                   <p className="text-gray-600 mb-4">{participant.school}</p>
