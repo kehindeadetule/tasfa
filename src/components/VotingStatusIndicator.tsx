@@ -155,7 +155,7 @@ export default function VotingStatusIndicator() {
       {totalVotedEver === 0 && (
         <div className="text-center py-6">
           <div className="text-4xl mb-2">🗳️</div>
-          <p className="text-sm text-gray-600 mb-2">Ready to stArts voting?</p>
+          <p className="text-sm text-gray-600 mb-2">Ready to start voting?</p>
           <p className="text-xs text-gray-500">
             All categories are available for voting.
           </p>
