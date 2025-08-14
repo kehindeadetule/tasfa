@@ -246,7 +246,7 @@ export default function CategoryPage({
                     <img
                       src={participant.image}
                       alt={`${participant.firstName} ${participant.lastName}`}
-                      className="object-cover w-full h-full"
+                      className="object-cover object-top w-full h-full"
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#005B96] to-[#1B1464] flex items-center justify-center">
