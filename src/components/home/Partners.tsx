@@ -1,22 +1,41 @@
 "use client";
-import nantap from "@/assets/client-logo/nantap.png";
-import pawstudios from "@/assets/client-logo/pawstudio.jpeg";
-import sonata from "@/assets/client-logo/sonata.png";
 import Image from "next/image";
 
 const partners = [
-  { logo: nantap, alt: "Nantap" },
-  { logo: pawstudios, alt: "Paw Studios", className: "bg-[#005B96]" },
-  { logo: sonata, alt: "Sonata" },
-  { logo: pawstudios, alt: "Paw Studios" },
-  { logo: nantap, alt: "Nantap" },
-  { logo: pawstudios, alt: "Paw Studios" },
-  { logo: sonata, alt: "Sonata" },
-  { logo: nantap, alt: "Nantap" },
-  { logo: pawstudios, alt: "Paw Studios" },
-  { logo: sonata, alt: "Sonata" },
-  { logo: pawstudios, alt: "Paw Studios" },
-  { logo: nantap, alt: "Nantap" },
+  { logo: "/assets/client-logo/nantap.png", alt: "Nantap" },
+  {
+    logo: "/assets/client-logo/pawstudio.jpeg",
+    alt: "Paw Studios",
+    className: "bg-[#005B96]",
+  },
+  { logo: "/assets/client-logo/sonata.png", alt: "Sonata" },
+  { logo: "/assets/client-logo/nantap.png", alt: "Nantap" },
+  { logo: "/assets/client-logo/pawstudio.jpeg", alt: "Paw Studios" },
+  { logo: "/assets/client-logo/sonata.png", alt: "Sonata" },
+  { logo: "/assets/client-logo/nantap.png", alt: "Nantap" },
+  { logo: "/assets/client-logo/pawstudio.jpeg", alt: "Paw Studios" },
+  { logo: "/assets/client-logo/sonata.png", alt: "Sonata" },
+  { logo: "/assets/client-logo/pawstudio.jpeg", alt: "Paw Studios" },
+  { logo: "/assets/client-logo/nantap.png", alt: "Nantap" },
+  { logo: "/assets/client-logo/pawstudio.jpeg", alt: "Paw Studios" },
+  { logo: "/assets/client-logo/sonata.png", alt: "Sonata" },
+];
+
+const schoolLogos = [
+  { logo: "/assets/school-logo/aaua.jpg", alt: "AAUA" },
+  { logo: "/assets/school-logo/bouesti.jpg", alt: "Bouesti" },
+  { logo: "/assets/school-logo/fuoye.jpg", alt: "Fuoye" },
+  { logo: "/assets/school-logo/ui.jpg", alt: "UI" },
+  { logo: "/assets/school-logo/eksu.png", alt: "Eksu" },
+  { logo: "/assets/school-logo/eaued.jpg", alt: "EAUED" },
+  { logo: "/assets/school-logo/fceabk.jpg", alt: "FCEABK" },
+  { logo: "/assets/school-logo/leadcity.png", alt: "Lead City" },
+  { logo: "/assets/school-logo/oau.jpg", alt: "OAU" },
+  { logo: "/assets/school-logo/oou.jpg", alt: "OOU" },
+  { logo: "/assets/school-logo/redeemers.jpg", alt: "Redeemers" },
+  { logo: "/assets/school-logo/bowen.png", alt: "Bowen" },
+  { logo: "/assets/school-logo/unn.jpg", alt: "unn" },
+  { logo: "/assets/school-logo/unioyo.jpg", alt: "Uinoyo" },
 ];
 
 export default function AboutPartners() {
@@ -39,13 +58,13 @@ export default function AboutPartners() {
 
       <div className="containe relative z-10 mx-auto px-">
         <div className="text-center max-w-4xl mx-auto mb-20">
-          <div className="inline-block bg-[#E7FBFE] text-[#005B96] px-6 py-2 text-sm rounded-full mb-6 font-medium shadow-sm">
+          <div className="inline-block bg-[#E7FBFE] font-semibold text-[#1B1464] px-6 py-2 text-sm rounded-full mb-6 shadow-sm">
             OUR PARTNERS
           </div>
-          <h2 className="text-4xl md:text-4xl font-bold text-white mb-6 bg-clip-text bg-gradient-to-r from-white via-[#7FB3D5] to-[#AED6F1] drop-shadow-lg">
+          <h2 className="text-xl md:text-4xl font-bold text-white md:mb-6 mb-0 bg-clip-text bg-gradient-to-r from-white via-[#7FB3D5] to-[#AED6F1] drop-shadow-lg">
             Trusted by Industry Leaders
           </h2>
-          <p className="text-white/90 text-lg md:text-xl leading-relaxed">
+          <p className="text-white/90 text-sm md:text-xl leading-relaxed p-3 md:p-0">
             Our partners are at the forefront of innovation and excellence,
             bringing their expertise and resources to make TASFA 2025 a
             remarkable success.
@@ -76,7 +95,7 @@ export default function AboutPartners() {
 
           {/* Second row - moving right */}
           <div className="flex animate-scroll-right mt-8 mb-8">
-            {[...partners, ...partners].map((partner, index) => (
+            {[...schoolLogos, ...schoolLogos].map((partner, index) => (
               <div
                 key={`right-${index}`}
                 className=" rounded-lg flex items-center justify-center h-20 md:min-w-[180px] min-w-[160px]  mx-4"

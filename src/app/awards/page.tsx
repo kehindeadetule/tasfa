@@ -78,7 +78,7 @@ export default function AwardsPage() {
         {/* Hero Section */}
         <AnimatedSection animation="fadeInUp">
           <div className="text-center md:mb-16 mb-8">
-            <div className="inline-block bg-[#E7FBFE] text-[#1B1464] px-4 py-2 text-sm font-medium rounded-full">
+            <div className="inline-block bg-[#E7FBFE] font-semibold text-[#1B1464] px-4 py-2 text-sm rounded-full">
               TASFA 2025 AWARDS
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function AwardsPage() {
           {/* Student Categories */}
           <section>
             <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold text-[#1B1464] mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-[#1B1464] mb-4">
                 🌟 Students Excellence Awards
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">

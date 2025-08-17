@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { toast } from 'react-toastify';
-import { API_BASE_URL } from '@/config/api';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { API_BASE_URL } from "@/config/api";
 
 interface Submission {
   _id: string;
@@ -16,11 +16,28 @@ interface Submission {
   createdAt: string;
 }
 
+interface EditFormData {
+  firstName: string;
+  lastName: string;
+  school: string;
+  awardCategory: string;
+}
+
 const SubmissionsGrid: React.FC = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [editingSubmission, setEditingSubmission] = useState<Submission | null>(
+    null
+  );
+  const [editFormData, setEditFormData] = useState<EditFormData>({
+    firstName: "",
+    lastName: "",
+    school: "",
+    awardCategory: "",
+  });
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -37,27 +54,31 @@ const SubmissionsGrid: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/voting-form/categories`);
+      const response = await fetch(
+        `${API_BASE_URL}/api/voting-form/categories`
+      );
       const data = await response.json();
       if (data.success) {
         setCategories(data.data);
       }
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
   const fetchSubmissions = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/voting-form/submissions`);
+      const response = await fetch(
+        `${API_BASE_URL}/api/voting-form/submissions`
+      );
       const data = await response.json();
       if (data.success) {
         setSubmissions(data.data);
       }
     } catch (error) {
-      console.error('Error fetching submissions:', error);
-      toast.error('Failed to fetch submissions');
+      console.error("Error fetching submissions:", error);
+      toast.error("Failed to fetch submissions");
     } finally {
       setLoading(false);
     }
@@ -66,24 +87,104 @@ const SubmissionsGrid: React.FC = () => {
   const fetchSubmissionsByCategory = async (category: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/voting-form/submissions/category/${encodeURIComponent(category)}`);
+      const response = await fetch(
+        `${API_BASE_URL}/api/voting-form/submissions/category/${encodeURIComponent(
+          category
+        )}`
+      );
       const data = await response.json();
       if (data.success) {
         setSubmissions(data.data);
       }
     } catch (error) {
-      console.error('Error fetching submissions by category:', error);
-      toast.error('Failed to fetch submissions');
+      console.error("Error fetching submissions by category:", error);
+      toast.error("Failed to fetch submissions");
     } finally {
       setLoading(false);
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const handleEdit = (submission: Submission) => {
+    setEditingSubmission(submission);
+    setEditFormData({
+      firstName: submission.firstName,
+      lastName: submission.lastName,
+      school: submission.school,
+      awardCategory: submission.awardCategory,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this submission?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/voting-form/submissions/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Submission deleted successfully");
+        fetchSubmissions();
+      } else {
+        toast.error(data.error || "Failed to delete submission");
+      }
+    } catch (error) {
+      toast.error("Failed to delete submission");
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!editingSubmission) return;
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/voting-form/submissions/${editingSubmission._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editFormData),
+        }
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Submission updated successfully");
+        setIsEditModalOpen(false);
+        setEditingSubmission(null);
+        fetchSubmissions();
+      } else {
+        toast.error(data.error || "Failed to update submission");
+      }
+    } catch (error) {
+      toast.error("Failed to update submission");
+    }
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingSubmission(null);
+    setEditFormData({
+      firstName: "",
+      lastName: "",
+      school: "",
+      awardCategory: "",
     });
   };
 
@@ -108,13 +209,14 @@ const SubmissionsGrid: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               Voting Submissions
             </h2>
-            <p className="text-gray-600">
-              View all submitted nominations
-            </p>
+            <p className="text-gray-600">View all submitted nominations</p>
           </div>
 
           <div className="mb-6">
-            <label htmlFor="categoryFilter" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="categoryFilter"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Filter by Category
             </label>
             <select
@@ -148,22 +250,33 @@ const SubmissionsGrid: React.FC = () => {
                       alt={`${submission.firstName} ${submission.lastName}`}
                       className="w-full h-48 object-cover"
                       onLoad={() => {
-                        console.log('Image loaded successfully:', submission.image);
+                        console.log(
+                          "Image loaded successfully:",
+                          submission.image
+                        );
                       }}
                       onError={(e) => {
-                        console.error('Image failed to load:', submission.image);
+                        console.error(
+                          "Image failed to load:",
+                          submission.image
+                        );
                         const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
+                        target.style.display = "none";
                         const fallback = target.nextSibling as HTMLElement;
                         if (fallback) {
-                          fallback.style.display = 'flex';
+                          fallback.style.display = "flex";
                         }
                       }}
                     />
                   ) : null}
-                  <div className={`w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${submission.image ? 'hidden' : ''}`}>
+                  <div
+                    className={`w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${
+                      submission.image ? "hidden" : ""
+                    }`}
+                  >
                     <span className="text-white text-4xl font-bold">
-                      {submission.firstName.charAt(0)}{submission.lastName.charAt(0)}
+                      {submission.firstName.charAt(0)}
+                      {submission.lastName.charAt(0)}
                     </span>
                   </div>
                   <div className="absolute top-2 right-2">
@@ -172,7 +285,7 @@ const SubmissionsGrid: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">
                     {submission.firstName} {submission.lastName}
@@ -185,9 +298,25 @@ const SubmissionsGrid: React.FC = () => {
                       {submission.awardCategory}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 mb-3">
                     Submitted: {formatDate(submission.createdAt)}
                   </p>
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-2 pt-2 border-t border-gray-100">
+                    <button
+                      onClick={() => handleEdit(submission)}
+                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(submission._id)}
+                      className="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -204,8 +333,136 @@ const SubmissionsGrid: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && editingSubmission && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Edit Submission
+              </h3>
+              <button
+                onClick={closeEditModal}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.firstName}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      firstName: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.lastName}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      lastName: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  School
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.school}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, school: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Award Category
+                </label>
+                <select
+                  value={editFormData.awardCategory}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      awardCategory: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Select a category</option>
+                  {categories.map((category, index) => (
+                    <option key={index} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={closeEditModal}
+                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdate}
+                className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-colors"
+              >
+                Update
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default SubmissionsGrid; 
+export default SubmissionsGrid;

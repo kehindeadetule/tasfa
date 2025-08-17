@@ -1,4 +1,4 @@
-import aboutInfo from "@/assets/about-img.jpg";
+// import aboutInfo from "/assets/national-theater.jpg";
 import Image from "next/image";
 import AnimatedSection from "../common/AnimatedSection";
 
@@ -13,7 +13,7 @@ export default function AboutInfo() {
             </span>
           </AnimatedSection>
           <AnimatedSection animation="fadeInUp" delay={0.2}>
-            <h2 className="text-[#1B1464] text-3xl md:text-4xl font-semibold leading-tight mt-1">
+            <h2 className="text-[#1B1464] text-2xl md:text-4xl font-semibold leading-tight mt-1">
               Celebrating Theatre Arts Excellence{" "}
               <br className="hidden md:block" />
               Across Nigerian Institutions
@@ -22,16 +22,18 @@ export default function AboutInfo() {
         </div>
         <div className="relative">
           <Image
-            src={aboutInfo}
+            src="/assets/national-theater.jpg"
             alt="TASFA Festival"
+            width={1200}
+            height={600}
             className="rounded-xl w-full h-full object-cover object-top"
           />
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 text-base md:text-lg">
           <AnimatedSection animation="fadeInUp" delay={0.3}>
-            <p className="text-lg leading-relaxed mb-6">
-              <span className="text-[#005B96]">
+            <p className=" leading-relaxed mb-6">
+              <span className="text-[#005B96] font-medium">
                 THE THEATRE ARTS STUDENTS FESTIVAL AND AWARDS (TASFA)
               </span>{" "}
               is a premier platform that unites theatre arts students from
@@ -42,7 +44,7 @@ export default function AboutInfo() {
             </p>
           </AnimatedSection>
           <AnimatedSection animation="fadeInUp" delay={0.4}>
-            <p className="text-lg leading-relaxed mb-6">
+            <p className=" leading-relaxed mb-6">
               Our festival serves as a dynamic bridge between emerging
               student-artists and established practitioners in the industry. We
               create opportunities for meaningful mentorship, foster
@@ -52,7 +54,7 @@ export default function AboutInfo() {
             </p>
           </AnimatedSection>
           <AnimatedSection animation="fadeInUp" delay={0.5}>
-            <p className="text-lg leading-relaxed">
+            <p className=" leading-relaxed">
               TASFA stands as a celebration of talent, a vibrant display of
               cultural diversity, and a testament to our commitment to nurturing
               the future of performing arts in Nigeria. Through our platform, we

@@ -1,7 +1,7 @@
-import strategicIcon from "@/assets/icons/strategic-icon.png";
-import serviceIcon from "@/assets/icons/service-icon.png";
-import visionIcon from "@/assets/icons/vision.png";
-import stakeholderIcon from "@/assets/icons/stakeholder-icon.png";
+// import strategicIcon from "/assets/icons/strategic-icon.png";
+// import serviceIcon from "/assets/icons/service-icon.png";
+// import visionIcon from "/assets/icons/vision.png";
+// import stakeholderIcon from "/assets/icons/stakeholder-icon.png";
 import Image, { StaticImageData } from "next/image";
 import AnimatedSection from "../common/AnimatedSection";
 
@@ -28,7 +28,7 @@ export default function Services() {
           <div className="inline-block bg-[#E7FBFE] text-[#1B1464] px-6 py-2 text-sm rounded-full mb-6 font-medium shadow-sm">
             FESTIVAL VENUE
           </div>
-          <h2 className="text-4xl md:text-4xl font-bold text-white mb-6">
+          <h2 className="text-xl md:text-4xl font-bold text-white mb-6">
             Trusted by Industry Leaders
           </h2>
           <p className="text-white text-lg md:text-xl leading-relaxed">
@@ -43,7 +43,7 @@ export default function Services() {
           <AnimatedSection animation="fadeIn" delay={0.2}>
             <ServiceCard
               title="High Visibility Across a Large, Captive Audience"
-              icon={visionIcon}
+              icon="/assets/icons/stakeholder-icon.png"
               description="The enclosed and self-contained nature of the camp means sponsor branding will dominate the space throughout the four-day festival. Banners, stage backdrops, branded zones, and digital screens ensure continuous exposure to every attendee."
             />
           </AnimatedSection>
@@ -52,7 +52,7 @@ export default function Services() {
           <AnimatedSection animation="fadeIn" delay={0.3}>
             <ServiceCard
               title="On-Site Activation Opportunities"
-              icon={serviceIcon}
+              icon="/assets/icons/strategic-icon.png"
               description="Sponsors can set up activation booths, demo areas, or interactive stands within high-traffic zones like registration points, workshop halls, and the main arena — maximizing brand interaction in a secure, concentrated setting."
             />
           </AnimatedSection>
@@ -61,7 +61,7 @@ export default function Services() {
           <AnimatedSection animation="fadeIn" delay={0.4}>
             <ServiceCard
               title="Extended Brand Exposure"
-              icon={strategicIcon}
+              icon="/assets/icons/strategic-icon.png"
               description="Unlike a traditional venue with short rental windows, the camp allows for multi-day engagement. Your brand presence stays active for the entire festival duration — including both day and late-night events."
             />
           </AnimatedSection>
@@ -70,7 +70,7 @@ export default function Services() {
           <AnimatedSection animation="fadeIn" delay={0.5}>
             <ServiceCard
               title="Media Content Opportunities"
-              icon={stakeholderIcon}
+              icon="/assets/icons/stakeholder-icon.png"
               description="The venue's layout and open-air spaces allow for creative filming, influencer engagement, and branded media coverage. Sponsors can co-create content that lives beyond the event and connects with wider online audiences."
             />
           </AnimatedSection>
@@ -90,7 +90,7 @@ export default function Services() {
 
 interface ServiceCardProps {
   title: string;
-  icon: StaticImageData;
+  icon: string;
   description: string;
 }
 
@@ -104,6 +104,8 @@ function ServiceCard({ title, icon, description }: ServiceCardProps) {
           <Image
             src={icon}
             alt={title}
+            width={48}
+            height={48}
             className="w-full h-full object-contain"
           />
         </div>

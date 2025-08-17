@@ -276,8 +276,9 @@ export default function CategoryPage({
                     ) : (
                       <button
                         onClick={() => handleVote(participant)}
-                        disabled={!canVote || votedParticipantId !== null}
-                        className={`px-6 py-2 rounded-full font-medium transition-all duration-200 ${
+                        // disabled={!canVote || votedParticipantId !== null}
+                        disabled={true}
+                        className={`px-6 py-2 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${
                           !canVote
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                             : votedParticipantId !== null

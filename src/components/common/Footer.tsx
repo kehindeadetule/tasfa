@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import logo from "@/assets/t-logo.png";
-import poweredBy from "@/assets/i560.jpg";
+// import logo from "/assets/t-logo.png";
+// import poweredBy from "/assets/i560.jpg";
 import Image from "next/image";
 
 export default function Footer() {
@@ -23,7 +23,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-10 lg:gap-28 md:gap-16 gap-8">
           {/* Company Info */}
           <div className="md:col-span-4">
-            <Image src={logo} alt="TASFA Logo" className="h-14  w-auto mb-4" />
+            <Image
+              src="/assets/t-logo.png"
+              alt="TASFA Logo"
+              width={200}
+              height={56}
+              className="h-14  w-auto mb-4"
+            />
             <p className="text-[#1B1464] text-sm mb-4">
               Theatre Arts Students Festival and Awards
             </p>
@@ -91,8 +97,10 @@ export default function Footer() {
                   className=""
                 >
                   <Image
-                    src={poweredBy}
+                    src="/assets/i560.jpg"
                     alt="powered by Logo"
+                    width={200}
+                    height={112}
                     className="h-28 w-auto mb-4"
                   />
                 </Link>

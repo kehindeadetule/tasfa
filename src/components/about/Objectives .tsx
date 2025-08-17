@@ -1,4 +1,4 @@
-import values from "@/assets/national-theater.jpg";
+// import values from "/assets/national-theater.jpg";
 import Image from "next/image";
 import AnimatedSection from "../common/AnimatedSection";
 import { Users, Globe, Award, Network } from "lucide-react";
@@ -10,14 +10,14 @@ export default function Values() {
       className="md:py-20 py-14 bg-gradient-to-b from-white to-gray-50"
     >
       <div className="container mx-auto px-4 md:px-0">
-        <div className="text-center mb-12">
+        <div className="text-center md:mb-12 mb-6">
           <AnimatedSection animation="fadeIn">
-            <span className="inline-block bg-[#E7FBFE] text-[#1B1464] px-4 py-2 text-sm font-medium rounded-full mb-4">
+            <span className="inline-block bg-[#E7FBFE] font-semibold text-[#1B1464] px-4 py-2 text-sm rounded-full mb-4">
               TASFA OBJECTIVES
             </span>
           </AnimatedSection>
           <AnimatedSection animation="fadeInUp" delay={0.2}>
-            <h2 className="text-3xl md:text-4xl font-bold mt-2">
+            <h2 className="text-2xl md:text-4xl font-semibold mt-2">
               Our <span className="text-[#1B1464]">Mission</span> to Empower
               <br className="hidden md:block" />
               Theatre Arts <span className="text-[#1B1464]">Students</span>
@@ -31,7 +31,7 @@ export default function Values() {
               <div className="bg-[#E7FBFE] w-14 h-14 rounded-full flex items-center justify-center mb-6">
                 <Users className="w-7 h-7 text-[#1B1464]" />
               </div>
-              <h3 className="text-xl text-[#1B1464] font-semibold mb-4">
+              <h3 className="md:text-xl text-lg text-[#1B1464] font-medium mb-4">
                 Unite Theatre Arts Students
               </h3>
               <p className="text-gray-700 leading-relaxed">
@@ -47,7 +47,7 @@ export default function Values() {
               <div className="bg-[#E7FBFE] w-14 h-14 rounded-full flex items-center justify-center mb-6">
                 <Globe className="w-7 h-7 text-[#1B1464]" />
               </div>
-              <h3 className="text-xl text-[#1B1464] font-semibold mb-4">
+              <h3 className="md:text-xl text-lg text-[#1B1464] font-medium mb-4">
                 Showcase Cultural Richness
               </h3>
               <p className="text-gray-700 leading-relaxed">
@@ -63,7 +63,7 @@ export default function Values() {
               <div className="bg-[#E7FBFE] w-14 h-14 rounded-full flex items-center justify-center mb-6">
                 <Award className="w-7 h-7 text-[#1B1464]" />
               </div>
-              <h3 className="text-xl text-[#1B1464] font-semibold mb-4">
+              <h3 className="md:text-xl text-lg text-[#1B1464] font-medium mb-4">
                 Recognize Artistic Ingenuity
               </h3>
               <p className="text-gray-700 leading-relaxed">
@@ -79,7 +79,7 @@ export default function Values() {
               <div className="bg-[#E7FBFE] w-14 h-14 rounded-full flex items-center justify-center mb-6">
                 <Network className="w-7 h-7 text-[#1B1464]" />
               </div>
-              <h3 className="text-xl text-[#1B1464] font-semibold mb-4">
+              <h3 className="md:text-xl text-lg text-[#1B1464] font-medium mb-4">
                 Bridge the Gap to Industry
               </h3>
               <p className="text-gray-700 leading-relaxed">
@@ -94,8 +94,10 @@ export default function Values() {
         <AnimatedSection animation="fadeInUp" delay={0.9}>
           <div className="mt-12">
             <Image
-              src={values}
+              src="/assets/national-theater.jpg"
               alt="TASFA Values"
+              width={1200}
+              height={600}
               className="w-full rounded-2xl shadow-lg"
             />
           </div>

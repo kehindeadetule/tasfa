@@ -5,6 +5,7 @@ import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Partners from "@/components/home/Partners";
 
 const montserrat = Montserrat({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -61,6 +62,7 @@ export default function RootLayout({
       <body className={montserrat.className}>
         <Navbar />
         {children}
+        <Partners />
         <Footer />
         <ToastContainer
           position="top-right"

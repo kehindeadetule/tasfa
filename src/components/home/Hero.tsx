@@ -5,70 +5,70 @@ import AnimatedSection from "../common/AnimatedSection";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import OpeningCeremony from "@/assets/opening-ceremony-1.webp";
-import Carnival from "@/assets/costume-parade-1.jpg";
-import StagePerformance from "@/assets/stage-performance-2.jpeg";
-import Workshops from "@/assets/master-class.jpg";
-import OldSkoolNight from "@/assets/os-2.jpeg";
-import AcademicPaperPresentations from "@/assets/academic.jpg";
-import MeetGreetConnect from "@/assets/meet-greet.webp";
-import AwardNight from "@/assets/award1.jpg";
-import Gyration from "@/assets/GYRATION.jpg";
+// import OpeningCeremony from "/assets/opening-ceremony-1.webp";
+// import Carnival from "/assets/costume-parade-1.jpg";
+// import StagePerformance from "/assets/stage-performance-2.jpeg";
+// import Workshops from "/assets/master-class.jpg";
+// import OldSkoolNight from "/assets/os-2.jpeg";
+// import AcademicPaperPresentations from "/assets/academic.jpg";
+// import MeetGreetConnect from "/assets/meet-greet.webp";
+// import AwardNight from "/assets/award1.jpg";
+// import Gyration from "/assets/GYRATION.jpg";
 
 const events = [
   {
     title: "Opening Ceremony",
     description:
       "A grand launch to set the tone, featuring welcome addresses, karaoke, DJ rave, and formal introductions of participating schools and dignitaries.",
-    image: OpeningCeremony,
+    image: "/assets/opening-ceremony-1.webp",
   },
   {
     title: "Carnival / Costume Parade",
     description:
       "A vibrant display of cultural pride through costumes, music, dance, and theatrical showcases.",
-    image: Carnival,
+    image: "/assets/costume-parade-1.jpg",
   },
   {
     title: "Stage Performances",
     description:
       "Competing schools present original or adapted plays or choreographed works, showcasing creativity and stagecraft while reflecting cultural and social themes.",
-    image: StagePerformance,
+    image: "/assets/stage-performance-2.jpeg",
   },
   {
     title: "Old Skool Night",
     description:
       "A nostalgic evening honoring theatre legends with throwback music, performances, and vintage fashion.",
-    image: OldSkoolNight,
+    image: "/assets/os-2.jpeg",
   },
   {
     title: "Workshops / Masterclasses",
     description:
       "Hands-on sessions with theatre experts on acting, directing, playwriting, stage design, and other areas of the art.",
-    image: Workshops,
+    image: "/assets/master-class.jpg",
   },
   {
     title: "Academic Paper Presentations",
     description:
       "A platform for students to share research on theatre, performance, and cultural studies.",
-    image: AcademicPaperPresentations,
+    image: "/assets/master-class.jpg", // Using master-class image as fallback
   },
   {
     title: "Meet, Greet & Connect",
     description:
       "Networking session to foster connections between students, professionals, and participants.",
-    image: MeetGreetConnect,
+    image: "/assets/meet-greet.webp",
   },
   {
     title: "Award Night / Closing Gala",
     description:
       "The festival's climax, celebrating excellence in performance and scholarship with awards and festivities.",
-    image: AwardNight,
+    image: "/assets/award1.jpg",
   },
   {
     title: "Gyration! Gyration!! Gyration!!!",
     description:
       "A high-energy post-gala celebration with music and dance to close the night.",
-    image: Gyration,
+    image: "/assets/GYRATION.jpg",
   },
 ];
 

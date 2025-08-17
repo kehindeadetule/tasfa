@@ -1,4 +1,4 @@
-import homeOne from "@/assets/activity.webp";
+// import homeOne from "/assets/activity.webp";
 import Image from "next/image";
 import Link from "next/link";
 import AnimatedSection from "../common/AnimatedSection";
@@ -14,7 +14,7 @@ export default function Advantage() {
             </span>
           </AnimatedSection>
           <AnimatedSection animation="fadeInUp" delay={0.2}>
-            <h2 className="text-3xl md:text-4xl text-[#1B1464] tracking-wide md:leading-12 leading-10 md:font-bold font-semibold mt-8 md:mt-6 mb-6">
+            <h2 className="text-2xl md:text-4xl text-[#1B1464] tracking-wide md:leading-12 leading-8 md:font-bold font-semibold mt-8 md:mt-6 mb-6">
               <span className="">Theatre Reimagined:</span>
               <br />
               Celebrating Roots, Creating Futures
@@ -23,14 +23,6 @@ export default function Advantage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-12 gap-10 items-center mb-10">
-          <div className="h-full w-full">
-            <Image
-              src={homeOne}
-              alt="Theatre performance"
-              className="rounded-lg h-full w-full"
-            />
-          </div>
-
           <div className="">
             {/* Timeline Item 1 */}
             <AnimatedSection animation="fadeInUp" delay={0.4}>

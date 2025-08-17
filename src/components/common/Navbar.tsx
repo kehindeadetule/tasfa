@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import logo from "@/assets/t-logo.png";
+// import logo from "/assets/t-logo.png";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -29,7 +29,13 @@ export default function Navbar() {
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <Image src={logo} alt="Tasfa Logo" className="h-14  w-auto" />
+              <Image
+                src="/assets/t-logo.png"
+                alt="Tasfa Logo"
+                width={200}
+                height={56}
+                className="h-14  w-auto"
+              />
             </Link>
           </div>
 
@@ -88,13 +94,12 @@ export default function Navbar() {
                 Awards
               </Link>
               <Link
-                href="#facilitator"
-                aria-disabled={true}
+                href="/judges"
                 className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors ${
-                  isActive("#facilitator") ? "font-semibold text-[#005B96]" : ""
+                  isActive("/judges") ? "font-semibold text-[#005B96]" : ""
                 }`}
               >
-                Facilitators
+                Judges
               </Link>
             </div>
           </div>
@@ -183,6 +188,15 @@ export default function Navbar() {
               >
                 Awards
               </Link>
+              <Link
+                href="/judges"
+                className={`text-white text-lg hover:text-[#016CEE] transition-colors ${
+                  isActive("/judges") ? "font-semibold text-[#005B96]" : ""
+                }`}
+              >
+                Judges
+              </Link>
+
               {/* <Link
                 href="/voting-form"
                 className={`text-white text-lg font-medium hover:text-[#016CEE] ${
@@ -195,7 +209,7 @@ export default function Navbar() {
                 Participant Form
               </Link> */}
               <Link
-                href="/contact"
+                href="#contact"
                 className={`text-white text-lg font-medium hover:text-[#016CEE] ${
                   isActive("#contact") ? "!text-[#005B96] font-semibold" : ""
                 }`}

@@ -1,5 +1,5 @@
-import strategicIcon from "@/assets/icons/strategic-icon.png";
-import stakeholderIcon from "@/assets/icons/stakeholder-icon.png";
+// import strategicIcon from "/assets/icons/strategic-icon.png";
+// import stakeholderIcon from "/assets/icons/stakeholder-icon.png";
 import Image from "next/image";
 import AnimatedSection from "../common/AnimatedSection";
 
@@ -15,14 +15,14 @@ export default function MissionVision() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
       </div>
 
-      <div className="container mx-auto px-4 py-14 md:py-20 relative">
+      <div className="container mx-auto px-4 py-10 md:py-20 relative">
         <AnimatedSection animation="fadeInUp">
           <div className="text-center text-white mb-16 md:mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+            <h2 className="text-3xl md:text-5xl font-semibold leading-tight">
               Our Purpose<span className="hidden md:inline">,</span>{" "}
-              <br className="md:hidden" /> Our Path
+              <br className="md:hidden " /> Our Path
             </h2>
-            <p className="text-xl text-blue-200 mt-4">
+            <p className="text-lg md:text-xl text-blue-200 mt-4">
               Driving Innovation and Success
             </p>
           </div>
@@ -36,12 +36,14 @@ export default function MissionVision() {
                 <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-2 h-24 bg-gradient-to-b from-[#ED1C24] to-[#C6007E] rounded-full"></div>
                 <div className="ml-2 md:ml-12">
                   <div className="flex items-center gap-6 mb-6">
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#ED1C24] to-[#C6007E] p-1">
+                    <div className="md:w-16 md:h-16 w-14 h-14 rounded-xl bg-gradient-to-br from-[#ED1C24] to-[#C6007E] p-1">
                       <div className="w-full h-full bg-[#005B96] rounded-xl flex items-center justify-center">
                         <Image
-                          src={stakeholderIcon}
+                          src="/assets/icons/stakeholder-icon.png"
                           alt="Vision Icon"
-                          className="w-8 h-8"
+                          width={32}
+                          height={32}
+                          className="md:w-8 md:h-8 w-7 h-7"
                         />
                       </div>
                     </div>
@@ -50,7 +52,7 @@ export default function MissionVision() {
                     </h3>
                   </div>
                   <div className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10">
-                    <p className="text-white/90 leading-relaxed text-lg">
+                    <p className="text-white/90 leading-relaxed text-base md:text-lg">
                       To be a beacon of artistic excellence and cultural unity,
                       empowering theatre arts students with the skills,
                       recognition, and opportunities they need to lead and
@@ -66,12 +68,14 @@ export default function MissionVision() {
                 <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-2 h-24 bg-gradient-to-b from-[#FFD200] to-[#F37021] rounded-full"></div>
                 <div className="ml-2 md:ml-12">
                   <div className="flex items-center gap-6 mb-6">
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#FFD200] to-[#F37021] p-1">
+                    <div className="md:w-16 md:h-16 w-14 h-14 rounded-xl bg-gradient-to-br from-[#FFD200] to-[#F37021] p-1">
                       <div className="w-full h-full bg-[#005B96] rounded-xl flex items-center justify-center">
                         <Image
-                          src={strategicIcon}
+                          src="/assets/icons/strategic-icon.png"
                           alt="Mission Icon"
-                          className="w-8 h-8"
+                          width={32}
+                          height={32}
+                          className="md:w-8 md:h-8 w-7 h-7"
                         />
                       </div>
                     </div>
@@ -80,7 +84,7 @@ export default function MissionVision() {
                     </h3>
                   </div>
                   <div className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10">
-                    <p className="text-white/90 leading-relaxed text-lg">
+                    <p className="text-white/90 leading-relaxed text-base md:text-lg">
                       To create an inclusive and inspiring platform that
                       celebrates the talents of theatre arts students across the
                       nation, promotes cultural diversity, and fosters

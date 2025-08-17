@@ -1,4 +1,4 @@
-import aIcon from "@/assets/icons/a-icon.png";
+// import aIcon from "/assets/icons/a-icon.png";
 import Image from "next/image";
 
 export default function About() {
@@ -9,7 +9,7 @@ export default function About() {
           <div className="inline-block bg-[#E7FBFE] text-[#1B1464] px-4 py-2 text-sm rounded-2xl mb-4 font-semibold shadow-sm">
             OUR VALUE
           </div>
-          <h2 className="text-3xl md:text-4xl md:tracking-normal md:leading-14 md:font-bold font-medium text-center md:mb-6 mb-3">
+          <h2 className="text-2xl md:text-4xl md:tracking-normal md:leading-14 md:font-bold font-semibold text-center md:mb-6 mb-3">
             <span className="text-[#1B1464] sm:text-center">
               TASFA VALUE PROPOSITION
             </span>
@@ -20,10 +20,10 @@ export default function About() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Value Proposition 1 */}
             <div className=" bg-[#1B1464] md:p-6 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-xl font-bold text-white mb-4">
+              <h3 className="md:text-xl text-lg font-bold text-white mb-4">
                 Skills Development for Students
               </h3>
-              <p className="text-white text-lg leading-relaxed">
+              <p className="text-white text-base md:text-lg leading-relaxed">
                 TASFA 2025 will empower over 3,000 students from universities
                 and colleges nationwide with practical training in key creative
                 fields. Through masterclasses, workshops, and performance-based
@@ -35,10 +35,10 @@ export default function About() {
 
             {/* Value Proposition 2 */}
             <div className="bg-[#F37021] md:p-6 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-xl font-bold text-white mb-4">
+              <h3 className="md:text-xl text-lg font-bold text-white mb-4">
                 Promoting Cultural Integration
               </h3>
-              <p className="text-white text-lg leading-relaxed">
+              <p className="text-white text-base md:text-lg leading-relaxed">
                 TASFA brings together students from all six geopolitical zones,
                 creating a melting pot of languages, traditions, and ideas.
                 Through collaboration and shared artistic experiences, the
@@ -51,10 +51,10 @@ export default function About() {
           {/* Value Proposition middle */}
           <div className="flex justify-center my-8">
             <div className="bg-[#C6007E] md:p-6 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 w-full md:w-1/2">
-              <h3 className="text-xl font-bold text-white mb-4">
+              <h3 className="md:text-xl text-lg font-bold text-white mb-4">
                 Promoting Nigeria&apos;s Culture & Art
               </h3>
-              <p className="text-white text-lg pt-4 leading-relaxed">
+              <p className="text-white text-base md:text-lg md:pt-4 pt-0 leading-relaxed">
                 The festival is a vibrant celebration of Nigeria&apos;s diverse
                 cultural heritage, using exhibitions, costume parades, academic
                 presentations, and performances to educate and inspire. TASFA
@@ -68,10 +68,10 @@ export default function About() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
             {/* Value Proposition 4 */}
             <div className="bg-[#005B96] md:p-8 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-xl font-bold text-white mb-4">
+              <h3 className="md:text-xl text-lg font-bold text-white mb-4">
                 Empowering Female Creative Arts Students
               </h3>
-              <p className="text-white text-lg leading-relaxed">
+              <p className="text-white text-base md:text-lg leading-relaxed">
                 TASFA is committed to bridging the gender gap in the creative
                 industry by supporting over 400 female participants with small
                 grants, leadership training, and mentorship in fields such as
@@ -83,10 +83,10 @@ export default function About() {
 
             {/* Value Proposition 5 */}
             <div className="bg-[#ED1C24] md:p-8 px-5 py-7 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 md:col-span">
-              <h3 className="text-xl font-bold text-white mb-4">
+              <h3 className="md:text-xl text-lg font-bold text-white mb-4">
                 Developing Leaders in the Creative Economy
               </h3>
-              <p className="text-white text-lg leading-relaxed">
+              <p className="text-white text-base md:text-lg leading-relaxed">
                 Through strategic mentorship, internship opportunities, and
                 leadership development, TASFA will nurture 50 promising student
                 leaders in Film, Theatre, Television, New Media, and Radio.
