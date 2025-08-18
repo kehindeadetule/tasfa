@@ -45,9 +45,3 @@ export const API_ENDPOINTS = {
 
 // Export the environment for debugging
 export const CURRENT_ENV = getEnvironment();
-
-console.log("API Configuration:", {
-  environment: CURRENT_ENV,
-  baseUrl: API_BASE_URL,
-  endpoints: API_ENDPOINTS,
-});

@@ -152,7 +152,7 @@ export default function CategoryPage({
 
   if (loading) {
     return (
-      <section className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
+      <section className="min-h-screen flex justify-center items-center bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#005B96] mx-auto"></div>
@@ -241,7 +241,7 @@ export default function CategoryPage({
                 key={participant._id}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
-                <div className="relative h-64 w-full">
+                <div className="relative h-80 md:h-80 w-full">
                   {participant.image ? (
                     <img
                       src={participant.image}

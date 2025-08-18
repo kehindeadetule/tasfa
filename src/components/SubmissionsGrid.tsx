@@ -190,7 +190,7 @@ const SubmissionsGrid: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
+      <div className="flex justify-center items-center py-12 h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -248,7 +248,7 @@ const SubmissionsGrid: React.FC = () => {
                     <img
                       src={submission.image}
                       alt={`${submission.firstName} ${submission.lastName}`}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-80 object-cover object-top"
                       onLoad={() => {
                         console.log(
                           "Image loaded successfully:",
@@ -306,13 +306,14 @@ const SubmissionsGrid: React.FC = () => {
                   <div className="flex space-x-2 pt-2 border-t border-gray-100">
                     <button
                       onClick={() => handleEdit(submission)}
-                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                      disabled={true}
+                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       ✏️ Edit
                     </button>
                     <button
                       onClick={() => handleDelete(submission._id)}
-                      className="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                      className="flex-1 bg-black hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                     >
                       🗑️ Delete
                     </button>
