@@ -7,6 +7,8 @@ import { useVotingStatus } from "@/hooks/useVotingStatus";
 import { API_ENDPOINTS } from "@/config/api";
 import { categorySlugToName } from "@/utils/categoryMapping";
 import VotingTimer from "@/components/VotingTimer";
+import { fetchWithRetry } from "@/utils/rateLimitHandler";
+import { voteCountsCache, CACHE_KEYS } from "@/utils/votingCache";
 
 interface Participant {
   _id: string;
@@ -34,6 +36,7 @@ export default function CategoryPage({
     updateVotingStatus,
     votingStatus,
     getNextVoteTime,
+    setVotingMode,
   } = useVotingStatus();
 
   const slug = params.category;
@@ -45,18 +48,44 @@ export default function CategoryPage({
     const fetchParticipants = async () => {
       try {
         setLoading(true);
-        const response = await fetch(API_ENDPOINTS.category(categoryName));
+
+        // Check cache first
+        const cacheKey = CACHE_KEYS.CATEGORY_PARTICIPANTS(categoryName);
+        const cached = voteCountsCache.get(cacheKey);
+        if (cached) {
+          setParticipants(cached);
+        }
+
+        const response = await fetchWithRetry(
+          API_ENDPOINTS.category(categoryName),
+          {},
+          {
+            maxRetries: 2,
+            showNotification: false,
+          }
+        );
+
         if (!response.ok) {
           setError("Failed to fetch participants");
           return;
         }
+
         const data = await response.json();
         if (data.success) {
           setParticipants(data.data);
-          console.log(data.data);
+          // Cache the participants data
+          voteCountsCache.set(cacheKey, data.data);
+
           // Check voting history
           try {
-            const historyResponse = await fetch(API_ENDPOINTS.votingHistory);
+            const historyResponse = await fetchWithRetry(
+              API_ENDPOINTS.votingHistory,
+              {},
+              {
+                maxRetries: 1,
+                showNotification: false,
+              }
+            );
             if (historyResponse.ok) {
               const historyData = await historyResponse.json();
               if (historyData.success) {
@@ -102,23 +131,36 @@ export default function CategoryPage({
       return;
     }
     if (votedParticipantId !== null) return;
+
     try {
-      const response = await fetch(API_ENDPOINTS.votes, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Set voting mode for immediate updates
+      setVotingMode();
+
+      const response = await fetchWithRetry(
+        API_ENDPOINTS.votes,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firstName: participant.firstName,
+            lastName: participant.lastName,
+            school: participant.school,
+            awardCategory: categoryName,
+          }),
         },
-        body: JSON.stringify({
-          firstName: participant.firstName,
-          lastName: participant.lastName,
-          school: participant.school,
-          awardCategory: categoryName,
-        }),
-      });
+        {
+          maxRetries: 3,
+          showNotification: true,
+        }
+      );
+
       if (!response.ok) {
         toast.error("Failed to submit vote. Please try again.");
         return;
       }
+
       const data = await response.json();
       if (data.success) {
         setParticipants((prev) =>
@@ -130,8 +172,15 @@ export default function CategoryPage({
         );
         setVotedParticipantId(participant._id);
         updateVotingStatus(categoryName);
+
+        // Clear cache to get fresh data
+        voteCountsCache.invalidate(
+          CACHE_KEYS.CATEGORY_PARTICIPANTS(categoryName)
+        );
+        voteCountsCache.invalidate(CACHE_KEYS.VOTE_COUNTS);
+
         toast.success(
-          `Vote count for ${participant.firstName} ${participant.lastName}!`
+          `Vote submitted for ${participant.firstName} ${participant.lastName}!`
         );
       } else {
         toast.error("Failed to submit vote. Please try again.");

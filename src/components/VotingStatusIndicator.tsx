@@ -2,6 +2,7 @@
 
 import { useVotingStatus } from "@/hooks/useVotingStatus";
 import VotingTimer, { VotingTimerWithProgress } from "./VotingTimer";
+import VotingDebugInfo from "./VotingDebugInfo";
 
 export default function VotingStatusIndicator() {
   const {
@@ -10,7 +11,8 @@ export default function VotingStatusIndicator() {
     error,
     getPendingCategories,
     getAvailableCategories,
-    refetch,
+    setVotingMode,
+    currentInterval,
   } = useVotingStatus();
 
   if (loading) {
@@ -26,6 +28,12 @@ export default function VotingStatusIndicator() {
     return (
       <div className="text-center py-4">
         <p className="text-red-600 text-sm">Error loading voting status</p>
+        <button
+          onClick={() => setVotingMode()}
+          className="mt-2 text-sm text-blue-600 hover:underline"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -36,8 +44,8 @@ export default function VotingStatusIndicator() {
   const totalVotedEver = Object.keys(votingStatus.voteTimestamps).length;
 
   const handleVotingAvailable = () => {
-    // Refresh voting status when a countdown expires
-    refetch();
+    // Set voting mode when a countdown expires to get immediate updates
+    setVotingMode();
   };
 
   return (
@@ -161,6 +169,9 @@ export default function VotingStatusIndicator() {
           </p>
         </div>
       )}
+
+      {/* Debug Info */}
+      <VotingDebugInfo currentInterval={currentInterval} />
     </div>
   );
 }

@@ -1,11 +1,4 @@
-import { useState, useEffect } from "react";
-import { API_ENDPOINTS } from "@/config/api";
-
-interface VotingStatus {
-  votedCategories: string[];
-  canVote: boolean;
-  voteTimestamps: { [category: string]: string }; // ISO timestamp strings
-}
+import { useSmartVotingPoller } from "./useSmartVotingPoller";
 
 interface VoteHistory {
   category: string;
@@ -14,37 +7,17 @@ interface VoteHistory {
 }
 
 export const useVotingStatus = () => {
-  const [votingStatus, setVotingStatus] = useState<VotingStatus>({
-    votedCategories: [],
-    canVote: true,
-    voteTimestamps: {},
+  const {
+    votingStatus,
+    loading,
+    error,
+    updateVotingStatus,
+    refresh,
+    setVotingMode,
+  } = useSmartVotingPoller({
+    enabled: true,
+    initialInterval: "active",
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchVotingStatus = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(API_ENDPOINTS.votingStatus);
-      const data = await response.json();
-
-      if (data.success) {
-        // Get local timestamps from localStorage
-        const storedTimestamps = getStoredVoteTimestamps();
-
-        setVotingStatus({
-          ...data.data,
-          voteTimestamps: storedTimestamps,
-        });
-      } else {
-        setError("Failed to fetch voting status");
-      }
-    } catch (err) {
-      setError("Error, please try again");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const canVoteForCategory = (category: string): boolean => {
     const timestamp = votingStatus.voteTimestamps[category];
@@ -96,41 +69,14 @@ export const useVotingStatus = () => {
     });
   };
 
-  const updateVotingStatus = (category: string) => {
-    const now = new Date().toISOString();
-
-    // Update state
-    setVotingStatus((prev) => ({
-      ...prev,
-      votedCategories: prev.votedCategories.includes(category)
-        ? prev.votedCategories
-        : [...prev.votedCategories, category],
-      voteTimestamps: {
-        ...prev.voteTimestamps,
-        [category]: now,
-      },
-    }));
-
-    // Store in localStorage
-    storeVoteTimestamp(category, now);
-  };
-
   const resetVotingStatus = () => {
-    setVotingStatus({
-      votedCategories: [],
-      canVote: true,
-      voteTimestamps: {},
-    });
-
     // Clear localStorage
     if (typeof window !== "undefined") {
       localStorage.removeItem("vote_timestamps");
     }
+    // Refresh to get updated status
+    refresh();
   };
-
-  useEffect(() => {
-    fetchVotingStatus();
-  }, []);
 
   return {
     votingStatus,
@@ -143,31 +89,7 @@ export const useVotingStatus = () => {
     getPendingCategories,
     updateVotingStatus,
     resetVotingStatus,
-    refetch: fetchVotingStatus,
+    refetch: refresh,
+    setVotingMode,
   };
 };
-
-// Utility functions for localStorage management
-function getStoredVoteTimestamps(): { [category: string]: string } {
-  if (typeof window === "undefined") return {};
-
-  try {
-    const stored = localStorage.getItem("vote_timestamps");
-    return stored ? JSON.parse(stored) : {};
-  } catch (error) {
-    console.error("Error reading vote timestamps from localStorage:", error);
-    return {};
-  }
-}
-
-function storeVoteTimestamp(category: string, timestamp: string) {
-  if (typeof window === "undefined") return;
-
-  try {
-    const existing = getStoredVoteTimestamps();
-    const updated = { ...existing, [category]: timestamp };
-    localStorage.setItem("vote_timestamps", JSON.stringify(updated));
-  } catch (error) {
-    console.error("Error storing vote timestamp to localStorage:", error);
-  }
-}
