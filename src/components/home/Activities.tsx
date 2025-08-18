@@ -71,7 +71,7 @@ export default function Advantage() {
                   Grading of Submitted Works
                 </h3>
                 <p className="text-gray-700">
-                  September 14th – September 30th, 2025
+                  September 19th – September 30th, 2025
                 </p>
               </div>
             </AnimatedSection>

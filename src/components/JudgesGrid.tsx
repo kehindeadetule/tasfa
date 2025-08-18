@@ -15,10 +15,10 @@ interface Judge {
 const judges: Judge[] = [
   {
     id: "oluwatoyin",
-    name: "Oluwatoyin Olokodana-James",
+    name: "Oluwatoyin Olokodana-James, Ph.D.",
     title: "Ph.D. Lecturer & Theatre Arts Researcher",
     image: "/assets/judges/toyin.jpg",
-    fullBio: `Oluwatoyin Olokodana-James, Ph.D., is a Lecturer at the Faculty of Creative Arts, University of Lagos. She is an alumna of the Harvard Mellon School of Theater and Performance Research, USA, and a Fellow of the Ife Institute of Advanced Studies, Obafemi Awolowo University, Ile-Ife, Nigeria. She is also a Fellow of Theatre Arts, National Association of Theatre and Applied Arts Practitioners (NANTAP), and Principal Investigator of the UNILAG/Bayreuth Multiple Cluster, Germany. 
+    fullBio: `Oluwatoyin Olokodana-James is a Lecturer at the Faculty of Creative Arts, University of Lagos. She is an alumna of the Harvard Mellon School of Theater and Performance Research, USA, and a Fellow of the Ife Institute of Advanced Studies, Obafemi Awolowo University, Ile-Ife, Nigeria. She is also a Fellow of Theatre Arts, National Association of Theatre and Applied Arts Practitioners (NANTAP), and Principal Investigator of the UNILAG/Bayreuth Multiple Cluster, Germany. 
 
 Dr. Olokodana-James holds a Bachelor of Arts from Lagos State University, as well as a Master of Arts and a Ph.D. in Theatre Arts from the University of Lagos. As an academic, researcher, and practitioner, she is committed to exploring the pragmatics of the arts for human development, with a focus on women and children. She is the brain behind the following initiatives:
 1.Slum through Art to School Project
