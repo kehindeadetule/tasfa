@@ -8,7 +8,7 @@ export default function AboutInfo() {
       <div className="container mx-auto px-4 md:px-0">
         <div className="text-center mb-8">
           <AnimatedSection animation="fadeIn">
-            <span className="inline-block bg-[#E7FBFE] text-[#1B1464] px-3 py-1.5 text-xs rounded-2xl mb-4">
+            <span className="inline-block bg-[#E7FBFE] text-[#1B1464]  px-3 py-1.5 text-xs rounded-2xl mb-4 font-semibold">
               ABOUT TASFA
             </span>
           </AnimatedSection>
@@ -16,7 +16,7 @@ export default function AboutInfo() {
             <h2 className="text-[#1B1464] text-2xl md:text-4xl font-semibold leading-tight mt-1">
               Celebrating Theatre Arts Excellence{" "}
               <br className="hidden md:block" />
-              Across Nigerian Institutions
+              Across Nigeria's Tertiary Institutions
             </h2>
           </AnimatedSection>
         </div>
@@ -49,7 +49,7 @@ export default function AboutInfo() {
               student-artists and established practitioners in the industry. We
               create opportunities for meaningful mentorship, foster
               collaborative projects, and facilitate professional growth,
-              ensuring that the next generation of theatre artists is
+              ensuring that the next generation of theatre artists are
               well-prepared for the industry.
             </p>
           </AnimatedSection>
@@ -57,8 +57,8 @@ export default function AboutInfo() {
             <p className=" leading-relaxed">
               TASFA stands as a celebration of talent, a vibrant display of
               cultural diversity, and a testament to our commitment to nurturing
-              the future of performing arts in Nigeria. Through our platform, we
-              not only recognize excellence but also create a space where
+              the future of performing arts in Nigeria. Through this platform,
+              we not only recognize excellence but also create a space where
               creativity flourishes and cultural heritage is preserved and
               celebrated.
             </p>
