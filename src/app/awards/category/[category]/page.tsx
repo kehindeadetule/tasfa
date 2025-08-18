@@ -78,7 +78,7 @@ export default function CategoryPage({
           setError("Failed to fetch participants");
         }
       } catch (err) {
-        setError("Error connecting to server");
+        setError("Error, please try again");
       } finally {
         setLoading(false);
       }

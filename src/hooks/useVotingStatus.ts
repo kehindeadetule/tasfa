@@ -40,7 +40,7 @@ export const useVotingStatus = () => {
         setError("Failed to fetch voting status");
       }
     } catch (err) {
-      setError("Error connecting to server");
+      setError("Error, please try again");
     } finally {
       setLoading(false);
     }
