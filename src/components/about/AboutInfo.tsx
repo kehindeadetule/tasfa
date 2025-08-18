@@ -22,7 +22,7 @@ export default function AboutInfo() {
         </div>
         <div className="relative">
           <Image
-            src="/assets/national-theater.jpg"
+            src="/assets/about-img2.jpg"
             alt="TASFA Festival"
             width={1200}
             height={600}

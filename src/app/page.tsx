@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TASFA - Home",
     description: "Theatre Arts Students Festival and Awards",
-    url: "https://dga0m8ap1tk9g.cloudfront.net",
+    url: "https://www.tasfa.com.ng",
     siteName: "TASFA",
     images: [
       {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/hero-bg-m.png"],
   },
   alternates: {
-    canonical: "https://dga0m8ap1tk9g.cloudfront.net",
+    canonical: "https://www.tasfa.com.ng",
   },
 };
 

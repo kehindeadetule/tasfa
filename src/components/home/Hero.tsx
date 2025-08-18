@@ -5,15 +5,6 @@ import AnimatedSection from "../common/AnimatedSection";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-// import OpeningCeremony from "/assets/opening-ceremony-1.webp";
-// import Carnival from "/assets/costume-parade-1.jpg";
-// import StagePerformance from "/assets/stage-performance-2.jpeg";
-// import Workshops from "/assets/master-class.jpg";
-// import OldSkoolNight from "/assets/os-2.jpeg";
-// import AcademicPaperPresentations from "/assets/academic.jpg";
-// import MeetGreetConnect from "/assets/meet-greet.webp";
-// import AwardNight from "/assets/award1.jpg";
-// import Gyration from "/assets/GYRATION.jpg";
 
 const events = [
   {
@@ -50,7 +41,7 @@ const events = [
     title: "Academic Paper Presentations",
     description:
       "A platform for students to share research on theatre, performance, and cultural studies.",
-    image: "/assets/master-class.jpg", // Using master-class image as fallback
+    image: "/assets/academic.jpg",
   },
   {
     title: "Meet, Greet & Connect",
@@ -77,7 +68,7 @@ function NextArrow(props: any) {
   return (
     <button
       onClick={onClick}
-      className="absolute right-8 md:top-1/2 top-3/4 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all "
+      className="absolute md:right-8 right-4 md:top-1/2 top-[70%] -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all "
       aria-label="Next slide"
     >
       <svg
@@ -103,7 +94,7 @@ function PrevArrow(props: any) {
   return (
     <button
       onClick={onClick}
-      className="absolute left-8  md:top-1/2 top-3/4 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all"
+      className="absolute md:left-8 left-4 md:top-1/2 top-[70%] -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all"
       aria-label="Previous slide"
     >
       <svg
@@ -156,9 +147,6 @@ export default function Hero() {
 
             <div className="container relative z-10 mx-auto mt-6 md:mt-0 px-4 h-full flex flex-col items-stArts justify-center">
               <AnimatedSection animation="fadeInUp">
-                {/* <h2 className="text-lg md:text-xl text-white/90 font-medium mb-6 [text-shadow:_0_2px_4px_rgba(0,0,0,0.8)]">
-                  {event.date}
-                </h2> */}
                 <h1 className="text-2xl lg:text-3xl md:leading-12 leading-8 font-bold tracking-wide text-white max-w-4xl mb-8 [text-shadow:_0_4px_8px_rgba(0,0,0,0.8)]">
                   {event.title}
                 </h1>
@@ -166,15 +154,6 @@ export default function Hero() {
                   {event.description}
                 </p>
               </AnimatedSection>
-
-              {/* <AnimatedSection animation="fadeInUp" delay={0.3}>
-                <Link
-                  href="/contact"
-                  className="mt-12 bg-white text-[#005B96] px-12 py-3 text-lg rounded-full font-medium hover:bg-[#005B96] hover:text-white transition-colors [box-shadow:_0_8px_16px_rgba(0,0,0,0.4)]"
-                >
-                  Vote Now
-                </Link>
-              </AnimatedSection> */}
             </div>
           </div>
         ))}

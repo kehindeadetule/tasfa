@@ -1,4 +1,3 @@
-// import homeOne from "/assets/activity.webp";
 import Image from "next/image";
 import Link from "next/link";
 import AnimatedSection from "../common/AnimatedSection";
@@ -23,47 +22,56 @@ export default function Advantage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-12 gap-10 items-center mb-10">
+          <div>
+            <Image
+              src="/assets/activities.webp"
+              alt="TASFA 2025"
+              width={1000}
+              height={1000}
+              className="w-full h-full object-contain"
+            />
+          </div>
           <div className="">
             {/* Timeline Item 1 */}
             <AnimatedSection animation="fadeInUp" delay={0.4}>
-              <div className="mb-10">
-                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-3">
+              <div className="mb-6">
+                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-2">
                   Nominations
                 </h3>
-                <p className="text-gray-700">July 21st – August 4th, 2025</p>
+                <p className="text-gray-700">July 21st – August 10th, 2025</p>
               </div>
             </AnimatedSection>
 
             {/* Timeline Item 2 */}
             <AnimatedSection animation="fadeInUp" delay={0.5}>
-              <div className="mb-10">
-                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-3">
+              <div className="mb-6">
+                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-2">
                   Online Voting
                 </h3>
-                <p className="text-gray-700">August 10th – August 24th, 2025</p>
+                <p className="text-gray-700">August 19th – August 29th, 2025</p>
               </div>
             </AnimatedSection>
 
             {/* Timeline Item 3 */}
             <AnimatedSection animation="fadeInUp" delay={0.6}>
-              <div className="mb-10">
-                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-3">
+              <div className="mb-6">
+                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-2">
                   Submission of Works
                 </h3>
                 <p className="text-gray-700">
-                  August 30th – September 8th, 2025
+                  September 4th – September 13th, 2025
                 </p>
               </div>
             </AnimatedSection>
 
             {/* Timeline Item 4 */}
             <AnimatedSection animation="fadeInUp" delay={0.7}>
-              <div className="mb-10">
-                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-3">
+              <div className="mb-6">
+                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-2">
                   Grading of Submitted Works
                 </h3>
                 <p className="text-gray-700">
-                  September 14th – September 28th, 2025
+                  September 14th – September 30th, 2025
                 </p>
               </div>
             </AnimatedSection>
@@ -71,7 +79,7 @@ export default function Advantage() {
             {/* Timeline Item 5 */}
             <AnimatedSection animation="fadeInUp" delay={0.8}>
               <div>
-                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-3">
+                <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-2">
                   Festival
                 </h3>
                 <p className="text-gray-700">

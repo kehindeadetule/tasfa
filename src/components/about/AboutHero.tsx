@@ -1,4 +1,4 @@
-// import heroBg from "/assets/about-banner2.jpg";
+import heroBg from "/assets/about-banner.png";
 import AnimatedSection from "../common/AnimatedSection";
 
 export default function AboutHero() {
@@ -6,7 +6,7 @@ export default function AboutHero() {
     <section
       className="relative min-h-[86vh] md:min-h-[65vh] lg:min-h-screen overflow-hidden bg-[#003677]"
       style={{
-        // backgroundImage: `url(${heroBg.src})`,
+        backgroundImage: "url('/assets/about-banner.png')",
         backgroundSize: "cover",
         backgroundPosition: "top",
         backgroundRepeat: "no-repeat",

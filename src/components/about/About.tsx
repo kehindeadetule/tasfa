@@ -1,4 +1,4 @@
-import AboutHero from "./Hero";
+import AboutHero from "./AboutHero";
 import AboutInfo from "./AboutInfo";
 import MissionVision from "./MissionVision";
 import Objectives from "./Objectives ";

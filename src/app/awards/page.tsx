@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: "Awards - TASFA 2025",
     description:
       "Vote for the brightest stars and most innovative institutions in theatre arts.",
-    url: "https://dga0m8ap1tk9g.cloudfront.net/awards",
+    url: "https://www.tasfa.com.ng/awards",
     siteName: "TASFA",
     images: [
       {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     images: ["/hero-bg-m.png"],
   },
   alternates: {
-    canonical: "/awards",
+    canonical: "https://www.tasfa.com.ng/awards",
   },
 };
 

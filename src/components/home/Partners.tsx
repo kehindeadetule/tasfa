@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 
 const partners = [
   { logo: "/assets/client-logo/nantap.png", alt: "Nantap" },
@@ -39,6 +40,69 @@ const schoolLogos = [
 ];
 
 export default function AboutPartners() {
+  const leftScrollRef = useRef<HTMLDivElement>(null);
+  const rightScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const leftScroll = leftScrollRef.current;
+    const rightScroll = rightScrollRef.current;
+
+    if (!leftScroll || !rightScroll) return;
+
+    let leftInterval: NodeJS.Timeout;
+    let rightInterval: NodeJS.Timeout;
+
+    // Left scroll (partners)
+    const startLeftScroll = () => {
+      leftInterval = setInterval(() => {
+        if (leftScroll.scrollLeft >= leftScroll.scrollWidth / 2) {
+          leftScroll.scrollLeft = 0;
+        } else {
+          leftScroll.scrollLeft += 2;
+        }
+      }, 27); // Much faster scroll
+    };
+
+    // Right scroll (school logos)
+    const startRightScroll = () => {
+      rightInterval = setInterval(() => {
+        if (rightScroll.scrollLeft <= 0) {
+          rightScroll.scrollLeft = rightScroll.scrollWidth / 2;
+        } else {
+          rightScroll.scrollLeft -= 2;
+        }
+      }, 27); // Much faster scroll
+    };
+
+    startLeftScroll();
+    startRightScroll();
+
+    // Pause on hover
+    const handleMouseEnter = () => {
+      clearInterval(leftInterval);
+      clearInterval(rightInterval);
+    };
+
+    const handleMouseLeave = () => {
+      startLeftScroll();
+      startRightScroll();
+    };
+
+    leftScroll.addEventListener("mouseenter", handleMouseEnter);
+    leftScroll.addEventListener("mouseleave", handleMouseLeave);
+    rightScroll.addEventListener("mouseenter", handleMouseEnter);
+    rightScroll.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      clearInterval(leftInterval);
+      clearInterval(rightInterval);
+      leftScroll.removeEventListener("mouseenter", handleMouseEnter);
+      leftScroll.removeEventListener("mouseleave", handleMouseLeave);
+      rightScroll.removeEventListener("mouseenter", handleMouseEnter);
+      rightScroll.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
+
   return (
     <section className="py-20 md:py-16  relative overflow-hidden">
       {/* Background Elements */}
@@ -73,11 +137,15 @@ export default function AboutPartners() {
 
         <div className="relative w-full overflow-hidden">
           {/* First row - moving left */}
-          <div className="flex animate-scroll-left">
-            {[...partners, ...partners].map((partner, index) => (
+          <div
+            ref={leftScrollRef}
+            className="flex overflow-x-hidden"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {[...partners, ...partners, ...partners].map((partner, index) => (
               <div
                 key={`left-${index}`}
-                className="rounded-lg flex items-center justify-center h-20 md:min-w-[180px] min-w-[160px] mx-4"
+                className="rounded-lg flex items-center justify-center h-20 md:min-w-[180px] min-w-[160px] mx-4 flex-shrink-0"
               >
                 <div className="relative w-full h-full">
                   <Image
@@ -107,7 +175,9 @@ export default function AboutPartners() {
           </div>
 
           <div className="flex justify-center items-center">
-            <h3 className="text-white font-medium">Participanting Schools</h3>
+            <h3 className="text-white font-medium">
+              Participanting Institutions
+            </h3>
           </div>
 
           <div className="flex items-center justify-center py-4">
@@ -123,24 +193,30 @@ export default function AboutPartners() {
           </div>
 
           {/* Second row - moving right */}
-          <div className="flex animate-scroll-right mt-5 mb-8">
-            {[...schoolLogos, ...schoolLogos].map((partner, index) => (
-              <div
-                key={`right-${index}`}
-                className=" rounded-lg flex items-center justify-center h-20 md:min-w-[180px] min-w-[160px]  mx-4"
-              >
-                <div className="relative w-full h-full">
-                  <Image
-                    src={partner.logo}
-                    alt={partner.alt}
-                    fill
-                    className="object-contain "
-                    sizes="(max-width: 160px) 100vw, 160px"
-                    priority={index < 7} // Prioritize first set of logos
-                  />
+          <div
+            ref={rightScrollRef}
+            className="flex overflow-x-hidden mt-5 mb-8"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {[...schoolLogos, ...schoolLogos, ...schoolLogos].map(
+              (partner, index) => (
+                <div
+                  key={`right-${index}`}
+                  className=" rounded-lg flex items-center justify-center h-20 md:min-w-[180px] min-w-[160px]  mx-4 flex-shrink-0"
+                >
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={partner.logo}
+                      alt={partner.alt}
+                      fill
+                      className="object-contain "
+                      sizes="(max-width: 160px) 100vw, 160px"
+                      priority={index < 7} // Prioritize first set of logos
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            )}
           </div>
         </div>
       </div>
@@ -154,65 +230,9 @@ export default function AboutPartners() {
       </div>
 
       <style jsx global>{`
-        @media (min-width: 768px) {
-          @keyframes scroll-left {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-100%);
-            }
-          }
-
-          @keyframes scroll-right {
-            0% {
-              transform: translateX(-100%);
-            }
-            100% {
-              transform: translateX(0);
-            }
-          }
-
-          .animate-scroll-left {
-            animation: scroll-left 55s linear infinite;
-          }
-
-          .animate-scroll-right {
-            animation: scroll-right 55s linear infinite;
-          }
-        }
-
-        @media (max-width: 767px) {
-          @keyframes scroll-left {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-300%);
-            }
-          }
-
-          @keyframes scroll-right {
-            0% {
-              transform: translateX(-300%);
-            }
-            100% {
-              transform: translateX(0);
-            }
-          }
-
-          .animate-scroll-left {
-            animation: scroll-left 20s linear infinite;
-          }
-
-          .animate-scroll-right {
-            animation: scroll-right 20s linear infinite;
-          }
-        }
-
-        .animate-scroll-left:hover,
-        .animate-scroll-right:hover {
-          animation-play-state: paused;
+        /* Hide scrollbars */
+        .overflow-x-hidden::-webkit-scrollbar {
+          display: none;
         }
       `}</style>
     </section>

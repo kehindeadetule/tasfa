@@ -32,9 +32,9 @@ export default function Navbar() {
               <Image
                 src="/assets/t-logo.png"
                 alt="Tasfa Logo"
-                width={200}
-                height={56}
-                className="h-14  w-auto"
+                width={100}
+                height={100}
+                className="h-14 w-auto"
               />
             </Link>
           </div>

@@ -14,7 +14,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dga0m8ap1tk9g.cloudfront.net"),
+  metadataBase: new URL("https://www.tasfa.com.ng"),
   title: {
     default: "Theatre Arts Students Festival and Awards",
     template: "%s | Theatre Arts Students Festival and Awards",
