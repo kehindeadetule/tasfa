@@ -197,7 +197,7 @@ const SubmissionsGrid: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8 mt-14">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -206,10 +206,12 @@ const SubmissionsGrid: React.FC = () => {
           className="bg-white rounded-lg shadow-xl p-8"
         >
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Voting Submissions
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              Award participants
             </h2>
-            <p className="text-gray-600">View all submitted nominations</p>
+            <p className="text-gray-600">
+              View all submitted nominations for the award
+            </p>
           </div>
 
           <div className="mb-6">
