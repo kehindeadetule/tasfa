@@ -230,7 +230,7 @@ const JudgesGrid: React.FC = () => {
                 className="bg-white rounded-xl shadow-lg overflow-hidden"
               >
                 {/* Image Section */}
-                <div className="w-full h-80 relative rounded-lg p-4">
+                <div className="w-full h-[25rem] relative rounded-lg p-4">
                   <img
                     src={judge.image}
                     alt={judge.name}

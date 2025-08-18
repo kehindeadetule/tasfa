@@ -193,6 +193,7 @@ export default function Navbar() {
                 className={`text-white text-lg hover:text-[#016CEE] transition-colors ${
                   isActive("/judges") ? "font-semibold text-[#005B96]" : ""
                 }`}
+                onClick={() => setIsMenuOpen(false)}
               >
                 Judges
               </Link>
