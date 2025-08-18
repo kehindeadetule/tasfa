@@ -93,8 +93,37 @@ export default function AboutPartners() {
             ))}
           </div>
 
+          {/* Decorative divider with gradient and dots */}
+          <div className="flex items-center justify-center mt-5 py-4">
+            <div className="flex items-center space-x-4 w-full max-w-2xl">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+                <div className="w-1 h-1 bg-white/60 rounded-full"></div>
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            </div>
+          </div>
+
+          <div className="flex justify-center items-center">
+            <h3 className="text-white font-medium">Participanting Schools</h3>
+          </div>
+
+          <div className="flex items-center justify-center py-4">
+            <div className="flex items-center space-x-4 w-full max-w-2xl">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+                <div className="w-1 h-1 bg-white/60 rounded-full"></div>
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            </div>
+          </div>
+
           {/* Second row - moving right */}
-          <div className="flex animate-scroll-right mt-8 mb-8">
+          <div className="flex animate-scroll-right mt-5 mb-8">
             {[...schoolLogos, ...schoolLogos].map((partner, index) => (
               <div
                 key={`right-${index}`}

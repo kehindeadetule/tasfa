@@ -202,7 +202,7 @@ const JudgesGrid: React.FC = () => {
                   initial={{ opacity: 0, scaleX: 0 }}
                   animate={{ opacity: 1, scaleX: 1 }}
                   transition={{ duration: 0.6, delay: index * 0.1 + 0.3 }}
-                  className="flex items-center justify-center py-8"
+                  className="flex items-center justify-center py-4"
                 >
                   <div className="flex items-center space-x-4 w-full max-w-2xl">
                     <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#005B96]/30 to-transparent"></div>
