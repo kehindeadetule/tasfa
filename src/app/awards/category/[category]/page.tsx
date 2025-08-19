@@ -2,13 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import Link from "next/link";
 import { useVotingStatus } from "@/hooks/useVotingStatus";
 import { API_ENDPOINTS } from "@/config/api";
 import { categorySlugToName } from "@/utils/categoryMapping";
 import VotingTimer from "@/components/VotingTimer";
 import { fetchWithRetry } from "@/utils/rateLimitHandler";
-import { voteCountsCache, CACHE_KEYS } from "@/utils/votingCache";
+import {
+  getCachedParticipants,
+  setCachedParticipants,
+  updateCachedVoteCount,
+  cleanupOldLocalStorageKeys,
+  markFetchAttempt,
+} from "@/utils/participantCache";
 
 interface Participant {
   _id: string;
@@ -31,10 +36,11 @@ export default function CategoryPage({
   const [votedParticipantId, setVotedParticipantId] = useState<string | null>(
     null
   );
+
   const {
+    votingStatus,
     canVoteForCategory,
     updateVotingStatus,
-    votingStatus,
     getNextVoteTime,
     setVotingMode,
   } = useVotingStatus();
@@ -42,100 +48,177 @@ export default function CategoryPage({
   const slug = params.category;
   const categoryName = categorySlugToName[slug] || slug;
   const canVote = canVoteForCategory(categoryName);
-  const nextVoteTime = getNextVoteTime(categoryName);
+  const originalNextVoteTime = getNextVoteTime(categoryName);
+
+  // Backend workaround: If user has voted, they can't vote again regardless of server status
+  // Also ensure that if user has voted locally, they can't vote again
+  const actualCanVote = canVote && votedParticipantId === null;
+
+  // Enhanced workaround: If user has voted locally, force the UI to show voting status
+  // This ensures the countdown shows even if backend is slow to respond
+  const hasVotedLocally = votedParticipantId !== null;
+  const shouldShowVotingStatus = !actualCanVote || hasVotedLocally;
+
+  // Get next vote time - if backend is slow, calculate it locally
+  const backendNextVoteTime = originalNextVoteTime;
+  const localNextVoteTime = hasVotedLocally
+    ? new Date(Date.now() + 24 * 60 * 60 * 1000)
+    : null;
+  const nextVoteTime = backendNextVoteTime || localNextVoteTime;
+
+  // Debug logging
+  console.log("Voting status debug:", {
+    categoryName,
+    canVote,
+    votedParticipantId,
+    actualCanVote,
+    hasVotedLocally,
+    shouldShowVotingStatus,
+    backendNextVoteTime,
+    localNextVoteTime,
+    nextVoteTime,
+    voteTimestamps: votingStatus.voteTimestamps[categoryName],
+  });
+
+  // Initialize cache cleanup on mount
+  useEffect(() => {
+    cleanupOldLocalStorageKeys();
+  }, []);
 
   useEffect(() => {
     const fetchParticipants = async () => {
       try {
         setLoading(true);
+        setError(null);
 
-        // Check cache first
-        const cacheKey = CACHE_KEYS.CATEGORY_PARTICIPANTS(categoryName);
-        const cached = voteCountsCache.get(cacheKey);
-        if (cached) {
+        // Check localStorage cache first
+        const cached = getCachedParticipants(categoryName);
+
+        if (cached && cached.length > 0) {
+          console.log(
+            `Using cached data for ${categoryName}:`,
+            cached.length,
+            "participants"
+          );
           setParticipants(cached);
+          setLoading(false);
+
+          // Still fetch voting history in background
+          fetchVotingHistory();
+          return; // Exit early if we have cached data
         }
 
+        console.log(`No cache found for ${categoryName}, fetching from API...`);
+
+        // Mark fetch attempt
+        markFetchAttempt(categoryName, false);
+
+        // If no cache, fetch from API
         const response = await fetchWithRetry(
           API_ENDPOINTS.category(categoryName),
+          {},
+          {
+            maxRetries: 3,
+            showNotification: true,
+            baseDelay: 3000, // Longer delay for rate limits
+          }
+        );
+
+        if (!response.ok) {
+          markFetchAttempt(categoryName, false);
+
+          if (response.status === 429) {
+            setError("High traffic detected. Please try again in a moment.");
+          } else {
+            setError("Failed to fetch participants");
+          }
+          return;
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          console.log(
+            `Successfully fetched ${data.data.length} participants for ${categoryName}`
+          );
+
+          setParticipants(data.data);
+
+          // Cache the participants data in localStorage
+          setCachedParticipants(categoryName, data.data);
+          markFetchAttempt(categoryName, true);
+
+          // Fetch voting history
+          await fetchVotingHistory();
+        } else {
+          markFetchAttempt(categoryName, false);
+          setError("Failed to fetch participants");
+        }
+      } catch (err: any) {
+        markFetchAttempt(categoryName, false);
+
+        if (err.message?.includes("Rate limited") || err.status === 429) {
+          setError("High traffic detected. Please try again in a moment.");
+        } else {
+          setError("Error, please try again");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchVotingHistory = async () => {
+      try {
+        const historyResponse = await fetchWithRetry(
+          API_ENDPOINTS.votingHistory,
           {},
           {
             maxRetries: 2,
             showNotification: false,
           }
         );
-
-        if (!response.ok) {
-          setError("Failed to fetch participants");
-          return;
-        }
-
-        const data = await response.json();
-        if (data.success) {
-          setParticipants(data.data);
-          // Cache the participants data
-          voteCountsCache.set(cacheKey, data.data);
-
-          // Check voting history
-          try {
-            const historyResponse = await fetchWithRetry(
-              API_ENDPOINTS.votingHistory,
-              {},
-              {
-                maxRetries: 1,
-                showNotification: false,
-              }
+        if (historyResponse.ok) {
+          const historyData = await historyResponse.json();
+          if (historyData.success) {
+            const votedParticipant = historyData.data.votedParticipants.find(
+              (p: any) => p.awardCategory === categoryName
             );
-            if (historyResponse.ok) {
-              const historyData = await historyResponse.json();
-              if (historyData.success) {
-                const votedParticipant =
-                  historyData.data.votedParticipants.find(
-                    (p: any) => p.awardCategory === categoryName
-                  );
-                if (votedParticipant) {
-                  setVotedParticipantId(votedParticipant._id);
-                } else {
-                  setVotedParticipantId(null);
-                }
-              }
+            if (votedParticipant) {
+              setVotedParticipantId(votedParticipant._id);
+            } else {
+              setVotedParticipantId(null);
             }
-          } catch (historyErr) {
-            setVotedParticipantId(null);
           }
-        } else {
-          setError("Failed to fetch participants");
         }
-      } catch (err) {
-        setError("Error, please try again");
-      } finally {
-        setLoading(false);
+      } catch (historyErr) {
+        console.warn("Failed to fetch voting history:", historyErr);
+        setVotedParticipantId(null);
       }
     };
+
     fetchParticipants();
   }, [categoryName]);
 
-  const handleVote = async (participant: Participant) => {
-    if (!canVote) {
-      toast.info(
-        `You have already voted for ${categoryName} today. Check the countdown timer to see when you can vote again!`,
-        {
-          position: "top-center",
-          autoClose: 6000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        }
-      );
+  // Clear votedParticipantId when user can vote (24-hour restriction expired)
+  useEffect(() => {
+    if (canVote && votedParticipantId !== null) {
+      setVotedParticipantId(null);
+    }
+  }, [canVote, votedParticipantId, categoryName]);
+
+  const handleVote = async (participantId: string) => {
+    if (!actualCanVote) {
+      toast.error("You cannot vote at this time");
       return;
     }
-    if (votedParticipantId !== null) return;
+
+    // Find the participant details
+    const participant = participants.find((p) => p._id === participantId);
+    if (!participant) {
+      toast.error("Participant not found");
+      return;
+    }
 
     try {
-      // Set voting mode for immediate updates
-      setVotingMode();
-
       const response = await fetchWithRetry(
         API_ENDPOINTS.votes,
         {
@@ -147,56 +230,79 @@ export default function CategoryPage({
             firstName: participant.firstName,
             lastName: participant.lastName,
             school: participant.school,
-            awardCategory: categoryName,
+            awardCategory: participant.awardCategory,
           }),
         },
         {
-          maxRetries: 3,
+          maxRetries: 2,
           showNotification: true,
         }
       );
 
       if (!response.ok) {
-        toast.error("Failed to submit vote. Please try again.");
+        if (response.status === 429) {
+          toast.error("Too many requests. Please wait before voting again.");
+        } else {
+          toast.error("Failed to submit vote");
+        }
         return;
       }
 
       const data = await response.json();
+
       if (data.success) {
-        setParticipants((prev) =>
-          prev.map((p) =>
-            p._id === participant._id
-              ? { ...p, voteCount: data.data.voteCount }
-              : p
-          )
+        toast.success("Vote submitted successfully!");
+
+        // Update local state immediately
+        setVotedParticipantId(participantId);
+        console.log(
+          "Vote successful - set votedParticipantId to:",
+          participantId
         );
-        setVotedParticipantId(participant._id);
+
+        // Update cache with new vote count
+        const updatedParticipants = participants.map((participant) =>
+          participant._id === participantId
+            ? { ...participant, voteCount: participant.voteCount + 1 }
+            : participant
+        );
+
+        setParticipants(updatedParticipants);
+        const currentParticipant = participants.find(
+          (p) => p._id === participantId
+        );
+        if (currentParticipant) {
+          updateCachedVoteCount(
+            categoryName,
+            participantId,
+            currentParticipant.voteCount + 1
+          );
+        }
+
+        // Update voting status immediately to disable voting
         updateVotingStatus(categoryName);
+        console.log("Updated voting status for category:", categoryName);
 
-        // Clear cache to get fresh data
-        voteCountsCache.invalidate(
-          CACHE_KEYS.CATEGORY_PARTICIPANTS(categoryName)
-        );
-        voteCountsCache.invalidate(CACHE_KEYS.VOTE_COUNTS);
+        // Store vote timestamp in localStorage as backup
+        const voteTimestamp = new Date().toISOString();
+        localStorage.setItem(`vote_${categoryName}`, voteTimestamp);
+        console.log("Stored vote timestamp in localStorage:", voteTimestamp);
 
-        toast.success(
-          `Vote submitted for ${participant.firstName} ${participant.lastName}!`
-        );
+        // Set voting mode to active to refresh status
+        setVotingMode();
       } else {
-        toast.error("Failed to submit vote. Please try again.");
+        toast.error(data.error || "Failed to submit vote");
       }
-    } catch (err) {
-      toast.error(
-        "Error submitting vote. Please check your connection and try again."
-      );
+    } catch (error) {
+      console.error("Vote submission error:", error);
+      toast.error("Network error. Please try again.");
     }
   };
 
   const handleVotingAvailable = () => {
-    toast.success(`Voting is now available for ${categoryName}!`, {
-      position: "top-center",
-      autoClose: 5000,
-    });
+    console.log("Voting available - resetting local state");
+    setVotedParticipantId(null);
+    updateVotingStatus(categoryName);
   };
 
   if (loading) {
@@ -218,12 +324,14 @@ export default function CategoryPage({
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-[#005B96] text-white rounded-full hover:bg-[#004080]"
-            >
-              Try Again
-            </button>
+            <div className="space-x-4">
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600"
+              >
+                Reload Page
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -238,7 +346,7 @@ export default function CategoryPage({
         </h1>
 
         {/* Voting Status Banner */}
-        {!canVote && nextVoteTime && (
+        {shouldShowVotingStatus && nextVoteTime && (
           <div className="max-w-2xl mx-auto mb-8">
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
@@ -261,7 +369,7 @@ export default function CategoryPage({
           </div>
         )}
 
-        {canVote && votedParticipantId === null && (
+        {actualCanVote && !hasVotedLocally && (
           <div className="max-w-2xl mx-auto mb-8">
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
               <div className="flex items-center justify-center space-x-2 mb-2">
@@ -324,25 +432,26 @@ export default function CategoryPage({
                       </span>
                     ) : (
                       <button
-                        onClick={() => handleVote(participant)}
-                        disabled={!canVote || votedParticipantId !== null}
-                        // disabled={true}
+                        onClick={() => handleVote(participant._id)}
+                        disabled={!actualCanVote}
                         className={`px-6 py-2 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${
-                          !canVote
-                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                            : votedParticipantId !== null
+                          !actualCanVote
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                             : "bg-[#005B96] text-white hover:bg-[#004080] hover:scale-105 active:scale-95"
                         }`}
                         title={
-                          !canVote
-                            ? "You need to wait before voting again"
-                            : votedParticipantId !== null
-                            ? "You have already voted in this category"
+                          !actualCanVote
+                            ? votedParticipantId === participant._id
+                              ? "You have already voted for this participant"
+                              : "You need to wait before voting again"
                             : "Click to vote"
                         }
                       >
-                        {!canVote ? "⏰ Wait" : "Vote"}
+                        {!actualCanVote
+                          ? votedParticipantId === participant._id
+                            ? "✓ Voted"
+                            : "⏰ Wait"
+                          : "Vote"}
                       </button>
                     )}
                   </div>

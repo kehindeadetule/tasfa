@@ -2,7 +2,6 @@
 
 import { useVotingStatus } from "@/hooks/useVotingStatus";
 import VotingTimer, { VotingTimerWithProgress } from "./VotingTimer";
-import VotingDebugInfo from "./VotingDebugInfo";
 
 export default function VotingStatusIndicator() {
   const {
@@ -11,8 +10,7 @@ export default function VotingStatusIndicator() {
     error,
     getPendingCategories,
     getAvailableCategories,
-    setVotingMode,
-    currentInterval,
+    setVotingMode, // Used for refresh
   } = useVotingStatus();
 
   if (loading) {
@@ -124,7 +122,6 @@ export default function VotingStatusIndicator() {
                   className="text-xs text-[#005B96] hover:underline"
                   onClick={() => {
                     // Could expand to show all or navigate to a detailed view
-                    console.log("Show all pending categories");
                   }}
                 >
                   View {pendingCategories.length - 4} more categories
@@ -169,9 +166,6 @@ export default function VotingStatusIndicator() {
           </p>
         </div>
       )}
-
-      {/* Debug Info */}
-      <VotingDebugInfo currentInterval={currentInterval} />
     </div>
   );
 }

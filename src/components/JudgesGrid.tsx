@@ -220,7 +220,7 @@ const JudgesGrid: React.FC = () => {
         </div>
 
         {/* Mobile View - Block Layout */}
-        <div className="lg:hidden space-y-6">
+        <div className="md:hidden space-y-6">
           {judges.map((judge, index) => (
             <React.Fragment key={judge.id}>
               <motion.div

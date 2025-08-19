@@ -51,12 +51,6 @@ const VotingFormContent: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      console.log("File selected:", {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-      });
-
       setFormData((prev) => ({
         ...prev,
         picture: file,
@@ -73,9 +67,6 @@ const VotingFormContent: React.FC = () => {
     setLoading(true);
 
     try {
-      console.log("Starting form submission...");
-      console.log("Form data:", formData);
-
       const formDataToSend = new FormData();
       formDataToSend.append("firstName", formData.firstName);
       formDataToSend.append("lastName", formData.lastName);
@@ -83,29 +74,16 @@ const VotingFormContent: React.FC = () => {
       formDataToSend.append("awardCategory", formData.awardCategory);
 
       if (formData.picture) {
-        console.log("Adding picture to form data:", {
-          name: formData.picture.name,
-          size: formData.picture.size,
-          type: formData.picture.type,
-        });
         formDataToSend.append("picture", formData.picture);
       } else {
-        console.log("No picture selected");
       }
-
-      console.log(
-        "Sending request to:",
-        `${API_BASE_URL}/api/voting-form/submit`
-      );
 
       const response = await fetch(`${API_BASE_URL}/api/voting-form/submit`, {
         method: "POST",
         body: formDataToSend,
       });
 
-      console.log("Response status:", response.status);
       const data = await response.json();
-      console.log("Response data:", data);
 
       if (data.success) {
         toast.success("Voting form submitted successfully!");

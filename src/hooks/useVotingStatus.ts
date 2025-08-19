@@ -14,6 +14,7 @@ export const useVotingStatus = () => {
     updateVotingStatus,
     refresh,
     setVotingMode,
+    // currentInterval,
   } = useSmartVotingPoller({
     enabled: true,
     initialInterval: "active",
@@ -70,11 +71,7 @@ export const useVotingStatus = () => {
   };
 
   const resetVotingStatus = () => {
-    // Clear localStorage
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("vote_timestamps");
-    }
-    // Refresh to get updated status
+    // Refresh to get updated status from server
     refresh();
   };
 
