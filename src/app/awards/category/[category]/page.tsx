@@ -68,6 +68,9 @@ export default function CategoryPage({
     }
   };
 
+  // Get the voted participant ID for highlighting
+  const votedParticipantId = votingStatus.votedParticipantId;
+
   if (loading) {
     return (
       <section className="min-h-screen flex justify-center items-center bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
@@ -105,16 +108,6 @@ export default function CategoryPage({
         <h1 className="text-3xl md:text-4xl font-bold text-[#1B1464] text-center mb-4">
           {categoryName}
         </h1>
-
-        {/* Security Notice */}
-        <div className="max-w-2xl mx-auto mb-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
-            <p className="text-xs text-blue-700">
-              🔒 Secure voting with session tracking • 24-hour category lock •
-              Rate limiting active
-            </p>
-          </div>
-        </div>
 
         {/* Voting Status - Backend controlled */}
         <SimpleVotingStatus
@@ -165,23 +158,23 @@ export default function CategoryPage({
                         {participant.voteCount}
                       </span>
                     </div>
-                    {votingStatus.votedParticipantId === participant._id ? (
+                    {votedParticipantId === participant._id ? (
                       <span className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
                         ✓ Voted
                       </span>
                     ) : (
                       <button
                         onClick={() => handleVote(participant)}
-                        disabled={true}
-                        // disabled={
-                        //   !votingStatus.canVote ||
-                        //   !!votingStatus.votedParticipantId ||
-                        //   disableVoteButton ||
-                        //   isSubmitting
-                        // }
+                        // disabled={true}
+                        disabled={
+                          !votingStatus.canVote ||
+                          !!votingStatus.votedParticipantId ||
+                          disableVoteButton ||
+                          isSubmitting
+                        }
                         className={`px-6 py-2 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${
                           !votingStatus.canVote ||
-                          votingStatus.votedParticipantId ||
+                          votedParticipantId ||
                           disableVoteButton ||
                           isSubmitting
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -192,7 +185,7 @@ export default function CategoryPage({
                             ? "Vote submission in progress..."
                             : !votingStatus.canVote
                             ? votingStatus.message || "Voting not available"
-                            : votingStatus.votedParticipantId
+                            : votedParticipantId
                             ? "You have already voted in this category"
                             : "Click to vote"
                         }

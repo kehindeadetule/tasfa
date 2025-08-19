@@ -1,6 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { apiClient, handleApiError, ApiError } from "@/utils/secureApiClient";
-import { saveVotingState, loadVotingState } from "@/utils/voteTimestampsUtils";
+import {
+  saveVotingState,
+  loadVotingState,
+  storeVotingData,
+  getVotingData,
+  hasVotedForCategory,
+  clearExpiredVotingData,
+} from "@/utils/voteTimestampsUtils";
 
 interface VotingStatus {
   canVote: boolean;
@@ -87,6 +94,31 @@ export const useSimpleVoting = (categoryName: string) => {
     [categoryName]
   );
 
+  // Get voting status from localStorage
+  const getVotingStatusFromStorage = useCallback(() => {
+    const hasVoted = hasVotedForCategory(categoryName);
+    const votingData = getVotingData(categoryName);
+
+    if (hasVoted && votingData) {
+      const voteTime = new Date(votingData.timestamp);
+      const expiresAt = new Date(voteTime.getTime() + 24 * 60 * 60 * 1000);
+      const now = new Date();
+      const timeLeft = Math.max(0, expiresAt.getTime() - now.getTime());
+
+      return {
+        canVote: false,
+        message:
+          "You have already voted for this category. Please wait 24 hours before voting again.",
+        nextVoteTime: expiresAt.toISOString(),
+        votedParticipantId: votingData.participantId,
+      };
+    }
+
+    return {
+      canVote: true,
+    };
+  }, [categoryName]);
+
   const fetchCategoryData = useCallback(async () => {
     try {
       setLoading(true);
@@ -112,10 +144,13 @@ export const useSimpleVoting = (categoryName: string) => {
         );
       }
 
-      // Extract participants
+      // Extract participants from backend (vote counts come from backend)
       const participants: Participant[] = Array.isArray(participantsResult.data)
         ? participantsResult.data
         : [];
+
+      // Get voting status from localStorage first, then fallback to API
+      const localStorageVotingStatus = getVotingStatusFromStorage();
 
       // Extract voting status using the new comprehensive structure
       const globalVotingStatus: GlobalVotingStatus =
@@ -123,12 +158,17 @@ export const useSimpleVoting = (categoryName: string) => {
       const categoryStatus = globalVotingStatus.categoryStatus?.[categoryName];
       const voteTimestamp = globalVotingStatus.voteTimestamps?.[categoryName];
 
-      const categoryVotingStatus: VotingStatus = {
-        canVote: categoryStatus?.canVote || false,
-        message:
-          categoryStatus?.reason || "Voting not available for this category",
-        nextVoteTime: categoryStatus?.nextVoteTime || undefined,
-      };
+      // Use localStorage status if user has voted, otherwise use API status
+      const categoryVotingStatus: VotingStatus =
+        localStorageVotingStatus.canVote
+          ? {
+              canVote: categoryStatus?.canVote || false,
+              message:
+                categoryStatus?.reason ||
+                "Voting not available for this category",
+              nextVoteTime: categoryStatus?.nextVoteTime || undefined,
+            }
+          : localStorageVotingStatus;
 
       const newData = {
         participants,
@@ -147,7 +187,7 @@ export const useSimpleVoting = (categoryName: string) => {
     } finally {
       setLoading(false);
     }
-  }, [categoryName, saveState]);
+  }, [categoryName, saveState, getVotingStatusFromStorage]);
 
   const submitVote = useCallback(
     async (participantId: string) => {
@@ -155,6 +195,15 @@ export const useSimpleVoting = (categoryName: string) => {
         return {
           success: false,
           message: "Vote submission in progress. Please wait...",
+        };
+      }
+
+      // Check if user has already voted for this category
+      if (hasVotedForCategory(categoryName)) {
+        return {
+          success: false,
+          message:
+            "You have already voted for this category. Please wait 24 hours before voting again.",
         };
       }
 
@@ -181,11 +230,17 @@ export const useSimpleVoting = (categoryName: string) => {
         });
 
         if (result.success) {
-          // Refresh the data to get updated voting status and vote counts
+          // Store voting data in localStorage with 24-hour expiration (for restriction only)
+          storeVotingData(categoryName, participantId);
+
+          // Refresh the data to get updated vote counts from backend
           await fetchCategoryData();
+
           return {
             success: true,
-            message: result.message || "Vote submitted successfully!",
+            message:
+              result.message ||
+              `Vote submitted successfully for ${participant.firstName} ${participant.lastName}!`,
           };
         } else {
           return {
@@ -238,6 +293,9 @@ export const useSimpleVoting = (categoryName: string) => {
 
   // Initial fetch with fallback to stored state
   useEffect(() => {
+    // Clear expired voting data first
+    clearExpiredVotingData();
+
     const storedState = loadStoredState();
     if (storedState) {
       setData(storedState);
