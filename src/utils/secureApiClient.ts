@@ -149,6 +149,8 @@ export const handleApiError = (error: ApiError): string => {
       return "You have already voted for this category. Please wait 24 hours before voting again.";
     case "SERVER_ERROR":
       return "Server error. Please try again later.";
+    case "QUEUE_ERROR":
+      return "Vote processing is temporarily unavailable. Please try again in a moment.";
     case "UNKNOWN_ERROR":
       return "An unexpected error occurred. Please try again.";
     default:

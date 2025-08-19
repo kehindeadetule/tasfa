@@ -48,10 +48,18 @@ export default function CategoryPage({
 
     if (result.success) {
       setDisableVoteButton(true);
-      toast.success(
-        result.message ||
-          `Vote submitted for ${participant.firstName} ${participant.lastName}!`
-      );
+
+      // Handle queue-based response
+      if (result.queued) {
+        toast.success(
+          result.message || "Vote submitted and queued for processing!"
+        );
+      } else {
+        toast.success(
+          result.message ||
+            `Vote submitted for ${participant.firstName} ${participant.lastName}!`
+        );
+      }
     } else {
       // Handle specific error cases with appropriate messages
       if (result.retryAfter) {

@@ -39,6 +39,14 @@ interface CategoryData {
   }>;
 }
 
+interface VoteResponseData {
+  queued?: boolean;
+  jobId?: string;
+  estimatedCount?: number;
+  voteCount?: number;
+  message?: string;
+}
+
 interface VoteTimestamp {
   votedAt: string | null;
   nextVoteAt: string | null;
@@ -222,7 +230,7 @@ export const useSimpleVoting = (categoryName: string) => {
           throw new Error("Invalid participant data");
         }
 
-        const result = await apiClient.post("/api/votes", {
+        const result = await apiClient.post<VoteResponseData>("/api/votes", {
           firstName: participant.firstName.trim(),
           lastName: participant.lastName.trim(),
           school: participant.school.trim(),
@@ -233,15 +241,45 @@ export const useSimpleVoting = (categoryName: string) => {
           // Store voting data in localStorage with 24-hour expiration (for restriction only)
           storeVotingData(categoryName, participantId);
 
-          // Refresh the data to get updated vote counts from backend
-          await fetchCategoryData();
+          // Handle queue-based response
+          if (result.data?.queued) {
+            // Use estimated count for immediate feedback
+            const estimatedCount = result.data.estimatedCount || 0;
 
-          return {
-            success: true,
-            message:
-              result.message ||
-              `Vote submitted successfully for ${participant.firstName} ${participant.lastName}!`,
-          };
+            // Update the participant's vote count with estimated value
+            setData((prevData) => ({
+              ...prevData,
+              participants: prevData.participants.map((p) =>
+                p._id === participantId
+                  ? { ...p, voteCount: p.voteCount + 1 }
+                  : p
+              ),
+            }));
+
+            // Optional: Refresh actual count after processing (3 seconds)
+            setTimeout(() => {
+              fetchCategoryData();
+            }, 3000);
+
+            return {
+              success: true,
+              message:
+                result.data.message ||
+                "Vote submitted and queued for processing!",
+              queued: true,
+              jobId: result.data.jobId,
+            };
+          } else {
+            // Fallback for direct processing
+            await fetchCategoryData();
+
+            return {
+              success: true,
+              message:
+                result.message ||
+                `Vote submitted successfully for ${participant.firstName} ${participant.lastName}!`,
+            };
+          }
         } else {
           return {
             success: false,
