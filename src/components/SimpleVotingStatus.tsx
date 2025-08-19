@@ -100,9 +100,12 @@ export default function SimpleVotingStatus({
             {effectiveVotingStatus.message ||
               "Choose your favorite participant below"}
           </p>
-          <div className="mt-2 text-xs text-green-600">
-            ⏰ You can vote again in 24 hours
-          </div>
+          {/* lets display the time left to vote again */}
+          {timeLeft && (
+            <div className="mt-2 text-xs text-green-600">
+              ⏰ You can vote again in {timeLeft}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -121,9 +124,11 @@ export default function SimpleVotingStatus({
           <p className="text-xs text-blue-700">
             {effectiveVotingStatus.message || "Thank you for your vote!"}
           </p>
-          <div className="mt-2 text-xs text-blue-600">
-            ⏰ You can vote again in 24 hours
-          </div>
+          {timeLeft && (
+            <div className="mt-2 text-xs text-blue-600">
+              ⏰ You can vote again in {timeLeft}
+            </div>
+          )}
           {onRefresh && (
             <button
               onClick={onRefresh}
