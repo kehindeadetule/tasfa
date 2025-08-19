@@ -186,6 +186,105 @@ const SubmissionsGrid: React.FC = () => {
     });
   };
 
+  const clearAllVotingData = () => {
+    if (
+      !confirm(
+        "⚠️ WARNING: This will clear ALL frontend voting data from users' browsers!\n\nThis action will:\n• Clear all vote counts from localStorage\n• Clear all voting timestamps\n• Clear all voted category records\n• Allow users to vote fresh\n\nAre you sure you want to proceed?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      let totalCleared = 0;
+      const clearedKeys: Array<{ key: string; reason: string }> = [];
+
+      // Get all localStorage keys
+      const allKeys: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          allKeys.push(key);
+        }
+      }
+
+      // Clear keys by prefix and content
+      allKeys.forEach((key) => {
+        let shouldClear = false;
+        let reason = "";
+
+        // Check for known voting prefixes
+        if (key.startsWith("voting_state_")) {
+          shouldClear = true;
+          reason = "voting_state_ prefix";
+        } else if (key.startsWith("tasfa_vote_")) {
+          shouldClear = true;
+          reason = "tasfa_vote_ prefix";
+        } else if (
+          key.toLowerCase().includes("vote") ||
+          key.toLowerCase().includes("voting") ||
+          key.toLowerCase().includes("tasfa")
+        ) {
+          shouldClear = true;
+          reason = "contains vote/voting/tasfa";
+        } else {
+          // Check the actual data content
+          try {
+            const value = localStorage.getItem(key);
+            if (value) {
+              const parsed = JSON.parse(value);
+
+              // Check if it contains voting-related data structure
+              if (parsed && typeof parsed === "object") {
+                const hasVotingData =
+                  parsed.votingStatus !== undefined ||
+                  parsed.participants !== undefined ||
+                  parsed.category !== undefined ||
+                  parsed.timestamp !== undefined ||
+                  parsed.canVote !== undefined ||
+                  parsed.pendingCategories !== undefined ||
+                  parsed.voteTimestamps !== undefined ||
+                  parsed.votedCategories !== undefined;
+
+                if (hasVotingData) {
+                  shouldClear = true;
+                  reason = "contains voting data structure";
+                }
+              }
+            }
+          } catch (e) {
+            // If JSON parsing fails, check if it's a string containing voting keywords
+            const value = localStorage.getItem(key);
+            if (
+              value &&
+              typeof value === "string" &&
+              (value.toLowerCase().includes("vote") ||
+                value.toLowerCase().includes("voting") ||
+                value.toLowerCase().includes("tasfa"))
+            ) {
+              shouldClear = true;
+              reason = "string contains voting keywords";
+            }
+          }
+        }
+
+        if (shouldClear) {
+          localStorage.removeItem(key);
+          totalCleared++;
+          clearedKeys.push({ key, reason });
+        }
+      });
+
+      toast.success(
+        `✅ Successfully cleared ${totalCleared} voting data items! Users can now vote fresh.`
+      );
+      console.log(`🗑️ Cleared ${totalCleared} voting data items:`, clearedKeys);
+    } catch (error) {
+      toast.error("❌ Error clearing voting data: " + (error as Error).message);
+      console.error("Error clearing voting data:", error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12 h-screen">
@@ -242,6 +341,26 @@ const SubmissionsGrid: React.FC = () => {
                 </span>
               )}
             </p>
+          </div>
+
+          {/* Clear Voting Data Button */}
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-red-800 mb-2">
+                🗑️ Clear All Voting Data
+              </h3>
+              <p className="text-sm text-red-600 mb-4">
+                This will clear all frontend voting data (vote counts,
+                timestamps, voted categories) from users' browsers. Users will
+                be able to vote fresh after this action.
+              </p>
+              <button
+                onClick={clearAllVotingData}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                🧹 Clear All Frontend Voting Data
+              </button>
+            </div>
           </div>
 
           <div className="mb-6">
