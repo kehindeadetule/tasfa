@@ -478,3 +478,27 @@ export function clearAllTasfaData(): void {
     console.warn("Failed to clear all TASFA data:", error);
   }
 }
+
+/**
+ * Clear ALL frontend voting data (vote counts, timestamps, voted categories)
+ * This function clears both voting state and voting data from localStorage
+ */
+export function clearAllFrontendVotingData(): void {
+  try {
+    console.log("Clearing all frontend voting data...");
+
+    // Clear all voting states (voting_state_*)
+    clearAllVotingStates();
+
+    // Clear all voting data (tasfa_vote_*)
+    clearAllVotingData();
+
+    // Clear all TASFA data (redundant but ensures everything is cleared)
+    clearAllTasfaData();
+
+    console.log("✅ All frontend voting data cleared successfully!");
+    console.log("Users can now start voting fresh.");
+  } catch (error) {
+    console.error("Failed to clear all frontend voting data:", error);
+  }
+}
