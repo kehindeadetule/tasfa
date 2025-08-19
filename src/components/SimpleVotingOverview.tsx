@@ -38,11 +38,13 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
     null
   );
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchVotingStatus = async () => {
     try {
-      setLoading(true);
+      setRefreshing(true);
       setError(null);
 
       // Clear expired voting data first
@@ -56,6 +58,14 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
         // Get localStorage voting data
         const localStorageVotingData = getAllVotingData();
 
+        // Debug logging
+        console.log("Voting Status Data:", {
+          apiVotingStatus,
+          localStorageVotingData,
+          voteTimestamps: apiVotingStatus.voteTimestamps,
+          votedCategories: apiVotingStatus.votedCategories,
+        });
+
         // Merge localStorage data with API data
         const mergedVotingStatus = {
           ...apiVotingStatus,
@@ -68,6 +78,7 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
         };
 
         setVotingStatus(mergedVotingStatus);
+        setLastUpdated(new Date());
       } else {
         throw new Error(result.message || "Failed to fetch voting status");
       }
@@ -79,12 +90,42 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
       setError(errorMessage);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
     fetchVotingStatus();
-    // Removed auto-refresh interval to prevent automatic refreshing
+
+    // Add auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchVotingStatus();
+    }, 30000);
+
+    // Listen for localStorage changes (when votes are submitted)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key && e.key.startsWith("tasfa_vote_")) {
+        // Refresh when voting data changes
+        fetchVotingStatus();
+      }
+    };
+
+    // Listen for keyboard shortcut (Ctrl+R) to refresh
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "r") {
+        e.preventDefault();
+        fetchVotingStatus();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   if (loading) {
@@ -123,26 +164,58 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
   // Use the new comprehensive structure for accurate counting
   const voteTimestamps = votingStatus.voteTimestamps || {};
 
+  // Get localStorage voting data as fallback
+  const localStorageVotingData = getAllVotingData();
+
+  // If API doesn't provide voteTimestamps, create a basic structure from localStorage
+  let effectiveVoteTimestamps = voteTimestamps;
+  if (
+    Object.keys(voteTimestamps).length === 0 &&
+    Object.keys(localStorageVotingData).length > 0
+  ) {
+    // Create basic voteTimestamps structure from localStorage data
+    effectiveVoteTimestamps = Object.keys(localStorageVotingData).reduce(
+      (acc, category) => {
+        acc[category] = {
+          votedAt: localStorageVotingData[category].timestamp,
+          nextVoteAt: new Date(
+            new Date(localStorageVotingData[category].timestamp).getTime() +
+              24 * 60 * 60 * 1000
+          ).toISOString(),
+          canVoteAgain: false,
+          status: "pending" as const,
+        };
+        return acc;
+      },
+      {} as { [category: string]: VoteTimestamp }
+    );
+  }
+
   // Count available categories (status === "available")
-  const availableCount = Object.values(voteTimestamps).filter(
+  const availableCount = Object.values(effectiveVoteTimestamps).filter(
     (data) => data.status === "available"
   ).length;
 
   // Count pending categories (status === "pending")
-  const pendingCount = Object.values(voteTimestamps).filter(
+  const pendingCount = Object.values(effectiveVoteTimestamps).filter(
     (data) => data.status === "pending"
   ).length;
 
-  // Total categories
-  const totalCount = Object.keys(voteTimestamps).length;
-
-  // Get categories by status for display
-  const availableCategories = Object.keys(voteTimestamps).filter(
-    (category) => voteTimestamps[category].status === "available"
+  // Total categories - include both API and localStorage data
+  const totalCount = Math.max(
+    Object.keys(effectiveVoteTimestamps).length,
+    Object.keys(localStorageVotingData).length
   );
 
-  const pendingCategories = Object.keys(voteTimestamps)
-    .filter((category) => voteTimestamps[category].status === "pending")
+  // Get categories by status for display
+  const availableCategories = Object.keys(effectiveVoteTimestamps).filter(
+    (category) => effectiveVoteTimestamps[category].status === "available"
+  );
+
+  const pendingCategories = Object.keys(effectiveVoteTimestamps)
+    .filter(
+      (category) => effectiveVoteTimestamps[category].status === "pending"
+    )
     .map((category) => ({
       category,
       timeRemaining: votingStatus.timeUntilNextVote[category] || 0,
@@ -157,14 +230,24 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
           </h3>
           <button
             onClick={fetchVotingStatus}
-            className="text-sm text-blue-600 hover:text-blue-800 underline"
+            disabled={refreshing}
+            className="text-sm text-blue-600 hover:text-blue-800 underline flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
             title="Refresh voting status"
           >
-            ↻ Refresh
+            <span className="text-xs">{refreshing ? "⟳" : "↻"}</span>
+            <span>{refreshing ? "Refreshing..." : "Refresh"}</span>
           </button>
         </div>
         <p className="text-sm text-gray-600">
           Track your voting journey across all categories
+        </p>
+        <p className="text-xs text-gray-500 mt-1">
+          Auto-refreshes every 30 seconds • Updates when you vote
+          {lastUpdated && (
+            <span className="block mt-1">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </span>
+          )}
         </p>
       </div>
 
@@ -251,6 +334,34 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
         <p className="text-xs text-gray-500 text-center">
           💡 You can vote once per category every 24 hours
         </p>
+
+        {/* Debug section - only show in development */}
+        {process.env.NODE_ENV === "development" && (
+          <details className="mt-4">
+            <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+              🔧 Debug Info (Development Only)
+            </summary>
+            <div className="mt-2 p-3 bg-gray-50 rounded text-xs">
+              <div>
+                <strong>API VoteTimestamps:</strong>{" "}
+                {Object.keys(voteTimestamps).length} categories
+              </div>
+              <div>
+                <strong>localStorage Data:</strong>{" "}
+                {Object.keys(localStorageVotingData).length} categories
+              </div>
+              <div>
+                <strong>Effective VoteTimestamps:</strong>{" "}
+                {Object.keys(effectiveVoteTimestamps).length} categories
+              </div>
+              <div>
+                <strong>Available:</strong> {availableCount} |{" "}
+                <strong>Pending:</strong> {pendingCount} |{" "}
+                <strong>Total:</strong> {totalCount}
+              </div>
+            </div>
+          </details>
+        )}
       </div>
     </div>
   );

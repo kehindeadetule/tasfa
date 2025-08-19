@@ -210,6 +210,38 @@ const SubmissionsGrid: React.FC = () => {
             <p className="text-gray-600">
               View all submitted nominations for the award
             </p>
+            <p className="text-gray-600">
+              Total submissions: {submissions.length}
+            </p>
+            <p className="text-gray-600">
+              Total categories: {categories.length}
+            </p>
+
+            {/* calculate the total votes */}
+            <p className="text-gray-600">
+              Total votes across all participants:{" "}
+              <span className="font-semibold">
+                {submissions
+                  .reduce((acc, submission) => acc + submission.voteCount, 0)
+                  .toLocaleString()}
+              </span>
+            </p>
+            <p className="text-gray-600">
+              Total participants:{" "}
+              <span className="font-semibold">{submissions.length}</span>
+              {submissions.length > 0 && (
+                <span className="text-sm text-gray-500 ml-2">
+                  (Avg:{" "}
+                  {Math.round(
+                    submissions.reduce(
+                      (acc, submission) => acc + submission.voteCount,
+                      0
+                    ) / submissions.length
+                  )}{" "}
+                  votes per participant)
+                </span>
+              )}
+            </p>
           </div>
 
           <div className="mb-6">
@@ -233,8 +265,6 @@ const SubmissionsGrid: React.FC = () => {
               ))}
             </select>
           </div>
-
-
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {submissions.map((submission, index) => (
