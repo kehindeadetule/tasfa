@@ -36,35 +36,32 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchVotingStatus = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const fetchVotingStatus = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        const result = await apiClient.get("/api/votes/voting-status");
+      const result = await apiClient.get("/api/votes/voting-status");
 
-        if (result.success) {
-          setVotingStatus(result.data as GlobalVotingStatus);
-        } else {
-          throw new Error(result.message || "Failed to fetch voting status");
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error
-            ? handleApiError(err as ApiError)
-            : "An error occurred";
-        setError(errorMessage);
-      } finally {
-        setLoading(false);
+      if (result.success) {
+        setVotingStatus(result.data as GlobalVotingStatus);
+      } else {
+        throw new Error(result.message || "Failed to fetch voting status");
       }
-    };
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? handleApiError(err as ApiError)
+          : "An error occurred";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchVotingStatus();
-
-    // Refresh every 30 seconds
-    const interval = setInterval(fetchVotingStatus, 30000);
-    return () => clearInterval(interval);
+    // Removed auto-refresh interval to prevent automatic refreshing
   }, []);
 
   if (loading) {
@@ -86,7 +83,7 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
             Error loading voting status
           </p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={fetchVotingStatus}
             className="text-sm text-blue-600 hover:underline"
           >
             Retry
@@ -131,9 +128,18 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="text-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
-          🗳️ Your Voting Progress
-        </h3>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-lg font-semibold text-gray-800">
+            🗳️ Your Voting Progress
+          </h3>
+          <button
+            onClick={fetchVotingStatus}
+            className="text-sm text-blue-600 hover:text-blue-800 underline"
+            title="Refresh voting status"
+          >
+            ↻ Refresh
+          </button>
+        </div>
         <p className="text-sm text-gray-600">
           Track your voting journey across all categories
         </p>

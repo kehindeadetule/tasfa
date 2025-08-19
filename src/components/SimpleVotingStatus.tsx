@@ -22,12 +22,14 @@ interface SimpleVotingStatusProps {
   votingStatus: VotingStatus;
   categoryName: string;
   pendingCategories?: PendingCategory[];
+  onRefresh?: () => void;
 }
 
 export default function SimpleVotingStatus({
   votingStatus,
   categoryName,
   pendingCategories = [],
+  onRefresh,
 }: SimpleVotingStatusProps) {
   const [timeLeft, setTimeLeft] = useState<string>("");
 
@@ -77,6 +79,14 @@ export default function SimpleVotingStatus({
           <div className="mt-2 text-xs text-green-600">
             🔒 Secure voting with session tracking
           </div>
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              className="mt-2 text-xs text-green-600 hover:text-green-800 underline"
+            >
+              ↻ Refresh Status
+            </button>
+          )}
         </div>
       </div>
     );
@@ -98,6 +108,14 @@ export default function SimpleVotingStatus({
           <div className="mt-2 text-xs text-blue-600">
             ⏰ You can vote again in 24 hours
           </div>
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+            >
+              ↻ Refresh Status
+            </button>
+          )}
         </div>
       </div>
     );
@@ -130,6 +148,14 @@ export default function SimpleVotingStatus({
             <div className="text-xs text-orange-600">
               🔒 Session-based voting prevents duplicate votes
             </div>
+            {onRefresh && (
+              <button
+                onClick={onRefresh}
+                className="mt-2 text-xs text-orange-600 hover:text-orange-800 underline"
+              >
+                ↻ Refresh Status
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -152,6 +178,14 @@ export default function SimpleVotingStatus({
         <div className="mt-2 text-xs text-gray-600">
           🔒 Secure session-based voting system
         </div>
+        {onRefresh && (
+          <button
+            onClick={onRefresh}
+            className="mt-2 text-xs text-gray-600 hover:text-gray-800 underline"
+          >
+            ↻ Refresh Status
+          </button>
+        )}
       </div>
     </div>
   );

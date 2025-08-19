@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { apiClient, handleApiError, ApiError } from "@/utils/secureApiClient";
+import { saveVotingState, loadVotingState } from "@/utils/voteTimestampsUtils";
 
 interface VotingStatus {
   canVote: boolean;
@@ -73,6 +74,19 @@ export const useSimpleVoting = (categoryName: string) => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Load initial state from localStorage
+  const loadStoredState = useCallback(() => {
+    return loadVotingState(categoryName);
+  }, [categoryName]);
+
+  // Save state to localStorage
+  const saveState = useCallback(
+    (newData: CategoryData) => {
+      saveVotingState(categoryName, newData);
+    },
+    [categoryName]
+  );
+
   const fetchCategoryData = useCallback(async () => {
     try {
       setLoading(true);
@@ -116,11 +130,14 @@ export const useSimpleVoting = (categoryName: string) => {
         nextVoteTime: categoryStatus?.nextVoteTime || undefined,
       };
 
-      setData({
+      const newData = {
         participants,
         votingStatus: categoryVotingStatus,
         pendingCategories: globalVotingStatus.pendingCategories || [],
-      });
+      };
+
+      setData(newData);
+      saveState(newData);
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -130,7 +147,7 @@ export const useSimpleVoting = (categoryName: string) => {
     } finally {
       setLoading(false);
     }
-  }, [categoryName]);
+  }, [categoryName, saveState]);
 
   const submitVote = useCallback(
     async (participantId: string) => {
@@ -219,16 +236,17 @@ export const useSimpleVoting = (categoryName: string) => {
     [categoryName, data.participants, fetchCategoryData, isSubmitting]
   );
 
-  // Initial fetch
+  // Initial fetch with fallback to stored state
   useEffect(() => {
+    const storedState = loadStoredState();
+    if (storedState) {
+      setData(storedState);
+      setLoading(false);
+    }
     fetchCategoryData();
-  }, [fetchCategoryData]);
+  }, [fetchCategoryData, loadStoredState]);
 
-  // Auto-refresh every 30 seconds to keep data current
-  useEffect(() => {
-    const interval = setInterval(fetchCategoryData, 30000);
-    return () => clearInterval(interval);
-  }, [fetchCategoryData]);
+  // Removed auto-refresh interval to prevent automatic refreshing
 
   return {
     participants: data.participants,

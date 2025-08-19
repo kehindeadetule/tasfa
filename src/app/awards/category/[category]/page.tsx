@@ -34,6 +34,7 @@ export default function CategoryPage({
     error,
     isSubmitting,
     submitVote,
+    refresh,
   } = useSimpleVoting(categoryName);
 
   const handleVote = async (participant: Participant) => {
@@ -82,12 +83,12 @@ export default function CategoryPage({
 
   if (error) {
     return (
-      <section className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
+      <section className="min-h-screen flex justify-center items-center bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <p className="text-red-600 mb-4">{error}</p>
             <button
-              onClick={() => window.location.reload()}
+              onClick={refresh}
               className="px-6 py-2 bg-[#005B96] text-white rounded-full hover:bg-[#004080]"
             >
               Try Again
@@ -120,6 +121,7 @@ export default function CategoryPage({
           votingStatus={votingStatus}
           categoryName={categoryName}
           pendingCategories={pendingCategories}
+          onRefresh={refresh}
         />
 
         {participants.length === 0 ? (
@@ -170,12 +172,13 @@ export default function CategoryPage({
                     ) : (
                       <button
                         onClick={() => handleVote(participant)}
-                        disabled={
-                          !votingStatus.canVote ||
-                          !!votingStatus.votedParticipantId ||
-                          disableVoteButton ||
-                          isSubmitting
-                        }
+                        disabled={true}
+                        // disabled={
+                        //   !votingStatus.canVote ||
+                        //   !!votingStatus.votedParticipantId ||
+                        //   disableVoteButton ||
+                        //   isSubmitting
+                        // }
                         className={`px-6 py-2 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${
                           !votingStatus.canVote ||
                           votingStatus.votedParticipantId ||
