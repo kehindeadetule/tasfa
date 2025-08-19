@@ -48,23 +48,10 @@ export default function CategoryPage({
   const slug = params.category;
   const categoryName = categorySlugToName[slug] || slug;
   const canVote = canVoteForCategory(categoryName);
-  const originalNextVoteTime = getNextVoteTime(categoryName);
+  const nextVoteTime = getNextVoteTime(categoryName);
 
   // Backend workaround: If user has voted, they can't vote again regardless of server status
-  // Also ensure that if user has voted locally, they can't vote again
   const actualCanVote = canVote && votedParticipantId === null;
-
-  // Enhanced workaround: If user has voted locally, force the UI to show voting status
-  // This ensures the countdown shows even if backend is slow to respond
-  const hasVotedLocally = votedParticipantId !== null;
-  const shouldShowVotingStatus = !actualCanVote || hasVotedLocally;
-
-  // Get next vote time - if backend is slow, calculate it locally
-  const backendNextVoteTime = originalNextVoteTime;
-  const localNextVoteTime = hasVotedLocally
-    ? new Date(Date.now() + 24 * 60 * 60 * 1000)
-    : null;
-  const nextVoteTime = backendNextVoteTime || localNextVoteTime;
 
   // Debug logging
   console.log("Voting status debug:", {
@@ -72,11 +59,6 @@ export default function CategoryPage({
     canVote,
     votedParticipantId,
     actualCanVote,
-    hasVotedLocally,
-    shouldShowVotingStatus,
-    backendNextVoteTime,
-    localNextVoteTime,
-    nextVoteTime,
     voteTimestamps: votingStatus.voteTimestamps[categoryName],
   });
 
@@ -283,11 +265,6 @@ export default function CategoryPage({
         updateVotingStatus(categoryName);
         console.log("Updated voting status for category:", categoryName);
 
-        // Store vote timestamp in localStorage as backup
-        const voteTimestamp = new Date().toISOString();
-        localStorage.setItem(`vote_${categoryName}`, voteTimestamp);
-        console.log("Stored vote timestamp in localStorage:", voteTimestamp);
-
         // Set voting mode to active to refresh status
         setVotingMode();
       } else {
@@ -346,7 +323,7 @@ export default function CategoryPage({
         </h1>
 
         {/* Voting Status Banner */}
-        {shouldShowVotingStatus && nextVoteTime && (
+        {!actualCanVote && nextVoteTime && (
           <div className="max-w-2xl mx-auto mb-8">
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
@@ -369,7 +346,7 @@ export default function CategoryPage({
           </div>
         )}
 
-        {actualCanVote && !hasVotedLocally && (
+        {actualCanVote && (
           <div className="max-w-2xl mx-auto mb-8">
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
               <div className="flex items-center justify-center space-x-2 mb-2">
