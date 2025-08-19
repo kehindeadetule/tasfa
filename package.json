@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:queue": "node test-queue-system.js"
   },
   "dependencies": {
     "@imgly/background-removal-node": "^1.4.5",

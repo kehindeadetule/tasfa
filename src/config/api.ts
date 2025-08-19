@@ -46,10 +46,12 @@ export const API_BASE_URL = API_CONFIG[getEnvironment()];
 export const API_ENDPOINTS = {
   votes: `${API_BASE_URL}/api/votes`,
   voteCounts: `${API_BASE_URL}/api/votes/counts`,
-  votingStatus: `${API_BASE_URL}/api/votes//voting-status`,
+  votingStatus: `${API_BASE_URL}/api/votes/voting-status`,
   votingHistory: `${API_BASE_URL}/api/votes/voting-history`,
   category: (category: string) =>
     `${API_BASE_URL}/api/votes/category/${category}`,
+  queueStatus: `${API_BASE_URL}/api/votes/queue-status`,
+  sessionDebug: `${API_BASE_URL}/api/votes/session-debug`,
   health: `${API_BASE_URL}/health`,
 };
 
