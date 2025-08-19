@@ -74,10 +74,11 @@ const AdminSubmissions: React.FC = () => {
       );
       const data = await response.json();
       if (data.success) {
+        console.log("Fetched submissions:", data.data);
+        console.log("Number of submissions:", data.data.length);
         setSubmissions(data.data);
-        setLoading(false);
       } else {
-        setLoading(false);
+        console.error("API returned error:", data);
       }
     } catch (error) {
       console.error("Error fetching submissions:", error);
@@ -108,33 +109,33 @@ const AdminSubmissions: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this submission?")) {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `${API_BASE_URL}/api/voting-form/delete/${id}`,
-          {
-            method: "DELETE",
-          }
-        );
+    console.log("Delete button clicked for ID:", id);
+    if (!confirm("Are you sure you want to delete this submission?")) {
+      return;
+    }
 
-        if (response.ok) {
-          setSubmissions(
-            submissions.filter((submission) => submission._id !== id)
-          );
-          toast.success("Submission deleted successfully");
-        } else {
-          toast.error("Failed to delete submission");
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/voting-form/submissions/${id}`,
+        {
+          method: "DELETE",
         }
-      } catch (error) {
-        toast.error("Error deleting submission");
-      } finally {
-        setLoading(false);
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Submission deleted successfully");
+        fetchSubmissions();
+      } else {
+        toast.error(data.error || "Failed to delete submission");
       }
+    } catch (error) {
+      toast.error("Failed to delete submission");
     }
   };
 
   const handleEdit = (submission: Submission) => {
+    console.log("Edit button clicked for:", submission);
     setEditingSubmission(submission);
     setEditFormData({
       firstName: submission.firstName,
@@ -295,7 +296,17 @@ const AdminSubmissions: React.FC = () => {
                             src={submission.image}
                             alt={`${submission.firstName} ${submission.lastName}`}
                             className="w-12 h-12 object-cover rounded-full border-2 border-gray-200"
+                            onLoad={() => {
+                              console.log(
+                                "Image loaded successfully:",
+                                submission.image
+                              );
+                            }}
                             onError={(e) => {
+                              console.error(
+                                "Image failed to load:",
+                                submission.image
+                              );
                               // Fallback to initials if image fails to load
                               const target = e.target as HTMLImageElement;
                               target.style.display = "none";

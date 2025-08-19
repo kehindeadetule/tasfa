@@ -27,19 +27,26 @@ interface UseSmartVotingPollerOptions {
 export const useSmartVotingPoller = (
   options: UseSmartVotingPollerOptions = {}
 ) => {
-  const { enabled = true, onStatusUpdate, onError } = options;
+  const {
+    enabled = true,
+    initialInterval = "idle",
+    onStatusUpdate,
+    onError,
+  } = options;
 
   const [votingStatus, setVotingStatus] = useState<VotingStatus>({
     votedCategories: [],
     canVote: true,
     voteTimestamps: {},
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentInterval, setCurrentInterval] =
+    useState<keyof typeof POLLING_INTERVALS>(initialInterval);
 
   const isActive = useRef(false);
   const lastVoteTime = useRef(0);
-  const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pollTimeoutRef = useRef<NodeJS.Timeout>();
   const errorCount = useRef(0);
 
   // Check if user is actively on the page
@@ -92,10 +99,11 @@ export const useSmartVotingPoller = (
       const data = await response.json();
 
       if (data.success) {
-        // Use server-side voting status (more secure)
+        // Get local timestamps from localStorage
+        const storedTimestamps = getStoredVoteTimestamps();
         const statusData = {
           ...data.data,
-          voteTimestamps: data.data.voteTimestamps || {}, // Use server data
+          voteTimestamps: storedTimestamps,
         };
 
         // Cache the result
@@ -119,7 +127,7 @@ export const useSmartVotingPoller = (
       onError?.(errorMessage);
 
       // Increase interval on error
-      // setCurrentInterval("error"); // This line is removed
+      setCurrentInterval("error");
 
       throw err;
     }
@@ -133,8 +141,8 @@ export const useSmartVotingPoller = (
       await fetchVotingStatus();
 
       // Adjust polling interval based on current conditions
-      // const optimalInterval = getOptimalInterval(); // This line is removed
-      // setCurrentInterval(optimalInterval); // This line is removed
+      const optimalInterval = getOptimalInterval();
+      setCurrentInterval(optimalInterval);
     } catch (error) {
       console.error("Polling error:", error);
     }
@@ -143,10 +151,10 @@ export const useSmartVotingPoller = (
     if (isActive.current) {
       pollTimeoutRef.current = setTimeout(
         poll,
-        POLLING_INTERVALS[getOptimalInterval()] // This line is changed
+        POLLING_INTERVALS[currentInterval]
       );
     }
-  }, [fetchVotingStatus, getOptimalInterval]); // This line is changed
+  }, [fetchVotingStatus, getOptimalInterval, currentInterval]);
 
   // Start polling
   const startPolling = useCallback(() => {
@@ -168,7 +176,7 @@ export const useSmartVotingPoller = (
   // Set voting mode (called when user votes)
   const setVotingMode = useCallback(() => {
     lastVoteTime.current = Date.now();
-    // setCurrentInterval("voting"); // This line is removed
+    setCurrentInterval("voting");
 
     // Clear cache to get fresh data
     votingStatusCache.invalidate(CACHE_KEYS.VOTING_STATUS);
@@ -191,7 +199,8 @@ export const useSmartVotingPoller = (
   // Update voting status when user votes
   const updateVotingStatus = useCallback(
     (category: string) => {
-      // Update local state for immediate UI feedback
+      const now = new Date().toISOString();
+
       setVotingStatus((prev) => ({
         ...prev,
         votedCategories: prev.votedCategories.includes(category)
@@ -199,9 +208,12 @@ export const useSmartVotingPoller = (
           : [...prev.votedCategories, category],
         voteTimestamps: {
           ...prev.voteTimestamps,
-          [category]: new Date().toISOString(),
+          [category]: now,
         },
       }));
+
+      // Store in localStorage
+      storeVoteTimestamp(category, now);
 
       // Set voting mode for immediate updates
       setVotingMode();
@@ -223,15 +235,19 @@ export const useSmartVotingPoller = (
   // Listen for page visibility changes
   useEffect(() => {
     const handleVisibilityChange = () => {
-      // setCurrentInterval("idle"); // This line is removed
+      if (document.hidden) {
+        setCurrentInterval("idle");
+      } else {
+        setCurrentInterval(getOptimalInterval());
+      }
     };
 
     const handleFocus = () => {
-      // setCurrentInterval(getOptimalInterval()); // This line is removed
+      setCurrentInterval(getOptimalInterval());
     };
 
     const handleBlur = () => {
-      // setCurrentInterval("idle"); // This line is removed
+      setCurrentInterval("idle");
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -243,12 +259,13 @@ export const useSmartVotingPoller = (
       window.removeEventListener("focus", handleFocus);
       window.removeEventListener("blur", handleBlur);
     };
-  }, [getOptimalInterval]); // This line is changed
+  }, [getOptimalInterval]);
 
   return {
     votingStatus,
     loading,
     error,
+    currentInterval: POLLING_INTERVALS[currentInterval],
     updateVotingStatus,
     refresh,
     setVotingMode,
@@ -257,4 +274,27 @@ export const useSmartVotingPoller = (
   };
 };
 
-// Note: Voting timestamps are now managed server-side for security
+// Utility functions for localStorage management
+function getStoredVoteTimestamps(): { [category: string]: string } {
+  if (typeof window === "undefined") return {};
+
+  try {
+    const stored = localStorage.getItem("vote_timestamps");
+    return stored ? JSON.parse(stored) : {};
+  } catch (error) {
+    console.error("Error reading vote timestamps from localStorage:", error);
+    return {};
+  }
+}
+
+function storeVoteTimestamp(category: string, timestamp: string) {
+  if (typeof window === "undefined") return;
+
+  try {
+    const existing = getStoredVoteTimestamps();
+    const updated = { ...existing, [category]: timestamp };
+    localStorage.setItem("vote_timestamps", JSON.stringify(updated));
+  } catch (error) {
+    console.error("Error storing vote timestamp to localStorage:", error);
+  }
+}

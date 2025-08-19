@@ -253,7 +253,17 @@ const SubmissionsGrid: React.FC = () => {
                       src={submission.image}
                       alt={`${submission.firstName} ${submission.lastName}`}
                       className="w-full h-80 object-cover object-top"
+                      onLoad={() => {
+                        console.log(
+                          "Image loaded successfully:",
+                          submission.image
+                        );
+                      }}
                       onError={(e) => {
+                        console.error(
+                          "Image failed to load:",
+                          submission.image
+                        );
                         const target = e.target as HTMLImageElement;
                         target.style.display = "none";
                         const fallback = target.nextSibling as HTMLElement;

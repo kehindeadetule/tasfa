@@ -50,4 +50,5 @@ export const voteCountsCache = new VotingStatusCache(10000); // 10 seconds for v
 export const CACHE_KEYS = {
   VOTING_STATUS: "voting-status",
   VOTE_COUNTS: "vote-counts",
+  CATEGORY_PARTICIPANTS: (category: string) => `category-${category}`,
 } as const;
