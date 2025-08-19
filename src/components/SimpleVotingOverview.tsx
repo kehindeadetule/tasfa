@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { apiClient, handleApiError, ApiError } from "@/utils/secureApiClient";
+import {
+  getAllVotingData,
+  clearExpiredVotingData,
+} from "@/utils/voteTimestampsUtils";
 
 interface VotingOverviewProps {}
 
@@ -41,10 +45,29 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
       setLoading(true);
       setError(null);
 
+      // Clear expired voting data first
+      clearExpiredVotingData();
+
       const result = await apiClient.get("/api/votes/voting-status");
 
       if (result.success) {
-        setVotingStatus(result.data as GlobalVotingStatus);
+        const apiVotingStatus = result.data as GlobalVotingStatus;
+
+        // Get localStorage voting data
+        const localStorageVotingData = getAllVotingData();
+
+        // Merge localStorage data with API data
+        const mergedVotingStatus = {
+          ...apiVotingStatus,
+          votedCategories: [
+            ...new Set([
+              ...apiVotingStatus.votedCategories,
+              ...Object.keys(localStorageVotingData),
+            ]),
+          ],
+        };
+
+        setVotingStatus(mergedVotingStatus);
       } else {
         throw new Error(result.message || "Failed to fetch voting status");
       }

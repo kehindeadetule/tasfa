@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  getVotingData,
+  hasVotedForCategory,
+} from "@/utils/voteTimestampsUtils";
 
 interface VotingStatus {
   canVote: boolean;
@@ -33,16 +37,35 @@ export default function SimpleVotingStatus({
 }: SimpleVotingStatusProps) {
   const [timeLeft, setTimeLeft] = useState<string>("");
 
+  // Get voting status from localStorage
+  const localStorageVotingData = getVotingData(categoryName);
+  const hasVotedInStorage = hasVotedForCategory(categoryName);
+
+  // Use localStorage data if available, otherwise use props
+  const effectiveVotingStatus =
+    hasVotedInStorage && localStorageVotingData
+      ? {
+          canVote: false,
+          votedParticipantId: localStorageVotingData.participantId,
+          nextVoteTime: new Date(
+            new Date(localStorageVotingData.timestamp).getTime() +
+              24 * 60 * 60 * 1000
+          ).toISOString(),
+          message:
+            "You have already voted for this category. Please wait 24 hours before voting again.",
+        }
+      : votingStatus;
+
   // Simple countdown timer that only shows if backend provides nextVoteTime
   useEffect(() => {
-    if (!votingStatus.nextVoteTime) {
+    if (!effectiveVotingStatus.nextVoteTime) {
       setTimeLeft("");
       return;
     }
 
     const updateTimer = () => {
       const now = new Date().getTime();
-      const nextVote = new Date(votingStatus.nextVoteTime!).getTime();
+      const nextVote = new Date(effectiveVotingStatus.nextVoteTime!).getTime();
       const difference = nextVote - now;
 
       if (difference <= 0) {
@@ -61,9 +84,9 @@ export default function SimpleVotingStatus({
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, [votingStatus.nextVoteTime]);
+  }, [effectiveVotingStatus.nextVoteTime]);
 
-  if (votingStatus.canVote) {
+  if (effectiveVotingStatus.canVote) {
     return (
       <div className="max-w-2xl mx-auto mb-8">
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
@@ -74,25 +97,18 @@ export default function SimpleVotingStatus({
             </h3>
           </div>
           <p className="text-xs text-green-700">
-            {votingStatus.message || "Choose your favorite participant below"}
+            {effectiveVotingStatus.message ||
+              "Choose your favorite participant below"}
           </p>
           <div className="mt-2 text-xs text-green-600">
-            🔒 Secure voting with session tracking
+            ⏰ You can vote again in 24 hours
           </div>
-          {onRefresh && (
-            <button
-              onClick={onRefresh}
-              className="mt-2 text-xs text-green-600 hover:text-green-800 underline"
-            >
-              ↻ Refresh Status
-            </button>
-          )}
         </div>
       </div>
     );
   }
 
-  if (votingStatus.votedParticipantId) {
+  if (effectiveVotingStatus.votedParticipantId) {
     return (
       <div className="max-w-2xl mx-auto mb-8">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
@@ -103,7 +119,7 @@ export default function SimpleVotingStatus({
             </h3>
           </div>
           <p className="text-xs text-blue-700">
-            {votingStatus.message || "Thank you for your vote!"}
+            {effectiveVotingStatus.message || "Thank you for your vote!"}
           </p>
           <div className="mt-2 text-xs text-blue-600">
             ⏰ You can vote again in 24 hours
@@ -121,7 +137,7 @@ export default function SimpleVotingStatus({
     );
   }
 
-  if (votingStatus.nextVoteTime && timeLeft) {
+  if (effectiveVotingStatus.nextVoteTime && timeLeft) {
     return (
       <div className="max-w-2xl mx-auto mb-8">
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
@@ -137,9 +153,9 @@ export default function SimpleVotingStatus({
               zero
             </p>
           </div>
-          {votingStatus.message && (
+          {effectiveVotingStatus.message && (
             <p className="text-xs text-orange-700 text-center mb-3">
-              {votingStatus.message}
+              {effectiveVotingStatus.message}
             </p>
           )}
 
@@ -173,7 +189,7 @@ export default function SimpleVotingStatus({
           </h3>
         </div>
         <p className="text-xs text-gray-700">
-          {votingStatus.message || "Loading voting information..."}
+          {effectiveVotingStatus.message || "Loading voting information..."}
         </p>
         <div className="mt-2 text-xs text-gray-600">
           🔒 Secure session-based voting system

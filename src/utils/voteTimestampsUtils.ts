@@ -262,3 +262,219 @@ export function getCategoryVotingStatus(
     message: "Voting not available for this category",
   };
 }
+
+/**
+ * Store voting data in localStorage with 24-hour expiration
+ */
+export function storeVotingData(
+  categoryName: string,
+  participantId: string
+): void {
+  try {
+    const votingData = {
+      categoryName,
+      participantId,
+      timestamp: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
+    };
+
+    localStorage.setItem(
+      `tasfa_vote_${categoryName}`,
+      JSON.stringify(votingData)
+    );
+    console.log(`Voting data stored for ${categoryName}`);
+  } catch (error) {
+    console.warn("Failed to store voting data:", error);
+  }
+}
+
+/**
+ * Get voting data from localStorage and check if it's still valid
+ */
+export function getVotingData(
+  categoryName: string
+): { participantId: string; timestamp: string } | null {
+  try {
+    const stored = localStorage.getItem(`tasfa_vote_${categoryName}`);
+    if (stored) {
+      const votingData = JSON.parse(stored);
+      const now = new Date();
+      const expiresAt = new Date(votingData.expiresAt);
+
+      // Check if the voting data has expired
+      if (now < expiresAt) {
+        return {
+          participantId: votingData.participantId,
+          timestamp: votingData.timestamp,
+        };
+      } else {
+        // Clean up expired data
+        localStorage.removeItem(`tasfa_vote_${categoryName}`);
+        console.log(`Voting data expired for ${categoryName}`);
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to get voting data:", error);
+  }
+  return null;
+}
+
+/**
+ * Check if user has voted for a specific category
+ */
+export function hasVotedForCategory(categoryName: string): boolean {
+  return getVotingData(categoryName) !== null;
+}
+
+/**
+ * Get all stored voting data
+ */
+export function getAllVotingData(): {
+  [category: string]: { participantId: string; timestamp: string };
+} {
+  const votingData: {
+    [category: string]: { participantId: string; timestamp: string };
+  } = {};
+
+  try {
+    // Get all localStorage keys that start with tasfa_vote_
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("tasfa_vote_")) {
+        const categoryName = key.replace("tasfa_vote_", "");
+        const data = getVotingData(categoryName);
+        if (data) {
+          votingData[categoryName] = data;
+        }
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to get all voting data:", error);
+  }
+
+  return votingData;
+}
+
+/**
+ * Clear all expired voting data
+ */
+export function clearExpiredVotingData(): void {
+  try {
+    const keysToRemove: string[] = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("tasfa_vote_")) {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          try {
+            const votingData = JSON.parse(stored);
+            const now = new Date();
+            const expiresAt = new Date(votingData.expiresAt);
+
+            if (now >= expiresAt) {
+              keysToRemove.push(key);
+            }
+          } catch (error) {
+            // If data is corrupted, remove it
+            keysToRemove.push(key);
+          }
+        }
+      }
+    }
+
+    // Remove expired keys
+    keysToRemove.forEach((key) => {
+      localStorage.removeItem(key);
+      console.log(`Removed expired voting data: ${key}`);
+    });
+  } catch (error) {
+    console.warn("Failed to clear expired voting data:", error);
+  }
+}
+
+/**
+ * Clear voting data for a specific category
+ */
+export function clearVotingData(categoryName: string): void {
+  try {
+    localStorage.removeItem(`tasfa_vote_${categoryName}`);
+    console.log(`Voting data cleared for ${categoryName}`);
+  } catch (error) {
+    console.warn("Failed to clear voting data:", error);
+  }
+}
+
+/**
+ * Clear all voting data
+ */
+export function clearAllVotingData(): void {
+  try {
+    const keysToRemove: string[] = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("tasfa_vote_")) {
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach((key) => {
+      localStorage.removeItem(key);
+    });
+
+    console.log("All voting data cleared");
+  } catch (error) {
+    console.warn("Failed to clear all voting data:", error);
+  }
+}
+
+/**
+ * Debug function to log all localStorage voting data
+ */
+export function debugVotingData(): void {
+  console.log("=== localStorage Voting Data Debug ===");
+
+  try {
+    const votingData = getAllVotingData();
+
+    console.log("Voting Records:", votingData);
+
+    // Log all tasfa-related localStorage keys
+    const tasfaKeys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("tasfa_vote_")) {
+        tasfaKeys.push(key);
+      }
+    }
+    console.log("All TASFA localStorage keys:", tasfaKeys);
+  } catch (error) {
+    console.error("Error debugging voting data:", error);
+  }
+}
+
+/**
+ * Clear all TASFA-related localStorage data
+ */
+export function clearAllTasfaData(): void {
+  try {
+    const keysToRemove: string[] = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("tasfa_vote_")) {
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach((key) => {
+      localStorage.removeItem(key);
+      console.log(`Removed: ${key}`);
+    });
+
+    console.log("All TASFA localStorage data cleared");
+  } catch (error) {
+    console.warn("Failed to clear all TASFA data:", error);
+  }
+}
