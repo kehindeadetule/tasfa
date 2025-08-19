@@ -39,6 +39,8 @@ export class SecureApiClient {
       const response = await fetch(url.toString(), {
         ...options,
         headers,
+        // Add credentials for session persistence
+        credentials: "include",
         // Add timeout
         signal: AbortSignal.timeout(30000), // 30 second timeout
       });
@@ -52,6 +54,34 @@ export class SecureApiClient {
       const data = await response.json();
 
       if (!response.ok) {
+        // Handle specific error status codes
+        if (response.status === 429) {
+          throw {
+            message:
+              "Rate limit exceeded. Please wait a moment before trying again.",
+            status: 429,
+            code: "RATE_LIMIT_EXCEEDED",
+          } as ApiError;
+        }
+
+        if (response.status === 403) {
+          throw {
+            message:
+              data.message ||
+              "You have already voted for this category. Please wait 24 hours before voting again.",
+            status: 403,
+            code: "ALREADY_VOTED",
+          } as ApiError;
+        }
+
+        if (response.status === 500) {
+          throw {
+            message: "Server error. Please try again later.",
+            status: 500,
+            code: "SERVER_ERROR",
+          } as ApiError;
+        }
+
         throw new Error(data.message || data.error || "Request failed");
       }
 
@@ -113,6 +143,12 @@ export const handleApiError = (error: ApiError): string => {
       return "Request timed out. Please try again.";
     case "TypeError":
       return "Network error. Please check your connection.";
+    case "RATE_LIMIT_EXCEEDED":
+      return "You're voting too quickly. Please wait a moment before trying again.";
+    case "ALREADY_VOTED":
+      return "You have already voted for this category. Please wait 24 hours before voting again.";
+    case "SERVER_ERROR":
+      return "Server error. Please try again later.";
     case "UNKNOWN_ERROR":
       return "An unexpected error occurred. Please try again.";
     default:

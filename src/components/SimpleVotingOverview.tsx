@@ -5,8 +5,34 @@ import { apiClient, handleApiError, ApiError } from "@/utils/secureApiClient";
 
 interface VotingOverviewProps {}
 
+interface VoteTimestamp {
+  votedAt: string | null;
+  nextVoteAt: string | null;
+  canVoteAgain: boolean;
+  status: "available" | "pending";
+}
+
+interface GlobalVotingStatus {
+  votedCategories: string[];
+  votableCategories: string[];
+  pendingCategories: Array<{
+    category: string;
+    participantName: string;
+    votedAt: string;
+    nextVoteTime: string;
+    timeRemaining: number;
+    canVoteAgain: boolean;
+  }>;
+  canVote: boolean;
+  voteTimestamps: { [category: string]: VoteTimestamp };
+  nextVoteTimes: { [category: string]: string | null };
+  timeUntilNextVote: { [category: string]: number };
+}
+
 export default function SimpleVotingOverview({}: VotingOverviewProps) {
-  const [votingStatus, setVotingStatus] = useState<any>(null);
+  const [votingStatus, setVotingStatus] = useState<GlobalVotingStatus | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +45,7 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
         const result = await apiClient.get("/api/votes/voting-status");
 
         if (result.success) {
-          setVotingStatus(result.data);
+          setVotingStatus(result.data as GlobalVotingStatus);
         } else {
           throw new Error(result.message || "Failed to fetch voting status");
         }
@@ -74,10 +100,33 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
     return null;
   }
 
-  // Calculate correct counts
-  const pendingCount = votingStatus.pendingCategories?.length || 0; // Categories under timer
-  const availableCount = votingStatus.votableCategories?.length || 0; // Categories you can vote for
-  const totalCount = pendingCount + availableCount; // Total categories
+  // Use the new comprehensive structure for accurate counting
+  const voteTimestamps = votingStatus.voteTimestamps || {};
+
+  // Count available categories (status === "available")
+  const availableCount = Object.values(voteTimestamps).filter(
+    (data) => data.status === "available"
+  ).length;
+
+  // Count pending categories (status === "pending")
+  const pendingCount = Object.values(voteTimestamps).filter(
+    (data) => data.status === "pending"
+  ).length;
+
+  // Total categories
+  const totalCount = Object.keys(voteTimestamps).length;
+
+  // Get categories by status for display
+  const availableCategories = Object.keys(voteTimestamps).filter(
+    (category) => voteTimestamps[category].status === "available"
+  );
+
+  const pendingCategories = Object.keys(voteTimestamps)
+    .filter((category) => voteTimestamps[category].status === "pending")
+    .map((category) => ({
+      category,
+      timeRemaining: votingStatus.timeUntilNextVote[category] || 0,
+    }));
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
@@ -108,14 +157,28 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
           <div className="text-sm text-gray-700">Total</div>
         </div>
       </div>
-      {/* 
+
+      {/* Security Features Info */}
+      {/* <div className="mb-4 p-4 bg-green-50 rounded-lg border border-green-200">
+        <h4 className="text-sm font-medium text-green-800 mb-2">
+          🔒 Security Features Active
+        </h4>
+        <div className="text-xs text-green-700 space-y-1">
+          <div>• 1-minute cooldown between votes</div>
+          <div>• Session + IP binding prevents multiple tabs</div>
+          <div>• Maximum 5 votes per minute per IP</div>
+          <div>• 24-hour category lock after voting</div>
+          <div>• Session persistence across browser tabs</div>
+        </div>
+      </div> */}
+
       {pendingCount > 0 && (
         <div className="mb-4">
           <h4 className="text-sm font-medium text-gray-700 mb-2">
             ⏰ Categories Waiting for Next Vote
           </h4>
           <div className="flex flex-wrap gap-2">
-            {votingStatus.pendingCategories?.slice(0, 5).map((pending: any) => (
+            {pendingCategories.slice(0, 5).map((pending: any) => (
               <span
                 key={pending.category}
                 className="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full"
@@ -123,9 +186,9 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
                 {pending.category} ({pending.timeRemaining}h)
               </span>
             ))}
-            {votingStatus.pendingCategories?.length > 5 && (
+            {pendingCategories.length > 5 && (
               <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                +{votingStatus.pendingCategories.length - 5} more
+                +{pendingCategories.length - 5} more
               </span>
             )}
           </div>
@@ -138,24 +201,22 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
             🎯 Categories Available for Voting
           </h4>
           <div className="flex flex-wrap gap-2">
-            {votingStatus.votableCategories
-              ?.slice(0, 5)
-              .map((category: string) => (
-                <span
-                  key={category}
-                  className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
-                >
-                  {category}
-                </span>
-              ))}
-            {votingStatus.votableCategories?.length > 5 && (
+            {availableCategories.slice(0, 5).map((category: string) => (
+              <span
+                key={category}
+                className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+              >
+                {category}
+              </span>
+            ))}
+            {availableCategories.length > 5 && (
               <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                +{votingStatus.votableCategories.length - 5} more
+                +{availableCategories.length - 5} more
               </span>
             )}
           </div>
         </div>
-      )} */}
+      )}
 
       <div className="mt-4 pt-4 border-t border-gray-200">
         <p className="text-xs text-gray-500 text-center">

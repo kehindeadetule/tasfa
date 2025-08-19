@@ -74,6 +74,9 @@ export default function SimpleVotingStatus({
           <p className="text-xs text-green-700">
             {votingStatus.message || "Choose your favorite participant below"}
           </p>
+          <div className="mt-2 text-xs text-green-600">
+            🔒 Secure voting with session tracking
+          </div>
         </div>
       </div>
     );
@@ -92,6 +95,9 @@ export default function SimpleVotingStatus({
           <p className="text-xs text-blue-700">
             {votingStatus.message || "Thank you for your vote!"}
           </p>
+          <div className="mt-2 text-xs text-blue-600">
+            ⏰ You can vote again in 24 hours
+          </div>
         </div>
       </div>
     );
@@ -119,8 +125,12 @@ export default function SimpleVotingStatus({
             </p>
           )}
 
-          {/* Pending Categories Section */}
-
+          {/* Security Info */}
+          <div className="text-center">
+            <div className="text-xs text-orange-600">
+              🔒 Session-based voting prevents duplicate votes
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -139,6 +149,9 @@ export default function SimpleVotingStatus({
         <p className="text-xs text-gray-700">
           {votingStatus.message || "Loading voting information..."}
         </p>
+        <div className="mt-2 text-xs text-gray-600">
+          🔒 Secure session-based voting system
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { categorySlugToName } from "@/utils/categoryMapping";
 import { useSimpleVoting } from "@/hooks/useSimpleVoting";
 import SimpleVotingStatus from "@/components/SimpleVotingStatus";
+import { useState } from "react";
 
 interface Participant {
   _id: string;
@@ -22,23 +23,47 @@ export default function CategoryPage({
 }) {
   const slug = params.category;
   const categoryName = categorySlugToName[slug] || slug;
-  
+
+  const [disableVoteButton, setDisableVoteButton] = useState(false);
+
   const {
     participants,
     votingStatus,
     pendingCategories,
     loading,
     error,
+    isSubmitting,
     submitVote,
   } = useSimpleVoting(categoryName);
 
   const handleVote = async (participant: Participant) => {
+    // Prevent multiple rapid clicks
+    if (isSubmitting) {
+      toast.info("Vote submission in progress. Please wait...");
+      return;
+    }
+
     const result = await submitVote(participant._id);
-    
+
     if (result.success) {
-      toast.success(result.message || `Vote submitted for ${participant.firstName} ${participant.lastName}!`);
+      setDisableVoteButton(true);
+      toast.success(
+        result.message ||
+          `Vote submitted for ${participant.firstName} ${participant.lastName}!`
+      );
     } else {
-      toast.error(result.message || "Failed to submit vote. Please try again.");
+      // Handle specific error cases with appropriate messages
+      if (result.retryAfter) {
+        toast.error(
+          `${result.message} Please wait ${result.retryAfter} seconds before trying again.`
+        );
+        setDisableVoteButton(false);
+      } else {
+        toast.error(
+          result.message || "Failed to submit vote. Please try again."
+        );
+        setDisableVoteButton(false);
+      }
     }
   };
 
@@ -80,9 +105,19 @@ export default function CategoryPage({
           {categoryName}
         </h1>
 
+        {/* Security Notice */}
+        <div className="max-w-2xl mx-auto mb-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+            <p className="text-xs text-blue-700">
+              🔒 Secure voting with session tracking • 24-hour category lock •
+              Rate limiting active
+            </p>
+          </div>
+        </div>
+
         {/* Voting Status - Backend controlled */}
-        <SimpleVotingStatus 
-          votingStatus={votingStatus} 
+        <SimpleVotingStatus
+          votingStatus={votingStatus}
           categoryName={categoryName}
           pendingCategories={pendingCategories}
         />
@@ -135,21 +170,35 @@ export default function CategoryPage({
                     ) : (
                       <button
                         onClick={() => handleVote(participant)}
-                        disabled={!votingStatus.canVote || !!votingStatus.votedParticipantId}
+                        disabled={
+                          !votingStatus.canVote ||
+                          !!votingStatus.votedParticipantId ||
+                          disableVoteButton ||
+                          isSubmitting
+                        }
                         className={`px-6 py-2 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${
-                          !votingStatus.canVote || votingStatus.votedParticipantId
+                          !votingStatus.canVote ||
+                          votingStatus.votedParticipantId ||
+                          disableVoteButton ||
+                          isSubmitting
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                             : "bg-[#005B96] text-white hover:bg-[#004080] hover:scale-105 active:scale-95"
                         }`}
                         title={
-                          !votingStatus.canVote
+                          isSubmitting
+                            ? "Vote submission in progress..."
+                            : !votingStatus.canVote
                             ? votingStatus.message || "Voting not available"
                             : votingStatus.votedParticipantId
                             ? "You have already voted in this category"
                             : "Click to vote"
                         }
                       >
-                        {!votingStatus.canVote ? "⏰ Wait" : "Vote"}
+                        {isSubmitting
+                          ? "Submitting..."
+                          : !votingStatus.canVote || disableVoteButton
+                          ? "⏰ Wait"
+                          : "Vote"}
                       </button>
                     )}
                   </div>

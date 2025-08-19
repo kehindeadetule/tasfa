@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { API_ENDPOINTS } from "@/config/api";
 import { apiClient, handleApiError, ApiError } from "@/utils/secureApiClient";
 
 interface VotingStatus {
@@ -33,17 +32,23 @@ interface CategoryData {
 }
 
 interface VoteTimestamp {
-  votedAt: string;
-  nextVoteAt: string;
+  votedAt: string | null;
+  nextVoteAt: string | null;
   canVoteAgain: boolean;
-  participantName?: string;
+  status: "available" | "pending";
+}
+
+interface CategoryStatus {
+  canVote: boolean;
+  reason: string;
+  nextVoteTime: string | null;
+  hoursUntilNextVote: number;
 }
 
 interface GlobalVotingStatus {
-  votableCategories?: string[];
-  votedCategories?: string[];
-  voteTimestamps?: { [category: string]: VoteTimestamp };
-  pendingCategories?: Array<{
+  votedCategories: string[];
+  votableCategories: string[];
+  pendingCategories: Array<{
     category: string;
     participantName: string;
     votedAt: string;
@@ -51,6 +56,11 @@ interface GlobalVotingStatus {
     timeRemaining: number;
     canVoteAgain: boolean;
   }>;
+  canVote: boolean;
+  voteTimestamps: { [category: string]: VoteTimestamp };
+  nextVoteTimes: { [category: string]: string | null };
+  timeUntilNextVote: { [category: string]: number };
+  categoryStatus: { [category: string]: CategoryStatus };
 }
 
 export const useSimpleVoting = (categoryName: string) => {
@@ -61,13 +71,14 @@ export const useSimpleVoting = (categoryName: string) => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchCategoryData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Fetch both category participants and voting status in parallel using secure API client
+      // Fetch both category participants and voting status in parallel
       const [participantsResult, votingStatusResult] = await Promise.all([
         apiClient.get(
           `/api/votes/category/${encodeURIComponent(categoryName)}`
@@ -92,46 +103,18 @@ export const useSimpleVoting = (categoryName: string) => {
         ? participantsResult.data
         : [];
 
-      // Extract voting status for this specific category
+      // Extract voting status using the new comprehensive structure
       const globalVotingStatus: GlobalVotingStatus =
-        votingStatusResult.data || {};
+        votingStatusResult.data as GlobalVotingStatus;
+      const categoryStatus = globalVotingStatus.categoryStatus?.[categoryName];
+      const voteTimestamp = globalVotingStatus.voteTimestamps?.[categoryName];
+
       const categoryVotingStatus: VotingStatus = {
-        canVote: false,
-        message: "Loading voting status...",
+        canVote: categoryStatus?.canVote || false,
+        message:
+          categoryStatus?.reason || "Voting not available for this category",
+        nextVoteTime: categoryStatus?.nextVoteTime || undefined,
       };
-
-      // Check if user can vote for this category
-      if (globalVotingStatus.votableCategories?.includes(categoryName)) {
-        categoryVotingStatus.canVote = true;
-        categoryVotingStatus.message = "Ready to vote!";
-      } else if (globalVotingStatus.votedCategories?.includes(categoryName)) {
-        // User has voted for this category, find the timing info
-        const voteTimestamp = globalVotingStatus.voteTimestamps?.[categoryName];
-        if (voteTimestamp) {
-          categoryVotingStatus.canVote = voteTimestamp.canVoteAgain || false;
-          categoryVotingStatus.nextVoteTime = voteTimestamp.nextVoteAt;
-
-          if (voteTimestamp.canVoteAgain) {
-            categoryVotingStatus.message = "You can vote again!";
-          } else {
-            categoryVotingStatus.message =
-              "You've already voted for this category";
-          }
-
-          // Find which participant was voted for
-          const votedParticipant = participants.find(
-            (p: Participant) =>
-              p.firstName === voteTimestamp.participantName?.split(" ")[0] &&
-              p.lastName ===
-                voteTimestamp.participantName?.split(" ").slice(1).join(" ")
-          );
-          if (votedParticipant) {
-            categoryVotingStatus.votedParticipantId = votedParticipant._id;
-          }
-        }
-      } else {
-        categoryVotingStatus.message = "Voting not available for this category";
-      }
 
       setData({
         participants,
@@ -151,7 +134,16 @@ export const useSimpleVoting = (categoryName: string) => {
 
   const submitVote = useCallback(
     async (participantId: string) => {
+      if (isSubmitting) {
+        return {
+          success: false,
+          message: "Vote submission in progress. Please wait...",
+        };
+      }
+
       try {
+        setIsSubmitting(true);
+
         const participant = data.participants.find(
           (p) => p._id === participantId
         );
@@ -189,13 +181,42 @@ export const useSimpleVoting = (categoryName: string) => {
           err instanceof Error
             ? handleApiError(err as ApiError)
             : "Failed to submit vote";
+
+        // Handle specific error cases
+        if (err instanceof Error && "status" in err) {
+          const apiError = err as ApiError;
+          if (apiError.status === 429) {
+            return {
+              success: false,
+              message:
+                "You're voting too quickly. Please wait a moment before trying again.",
+              retryAfter: 60, // 1 minute
+            };
+          }
+          if (apiError.status === 403) {
+            return {
+              success: false,
+              message:
+                "You have already voted for this category. Please wait 24 hours before voting again.",
+            };
+          }
+          if (apiError.status === 500) {
+            return {
+              success: false,
+              message: "Server error. Please try again later.",
+            };
+          }
+        }
+
         return {
           success: false,
           message: errorMessage,
         };
+      } finally {
+        setIsSubmitting(false);
       }
     },
-    [categoryName, data.participants, fetchCategoryData]
+    [categoryName, data.participants, fetchCategoryData, isSubmitting]
   );
 
   // Initial fetch
@@ -215,6 +236,7 @@ export const useSimpleVoting = (categoryName: string) => {
     pendingCategories: data.pendingCategories,
     loading,
     error,
+    isSubmitting,
     submitVote,
     refresh: fetchCategoryData,
   };
