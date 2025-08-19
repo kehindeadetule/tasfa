@@ -10,22 +10,33 @@ const API_CONFIG = {
 
 // Get the current environment
 const getEnvironment = (): "development" | "production" | "staging" => {
-  // Force use of Lambda API Gateway for testing
-  // Change this to 'development' when you want to use local backend
-  return "development";
+  // Use environment variable first, then fallback to hostname detection
+  const envFromConfig = process.env.NEXT_PUBLIC_ENV as
+    | "development"
+    | "production"
+    | "staging";
+  if (envFromConfig) {
+    return envFromConfig;
+  }
 
-  // Original logic (commented out for now):
-  /*
-  if (typeof window !== 'undefined') {
-    // Client-side: check if we're on localhost
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'development';
+  // Client-side: check if we're on localhost
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    if (
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname.includes("localhost")
+    ) {
+      return "development";
+    }
+    // Add your staging domain here
+    if (hostname.includes("staging") || hostname.includes("dev")) {
+      return "staging";
     }
   }
-  
-  // Server-side or production: use environment variable or default to production
-  return (process.env.NEXT_PUBLIC_ENV as 'development' | 'production' | 'staging') || 'production';
-  */
+
+  // Default to production for safety
+  return "production";
 };
 
 // Export the base API URL
@@ -40,7 +51,6 @@ export const API_ENDPOINTS = {
   category: (category: string) =>
     `${API_BASE_URL}/api/votes/category/${category}`,
   health: `${API_BASE_URL}/health`,
-  corsTest: `${API_BASE_URL}/cors-test`,
 };
 
 // Export the environment for debugging

@@ -62,7 +62,7 @@ const AdminSubmissions: React.FC = () => {
         setCategories(data.data);
       }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      // Error fetching categories
     }
   };
 
@@ -74,14 +74,12 @@ const AdminSubmissions: React.FC = () => {
       );
       const data = await response.json();
       if (data.success) {
-        console.log("Fetched submissions:", data.data);
-        console.log("Number of submissions:", data.data.length);
+        // Fetched submissions successfully
         setSubmissions(data.data);
       } else {
-        console.error("API returned error:", data);
+        // API returned error
       }
     } catch (error) {
-      console.error("Error fetching submissions:", error);
       toast.error("Failed to fetch submissions");
     } finally {
       setLoading(false);
@@ -101,7 +99,6 @@ const AdminSubmissions: React.FC = () => {
         setSubmissions(data.data);
       }
     } catch (error) {
-      console.error("Error fetching submissions by category:", error);
       toast.error("Failed to fetch submissions");
     } finally {
       setLoading(false);
@@ -109,7 +106,7 @@ const AdminSubmissions: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    console.log("Delete button clicked for ID:", id);
+    // Delete button clicked
     if (!confirm("Are you sure you want to delete this submission?")) {
       return;
     }
@@ -135,7 +132,7 @@ const AdminSubmissions: React.FC = () => {
   };
 
   const handleEdit = (submission: Submission) => {
-    console.log("Edit button clicked for:", submission);
+    // Edit button clicked
     setEditingSubmission(submission);
     setEditFormData({
       firstName: submission.firstName,
@@ -268,21 +265,6 @@ const AdminSubmissions: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {/* Test row to verify table structure */}
-                  <tr className="bg-yellow-100">
-                    <td className="px-6 py-4 whitespace-nowrap">TEST IMAGE</td>
-                    <td className="px-6 py-4 whitespace-nowrap">TEST NAME</td>
-                    <td className="px-6 py-4 whitespace-nowrap">TEST SCHOOL</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      TEST CATEGORY
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">TEST DATE</td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <button className="bg-green-500 text-white px-3 py-2 rounded">
-                        TEST BUTTON
-                      </button>
-                    </td>
-                  </tr>
                   {submissions.map((submission) => (
                     <motion.tr
                       key={submission._id}
@@ -297,16 +279,9 @@ const AdminSubmissions: React.FC = () => {
                             alt={`${submission.firstName} ${submission.lastName}`}
                             className="w-12 h-12 object-cover rounded-full border-2 border-gray-200"
                             onLoad={() => {
-                              console.log(
-                                "Image loaded successfully:",
-                                submission.image
-                              );
+                              // Image loaded successfully
                             }}
                             onError={(e) => {
-                              console.error(
-                                "Image failed to load:",
-                                submission.image
-                              );
                               // Fallback to initials if image fails to load
                               const target = e.target as HTMLImageElement;
                               target.style.display = "none";

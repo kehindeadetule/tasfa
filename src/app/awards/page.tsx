@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import AnimatedSection from "@/components/common/AnimatedSection";
-import VotingStatusIndicator from "@/components/VotingStatusIndicator";
+import SimpleVotingOverview from "@/components/SimpleVotingOverview";
 // import NotificationSettings from "@/components/NotificationSettings";
 
 export const metadata: Metadata = {
@@ -87,7 +87,7 @@ export default function AwardsPage() {
         {/* Voting Status and Notifications */}
         <div className="max-w-4xl mx-auto mb-12">
           <div className="grid md:grid-cols-1 gap-6">
-            <VotingStatusIndicator />
+            <SimpleVotingOverview />
             {/* <NotificationSettings /> */}
           </div>
         </div>

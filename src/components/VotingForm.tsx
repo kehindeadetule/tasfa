@@ -51,11 +51,18 @@ const VotingFormContent: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      console.log("File selected:", {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-      });
+      // Validate file immediately
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        e.target.value = ""; // Clear the input
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select a valid image file");
+        e.target.value = ""; // Clear the input
+        return;
+      }
 
       setFormData((prev) => ({
         ...prev,
@@ -73,39 +80,52 @@ const VotingFormContent: React.FC = () => {
     setLoading(true);
 
     try {
-      console.log("Starting form submission...");
-      console.log("Form data:", formData);
-
-      const formDataToSend = new FormData();
-      formDataToSend.append("firstName", formData.firstName);
-      formDataToSend.append("lastName", formData.lastName);
-      formDataToSend.append("school", formData.school);
-      formDataToSend.append("awardCategory", formData.awardCategory);
-
-      if (formData.picture) {
-        console.log("Adding picture to form data:", {
-          name: formData.picture.name,
-          size: formData.picture.size,
-          type: formData.picture.type,
-        });
-        formDataToSend.append("picture", formData.picture);
-      } else {
-        console.log("No picture selected");
+      // Validate required fields
+      if (
+        !formData.firstName.trim() ||
+        !formData.lastName.trim() ||
+        !formData.school.trim() ||
+        !formData.awardCategory.trim()
+      ) {
+        toast.error("Please fill in all required fields");
+        return;
       }
 
-      console.log(
-        "Sending request to:",
-        `${API_BASE_URL}/api/voting-form/submit`
-      );
+      const formDataToSend = new FormData();
+      formDataToSend.append("firstName", formData.firstName.trim());
+      formDataToSend.append("lastName", formData.lastName.trim());
+      formDataToSend.append("school", formData.school.trim());
+      formDataToSend.append("awardCategory", formData.awardCategory.trim());
+
+      if (formData.picture) {
+        // Validate file size (5MB limit)
+        if (formData.picture.size > 5 * 1024 * 1024) {
+          toast.error("Image size must be less than 5MB");
+          return;
+        }
+
+        // Validate file type
+        if (!formData.picture.type.startsWith("image/")) {
+          toast.error("Please select a valid image file");
+          return;
+        }
+
+        formDataToSend.append("picture", formData.picture);
+      }
 
       const response = await fetch(`${API_BASE_URL}/api/voting-form/submit`, {
         method: "POST",
         body: formDataToSend,
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+        },
       });
 
-      console.log("Response status:", response.status);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
       const data = await response.json();
-      console.log("Response data:", data);
 
       if (data.success) {
         toast.success("Voting form submitted successfully!");

@@ -1,14 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import Link from "next/link";
-import { useVotingStatus } from "@/hooks/useVotingStatus";
-import { API_ENDPOINTS } from "@/config/api";
 import { categorySlugToName } from "@/utils/categoryMapping";
-import VotingTimer from "@/components/VotingTimer";
-import { fetchWithRetry } from "@/utils/rateLimitHandler";
-import { voteCountsCache, CACHE_KEYS } from "@/utils/votingCache";
+import { useSimpleVoting } from "@/hooks/useSimpleVoting";
+import SimpleVotingStatus from "@/components/SimpleVotingStatus";
 
 interface Participant {
   _id: string;
@@ -25,178 +20,26 @@ export default function CategoryPage({
 }: {
   params: { category: string };
 }) {
-  const [participants, setParticipants] = useState<Participant[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [votedParticipantId, setVotedParticipantId] = useState<string | null>(
-    null
-  );
-  const {
-    canVoteForCategory,
-    updateVotingStatus,
-    votingStatus,
-    getNextVoteTime,
-    setVotingMode,
-  } = useVotingStatus();
-
   const slug = params.category;
   const categoryName = categorySlugToName[slug] || slug;
-  const canVote = canVoteForCategory(categoryName);
-  const nextVoteTime = getNextVoteTime(categoryName);
-
-  useEffect(() => {
-    const fetchParticipants = async () => {
-      try {
-        setLoading(true);
-
-        // Check cache first
-        const cacheKey = CACHE_KEYS.CATEGORY_PARTICIPANTS(categoryName);
-        const cached = voteCountsCache.get(cacheKey);
-        if (cached) {
-          setParticipants(cached);
-        }
-
-        const response = await fetchWithRetry(
-          API_ENDPOINTS.category(categoryName),
-          {},
-          {
-            maxRetries: 2,
-            showNotification: false,
-          }
-        );
-
-        if (!response.ok) {
-          setError("Failed to fetch participants");
-          return;
-        }
-
-        const data = await response.json();
-        if (data.success) {
-          setParticipants(data.data);
-          // Cache the participants data
-          voteCountsCache.set(cacheKey, data.data);
-
-          // Check voting history
-          try {
-            const historyResponse = await fetchWithRetry(
-              API_ENDPOINTS.votingHistory,
-              {},
-              {
-                maxRetries: 1,
-                showNotification: false,
-              }
-            );
-            if (historyResponse.ok) {
-              const historyData = await historyResponse.json();
-              if (historyData.success) {
-                const votedParticipant =
-                  historyData.data.votedParticipants.find(
-                    (p: any) => p.awardCategory === categoryName
-                  );
-                if (votedParticipant) {
-                  setVotedParticipantId(votedParticipant._id);
-                } else {
-                  setVotedParticipantId(null);
-                }
-              }
-            }
-          } catch (historyErr) {
-            setVotedParticipantId(null);
-          }
-        } else {
-          setError("Failed to fetch participants");
-        }
-      } catch (err) {
-        setError("Error, please try again");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchParticipants();
-  }, [categoryName]);
+  
+  const {
+    participants,
+    votingStatus,
+    pendingCategories,
+    loading,
+    error,
+    submitVote,
+  } = useSimpleVoting(categoryName);
 
   const handleVote = async (participant: Participant) => {
-    if (!canVote) {
-      toast.info(
-        `You have already voted for ${categoryName} today. Check the countdown timer to see when you can vote again!`,
-        {
-          position: "top-center",
-          autoClose: 6000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        }
-      );
-      return;
+    const result = await submitVote(participant._id);
+    
+    if (result.success) {
+      toast.success(result.message || `Vote submitted for ${participant.firstName} ${participant.lastName}!`);
+    } else {
+      toast.error(result.message || "Failed to submit vote. Please try again.");
     }
-    if (votedParticipantId !== null) return;
-
-    try {
-      // Set voting mode for immediate updates
-      setVotingMode();
-
-      const response = await fetchWithRetry(
-        API_ENDPOINTS.votes,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            firstName: participant.firstName,
-            lastName: participant.lastName,
-            school: participant.school,
-            awardCategory: categoryName,
-          }),
-        },
-        {
-          maxRetries: 3,
-          showNotification: true,
-        }
-      );
-
-      if (!response.ok) {
-        toast.error("Failed to submit vote. Please try again.");
-        return;
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        setParticipants((prev) =>
-          prev.map((p) =>
-            p._id === participant._id
-              ? { ...p, voteCount: data.data.voteCount }
-              : p
-          )
-        );
-        setVotedParticipantId(participant._id);
-        updateVotingStatus(categoryName);
-
-        // Clear cache to get fresh data
-        voteCountsCache.invalidate(
-          CACHE_KEYS.CATEGORY_PARTICIPANTS(categoryName)
-        );
-        voteCountsCache.invalidate(CACHE_KEYS.VOTE_COUNTS);
-
-        toast.success(
-          `Vote submitted for ${participant.firstName} ${participant.lastName}!`
-        );
-      } else {
-        toast.error("Failed to submit vote. Please try again.");
-      }
-    } catch (err) {
-      toast.error(
-        "Error submitting vote. Please check your connection and try again."
-      );
-    }
-  };
-
-  const handleVotingAvailable = () => {
-    toast.success(`Voting is now available for ${categoryName}!`, {
-      position: "top-center",
-      autoClose: 5000,
-    });
   };
 
   if (loading) {
@@ -237,45 +80,12 @@ export default function CategoryPage({
           {categoryName}
         </h1>
 
-        {/* Voting Status Banner */}
-        {!canVote && nextVoteTime && (
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-orange-800">
-                  🗳️ Voting Status for {categoryName}
-                </h3>
-              </div>
-              <div className="flex items-center justify-center mb-3">
-                <VotingTimer
-                  categoryName={categoryName}
-                  nextVoteTime={nextVoteTime}
-                  onVotingAvailable={handleVotingAvailable}
-                  compact={false}
-                />
-              </div>
-              <p className="text-xs text-orange-700 text-center">
-                You can vote again once the countdown reaches zero
-              </p>
-            </div>
-          </div>
-        )}
-
-        {canVote && votedParticipantId === null && (
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-              <div className="flex items-center justify-center space-x-2 mb-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <h3 className="text-sm font-medium text-green-800">
-                  ✅ Ready to Vote!
-                </h3>
-              </div>
-              <p className="text-xs text-green-700">
-                Choose your favorite participant below
-              </p>
-            </div>
-          </div>
-        )}
+        {/* Voting Status - Backend controlled */}
+        <SimpleVotingStatus 
+          votingStatus={votingStatus} 
+          categoryName={categoryName}
+          pendingCategories={pendingCategories}
+        />
 
         {participants.length === 0 ? (
           <div className="text-center py-12">
@@ -318,31 +128,28 @@ export default function CategoryPage({
                         {participant.voteCount}
                       </span>
                     </div>
-                    {votedParticipantId === participant._id ? (
+                    {votingStatus.votedParticipantId === participant._id ? (
                       <span className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
                         ✓ Voted
                       </span>
                     ) : (
                       <button
                         onClick={() => handleVote(participant)}
-                        disabled={!canVote || votedParticipantId !== null}
-                        // disabled={true}
+                        disabled={!votingStatus.canVote || !!votingStatus.votedParticipantId}
                         className={`px-6 py-2 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${
-                          !canVote
-                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                            : votedParticipantId !== null
+                          !votingStatus.canVote || votingStatus.votedParticipantId
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                             : "bg-[#005B96] text-white hover:bg-[#004080] hover:scale-105 active:scale-95"
                         }`}
                         title={
-                          !canVote
-                            ? "You need to wait before voting again"
-                            : votedParticipantId !== null
+                          !votingStatus.canVote
+                            ? votingStatus.message || "Voting not available"
+                            : votingStatus.votedParticipantId
                             ? "You have already voted in this category"
                             : "Click to vote"
                         }
                       >
-                        {!canVote ? "⏰ Wait" : "Vote"}
+                        {!votingStatus.canVote ? "⏰ Wait" : "Vote"}
                       </button>
                     )}
                   </div>

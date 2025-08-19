@@ -62,7 +62,7 @@ const SubmissionsGrid: React.FC = () => {
         setCategories(data.data);
       }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      // Error fetching categories
     }
   };
 
@@ -77,7 +77,6 @@ const SubmissionsGrid: React.FC = () => {
         setSubmissions(data.data);
       }
     } catch (error) {
-      console.error("Error fetching submissions:", error);
       toast.error("Failed to fetch submissions");
     } finally {
       setLoading(false);
@@ -97,7 +96,6 @@ const SubmissionsGrid: React.FC = () => {
         setSubmissions(data.data);
       }
     } catch (error) {
-      console.error("Error fetching submissions by category:", error);
       toast.error("Failed to fetch submissions");
     } finally {
       setLoading(false);
@@ -236,7 +234,7 @@ const SubmissionsGrid: React.FC = () => {
             </select>
           </div>
 
-          {/* test admin here */}
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {submissions.map((submission, index) => (
@@ -254,16 +252,9 @@ const SubmissionsGrid: React.FC = () => {
                       alt={`${submission.firstName} ${submission.lastName}`}
                       className="w-full h-80 object-cover object-top"
                       onLoad={() => {
-                        console.log(
-                          "Image loaded successfully:",
-                          submission.image
-                        );
+                        // Image loaded successfully
                       }}
                       onError={(e) => {
-                        console.error(
-                          "Image failed to load:",
-                          submission.image
-                        );
                         const target = e.target as HTMLImageElement;
                         target.style.display = "none";
                         const fallback = target.nextSibling as HTMLElement;
