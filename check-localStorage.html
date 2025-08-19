@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check localStorage Voting Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .danger {
+            background-color: #dc3545;
+        }
+        .danger:hover {
+            background-color: #c82333;
+        }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Check localStorage Voting Data</h1>
+        
+        <button class="button" onclick="checkAllData()">
+            🔍 Check All localStorage Data
+        </button>
+        
+        <button class="button danger" onclick="clearAllVotingData()">
+            🗑️ Clear ALL Voting Data
+        </button>
+        
+        <div id="log" class="log" style="display: none;"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.style.display = 'block';
+            logDiv.innerHTML += message + '\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function checkAllData() {
+            log('🔍 Checking ALL localStorage data...\n');
+            
+            try {
+                const allKeys = [];
+                const votingStateKeys = [];
+                const tasfaVoteKeys = [];
+                const otherKeys = [];
+                
+                // Get all localStorage keys
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                        allKeys.push(key);
+                        
+                        if (key.startsWith('voting_state_')) {
+                            votingStateKeys.push(key);
+                        } else if (key.startsWith('tasfa_vote_')) {
+                            tasfaVoteKeys.push(key);
+                        } else {
+                            otherKeys.push(key);
+                        }
+                    }
+                }
+                
+                log(`📊 Total localStorage items: ${allKeys.length}`);
+                log(`📊 Voting state items: ${votingStateKeys.length}`);
+                log(`📊 Tasfa vote items: ${tasfaVoteKeys.length}`);
+                log(`📊 Other items: ${otherKeys.length}\n`);
+                
+                if (votingStateKeys.length > 0) {
+                    log('🗳️ VOTING STATE KEYS:');
+                    votingStateKeys.forEach(key => {
+                        const value = localStorage.getItem(key);
+                        log(`   ${key}: ${value ? value.substring(0, 100) + '...' : 'null'}`);
+                    });
+                    log('');
+                }
+                
+                if (tasfaVoteKeys.length > 0) {
+                    log('🗳️ TASFA VOTE KEYS:');
+                    tasfaVoteKeys.forEach(key => {
+                        const value = localStorage.getItem(key);
+                        log(`   ${key}: ${value ? value.substring(0, 100) + '...' : 'null'}`);
+                    });
+                    log('');
+                }
+                
+                if (otherKeys.length > 0) {
+                    log('📁 OTHER KEYS:');
+                    otherKeys.forEach(key => {
+                        const value = localStorage.getItem(key);
+                        log(`   ${key}: ${value ? value.substring(0, 100) + '...' : 'null'}`);
+                    });
+                    log('');
+                }
+                
+                if (allKeys.length === 0) {
+                    log('✅ localStorage is completely empty!');
+                }
+                
+            } catch (error) {
+                log(`❌ Error checking data: ${error.message}`);
+            }
+        }
+
+        function clearAllVotingData() {
+            log('🧹 Clearing ALL voting data...\n');
+            
+            try {
+                let votingStateCount = 0;
+                let tasfaVoteCount = 0;
+                let otherCount = 0;
+                
+                // Get all keys first
+                const allKeys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                        allKeys.push(key);
+                    }
+                }
+                
+                // Clear voting_state_ keys
+                allKeys.forEach(key => {
+                    if (key.startsWith('voting_state_')) {
+                        localStorage.removeItem(key);
+                        votingStateCount++;
+                        log(`🗑️ Removed voting state: ${key}`);
+                    }
+                });
+                
+                // Clear tasfa_vote_ keys
+                allKeys.forEach(key => {
+                    if (key.startsWith('tasfa_vote_')) {
+                        localStorage.removeItem(key);
+                        tasfaVoteCount++;
+                        log(`🗑️ Removed tasfa vote: ${key}`);
+                    }
+                });
+                
+                // Clear any other voting-related keys
+                allKeys.forEach(key => {
+                    if (key.toLowerCase().includes('vote') || 
+                        key.toLowerCase().includes('voting') || 
+                        key.toLowerCase().includes('tasfa')) {
+                        if (!key.startsWith('voting_state_') && !key.startsWith('tasfa_vote_')) {
+                            localStorage.removeItem(key);
+                            otherCount++;
+                            log(`🗑️ Removed other voting-related: ${key}`);
+                        }
+                    }
+                });
+                
+                log(`\n✅ Summary:`);
+                log(`   - Voting state records cleared: ${votingStateCount}`);
+                log(`   - Tasfa vote records cleared: ${tasfaVoteCount}`);
+                log(`   - Other voting-related records cleared: ${otherCount}`);
+                log(`   - Total cleared: ${votingStateCount + tasfaVoteCount + otherCount}`);
+                log('\n🎉 All voting data cleared! Users can now vote fresh.');
+                
+            } catch (error) {
+                log(`❌ Error clearing data: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
