@@ -85,12 +85,12 @@ export default function AwardsPage() {
         </AnimatedSection>
 
         {/* Voting Status and Notifications */}
-        <div className="max-w-4xl mx-auto mb-12">
-          <div className="grid md:grid-cols-1 gap-6">
-            <SimpleVotingOverview />
-            {/* <NotificationSettings /> */}
-          </div>
-        </div>
+        {/* <div className="max-w-4xl mx-auto mb-12">
+          <div className="grid md:grid-cols-1 gap-6"> */}
+        {/* <SimpleVotingOverview /> */}
+        {/* <NotificationSettings /> */}
+        {/* </div>
+        </div> */}
 
         <div className="md:space-y-16 space-y-8">
           {/* Student Categories */}
