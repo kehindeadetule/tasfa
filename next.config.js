@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Enable static exports for Cloudflare Pages
-  output: 'export',
+  output: "export",
   trailingSlash: true,
   images: {
     unoptimized: true,
@@ -39,13 +39,13 @@ const nextConfig = {
         tls: false,
       };
     }
-    
+
     // Ensure @ alias works in build environment
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': require('path').resolve(__dirname, 'src'),
+      "@": require("path").resolve(__dirname, "src"),
     };
-    
+
     return config;
   },
 };
