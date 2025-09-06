@@ -3,9 +3,9 @@
 import { toast } from "react-toastify";
 
 import { useState } from "react";
-import { useAuth } from "../../../../hooks/useAuth";
-import { useSecureVoting } from "../../../../hooks/useSecureVoting";
-import { categorySlugToName } from "../../../../utils/categoryMapping";
+import { useAuth } from "@/hooks/useAuth";
+import { useSecureVoting } from "@/hooks/useSecureVoting";
+import { categorySlugToName } from "@/utils/categoryMapping";
 
 interface Participant {
   _id: string;

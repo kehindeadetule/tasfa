@@ -39,6 +39,13 @@ const nextConfig = {
         tls: false,
       };
     }
+    
+    // Ensure @ alias works in build environment
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+    
     return config;
   },
 };
