@@ -3,6 +3,7 @@ const nextConfig = {
   // Enable static exports for Cloudflare Pages
   output: "export",
   trailingSlash: true,
+  distDir: "out",
   images: {
     unoptimized: true,
     domains: [
