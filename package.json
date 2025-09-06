@@ -7,14 +7,19 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:queue": "node test-queue-system.js"
+    "test:queue": "node test-queue-system.js",
+    "pages:build": "npx @cloudflare/next-on-pages",
+    "preview": "npm run pages:build && wrangler pages dev",
+    "deploy": "npm run pages:build && wrangler pages deploy"
   },
   "dependencies": {
     "@imgly/background-removal-node": "^1.4.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/react-slick": "^0.23.13",
     "framer-motion": "^11.0.3",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.330.0",
-    "next": "14.1.0",
+    "next": "^14.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-slick": "^0.30.3",
@@ -22,6 +27,7 @@
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.16",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

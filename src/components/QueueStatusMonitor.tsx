@@ -26,7 +26,9 @@ export default function QueueStatusMonitor() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/api/votes/queue-status`);
+      const response = await fetch(
+        `${API_BASE_URL}/api/secure-votes/queue-status`
+      );
       const data = await response.json();
 
       if (data.success) {

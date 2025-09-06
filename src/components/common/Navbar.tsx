@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAboutDropdownOpen, setIsAboutDropdownOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
 
   const isActive = (path: string) => {
     // For awards section, check if pathname starts with /awards to handle nested routes
@@ -106,15 +108,37 @@ export default function Navbar() {
 
           <div className="flex-shrink-0">
             <div className="hidden md:flex items-center space-x-4">
-              {/* <Link
-                href="/voting-form"
-                className="bg-[#005B96] text-white text-sm px-5 py-2 rounded-full font-medium hover:bg-[#004080] transition-colors"
-              >
-                Participant Form
-              </Link> */}
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    href="/voting"
+                    className="bg-[#005B96] text-white text-sm px-5 py-2 rounded-full font-medium hover:bg-[#004080] transition-colors"
+                  >
+                    Vote Now
+                  </Link>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600">
+                      {user?.phoneNumber}
+                    </span>
+                    <button
+                      onClick={logout}
+                      className="text-sm text-red-600 hover:text-red-800 underline"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <Link
+                  href="/auth"
+                  className="bg-[#005B96] text-white text-sm px-5 py-2 rounded-full font-medium hover:bg-[#004080] transition-colors"
+                >
+                  Login / Sign Up
+                </Link>
+              )}
               <Link
                 href="#contact"
-                className="border-[2px] border-[#005B96] text-sm text-[#005B96] hover:bg-[#005B96] hover:text-white hover:border-none px-5 py-2 rounded-full font-medium transition-colors"
+                className="border-[2px] border-gray-300 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:border-none px-5 py-2 rounded-full font-medium transition-colors"
               >
                 Contact Us
               </Link>
@@ -198,17 +222,41 @@ export default function Navbar() {
                 Judges
               </Link>
 
-              {/* <Link
-                href="/voting-form"
-                className={`text-white text-lg font-medium hover:text-[#016CEE] ${
-                  isActive("/voting-form")
-                    ? "!text-[#005B96] font-semibold"
-                    : ""
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Participant Form
-              </Link> */}
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    href="/voting"
+                    className={`text-white text-lg font-medium hover:text-[#016CEE] ${
+                      isActive("/voting") ? "!text-[#005B96] font-semibold" : ""
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Vote Now
+                  </Link>
+                  <div className="text-white text-sm">
+                    <div className="text-gray-300">Logged in as:</div>
+                    <div className="font-medium">{user?.phoneNumber}</div>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="text-red-400 hover:text-red-300 underline mt-2"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <Link
+                  href="/auth"
+                  className="text-white text-lg font-medium hover:text-[#016CEE]"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login / Sign Up
+                </Link>
+              )}
+
               <Link
                 href="#contact"
                 className={`text-white text-lg font-medium hover:text-[#016CEE] ${

@@ -2,8 +2,8 @@
 
 import { toast } from "react-toastify";
 import { categorySlugToName } from "@/utils/categoryMapping";
-import { useSimpleVoting } from "@/hooks/useSimpleVoting";
-import SimpleVotingStatus from "@/components/SimpleVotingStatus";
+import { useAuth } from "@/hooks/useAuth";
+import { useSecureVoting } from "@/hooks/useSecureVoting";
 import { useState } from "react";
 
 interface Participant {
@@ -23,19 +23,19 @@ export default function CategoryPage({
 }) {
   const slug = params.category;
   const categoryName = categorySlugToName[slug] || slug;
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   const [disableVoteButton, setDisableVoteButton] = useState(false);
 
   const {
     participants,
     votingStatus,
-    pendingCategories,
     loading,
     error,
     isSubmitting,
     submitVote,
     refresh,
-  } = useSimpleVoting(categoryName);
+  } = useSecureVoting(categoryName);
 
   const handleVote = async (participant: Participant) => {
     // Prevent multiple rapid clicks
@@ -48,36 +48,65 @@ export default function CategoryPage({
 
     if (result.success) {
       setDisableVoteButton(true);
-
-      // Handle queue-based response
-      if (result.queued) {
-        toast.success(
-          result.message || "Vote submitted and queued for processing!"
-        );
-      } else {
-        toast.success(
-          result.message ||
-            `Vote submitted for ${participant.firstName} ${participant.lastName}!`
-        );
-      }
+      toast.success(
+        result.message ||
+          `Vote submitted for ${participant.firstName} ${participant.lastName}!`
+      );
     } else {
-      // Handle specific error cases with appropriate messages
-      if (result.retryAfter) {
-        toast.error(
-          `${result.message} Please wait ${result.retryAfter} seconds before trying again.`
-        );
-        setDisableVoteButton(false);
-      } else {
-        toast.error(
-          result.message || "Failed to submit vote. Please try again."
-        );
-        setDisableVoteButton(false);
-      }
+      toast.error(result.message || "Failed to submit vote. Please try again.");
+      setDisableVoteButton(false);
     }
   };
 
   // Get the voted participant ID for highlighting
   const votedParticipantId = votingStatus.votedParticipantId;
+
+  if (authLoading) {
+    return (
+      <section className="min-h-screen flex justify-center items-center bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#005B96] mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <section className="min-h-screen flex justify-center items-center bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-md mx-auto w-full space-y-8">
+            <div className="bg-white rounded-lg shadow-xl p-8 text-center">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                🔐 Authentication Required
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Please log in with your phone number and password to vote for{" "}
+                {categoryName}
+              </p>
+              <div className="space-y-4">
+                <a
+                  href="/auth"
+                  className="w-full bg-[#005B96] hover:bg-[#004080] text-white font-semibold py-3 px-6 rounded-lg transition-colors block text-center"
+                >
+                  Login / Sign Up
+                </a>
+                <a
+                  href="/voting"
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors block text-center"
+                >
+                  Go to Secure Voting
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (loading) {
     return (
@@ -117,13 +146,38 @@ export default function CategoryPage({
           {categoryName}
         </h1>
 
-        {/* Voting Status - Backend controlled */}
-        <SimpleVotingStatus
-          votingStatus={votingStatus}
-          categoryName={categoryName}
-          pendingCategories={pendingCategories}
-          onRefresh={refresh}
-        />
+        {/* Voting Status */}
+        {!votingStatus.canVote && (
+          <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-orange-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-orange-800">
+                  {votingStatus.message ||
+                    "You have already voted for this category"}
+                </p>
+                {votingStatus.nextVoteTime && (
+                  <p className="text-xs text-orange-600 mt-1">
+                    Next vote available:{" "}
+                    {new Date(votingStatus.nextVoteTime).toLocaleString()}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {participants.length === 0 ? (
           <div className="text-center py-12">

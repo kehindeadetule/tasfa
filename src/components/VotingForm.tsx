@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { API_BASE_URL } from "@/config/api";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Category {
   id: string;
@@ -22,6 +23,7 @@ interface FormData {
 const VotingFormContent: React.FC = () => {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
+  const { user, logout } = useAuth();
 
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -34,6 +36,11 @@ const VotingFormContent: React.FC = () => {
   // Categories are hardcoded in the select element
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // Component mount effect - no longer needed for security checks
+  useEffect(() => {
+    // Authentication is now handled by the parent component
+  }, []);
 
   // Categories are now hardcoded in the select element for better performance
   // No need to fetch from API
@@ -121,11 +128,19 @@ const VotingFormContent: React.FC = () => {
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      const data = await response.json();
+
+      // Check for errors in response
+      if (data.error) {
+        toast.error(data.error);
+        return;
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          data.message || data.error || "Network response was not ok"
+        );
+      }
 
       if (data.success) {
         toast.success("Voting form submitted successfully!");

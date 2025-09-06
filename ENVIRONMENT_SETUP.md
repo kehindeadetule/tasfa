@@ -1,142 +1,194 @@
-# 🔧 Environment Setup Guide
+# Environment Setup Guide
 
-## 🚨 Fix the "Unauthorized" Error
+## Overview
 
-The "Unauthorized" error occurs because the admin key isn't properly configured. Follow these steps to fix it:
+This guide explains how to properly configure environment variables for the TASFA application to ensure secure and flexible API endpoint configuration.
+
+## Security Best Practices
+
+### ✅ Safe Environment Variables
+
+- `NEXT_PUBLIC_API_BASE_URL` - Backend API URL (safe to expose to browser)
+- `NEXT_PUBLIC_ENV` - Environment identifier (safe to expose to browser)
+
+### ❌ Never Put in NEXT*PUBLIC* Variables
+
+- Database credentials
+- API keys
+- JWT secrets
+- Private tokens
+- Any sensitive data
+
+## Environment Configuration
 
 ### 1. Create Environment File
 
-Create a `.env.local` file in your project root:
+Run the setup script:
 
 ```bash
-# In your project root directory
-touch .env.local
+./setup-env.sh
 ```
 
-### 2. Add Required Environment Variables
-
-Add these variables to your `.env.local` file:
-
-```env
-# Admin authentication key (must match your backend)
-ADMIN_KEY=your-secure-admin-key-here
-
-# Backend URL where your cheater detection API is running
-BACKEND_URL=http://localhost:10000
-
-# Frontend admin key (for client-side requests)
-NEXT_PUBLIC_ADMIN_KEY=your-secure-admin-key-here
-```
-
-### 3. Get Your Admin Key
-
-You need to get the admin key from your backend. Check your backend configuration for:
-
-- Environment variable like `ADMIN_KEY` or `SECRET_KEY`
-- Configuration file that contains the admin key
-- Database or secure storage where the key is stored
-
-**Example backend admin key locations:**
+Or manually create `.env.local`:
 
 ```bash
-# Check your backend .env file
-cat backend/.env | grep ADMIN_KEY
+# Backend API Configuration
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
 
-# Or check your backend configuration
-cat backend/config.js | grep adminKey
+# Environment
+NEXT_PUBLIC_ENV=development
 ```
 
-### 4. Restart Your Development Server
+### 2. Environment-Specific URLs
 
-After adding the environment variables:
+#### Development (Local)
 
 ```bash
-# Stop the current server (Ctrl+C)
-# Then restart
-npm run dev
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
+NEXT_PUBLIC_ENV=development
 ```
 
-### 5. Verify Configuration
-
-Check that your environment variables are loaded:
+#### Staging
 
 ```bash
-# Add this temporarily to your page to debug
-console.log('Admin Key:', process.env.NEXT_PUBLIC_ADMIN_KEY);
-console.log('Backend URL:', process.env.BACKEND_URL);
+NEXT_PUBLIC_API_BASE_URL=https://staging-api.yourdomain.com
+NEXT_PUBLIC_ENV=staging
 ```
 
-## 🔍 Troubleshooting Authentication
+#### Production
 
-### If you still get "Unauthorized":
+```bash
+NEXT_PUBLIC_API_BASE_URL=https://api.yourdomain.com
+NEXT_PUBLIC_ENV=production
+```
 
-1. **Check Backend is Running**:
+## How It Works
+
+### 1. Environment Detection
+
+The application automatically detects the environment based on:
+
+1. `NEXT_PUBLIC_ENV` environment variable
+2. Hostname detection (localhost = development)
+3. Fallback to production for safety
+
+### 2. API URL Resolution
+
+```typescript
+// From src/config/api.ts
+const API_CONFIG = {
+  development: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001",
+  production:
+    process.env.NEXT_PUBLIC_API_BASE_URL || "https://tasfa-be.onrender.com",
+  staging:
+    process.env.NEXT_PUBLIC_API_BASE_URL || "https://tasfa-be.onrender.com",
+};
+```
+
+### 3. Automatic Fallbacks
+
+- If `NEXT_PUBLIC_API_BASE_URL` is not set, uses environment-specific defaults
+- Development defaults to `http://localhost:3001`
+- Production defaults to `https://tasfa-be.onrender.com`
+
+## File Structure
+
+```
+tasfa/
+├── .env.local                 # Local environment (gitignored)
+├── .env.example              # Example environment file
+├── setup-env.sh              # Environment setup script
+├── src/
+│   └── config/
+│       ├── api.ts            # API configuration
+│       └── environment.ts    # Environment utilities
+└── ENVIRONMENT_SETUP.md      # This guide
+```
+
+## Deployment Considerations
+
+### Local Development
+
+1. Run `./setup-env.sh` to create `.env.local`
+2. Start your backend server on port 3001
+3. Run `npm run dev`
+
+### Production Deployment
+
+1. Set environment variables in your deployment platform:
+   ```bash
+   NEXT_PUBLIC_API_BASE_URL=https://your-production-api.com
+   NEXT_PUBLIC_ENV=production
+   ```
+2. Deploy the application
+
+### Vercel Deployment
+
+```bash
+# Set environment variables in Vercel dashboard or CLI
+vercel env add NEXT_PUBLIC_API_BASE_URL
+vercel env add NEXT_PUBLIC_ENV
+```
+
+## Troubleshooting
+
+### Issue: "undefined" in API URL
+
+**Problem**: URL shows as `http://localhost:3000/undefined/api/...`
+**Solution**:
+
+1. Check if `.env.local` exists
+2. Verify `NEXT_PUBLIC_API_BASE_URL` is set
+3. Restart the development server
+
+### Issue: CORS Errors
+
+**Problem**: API calls fail with CORS errors
+**Solution**:
+
+1. Ensure backend server is running
+2. Check backend CORS configuration
+3. Verify API URL is correct
+
+### Issue: Environment Not Detected
+
+**Problem**: Wrong environment detected
+**Solution**:
+
+1. Set `NEXT_PUBLIC_ENV` explicitly
+2. Check hostname detection logic
+3. Verify environment variable format
+
+## Security Checklist
+
+- [ ] `.env.local` is in `.gitignore`
+- [ ] No sensitive data in `NEXT_PUBLIC_` variables
+- [ ] Production URLs use HTTPS
+- [ ] Environment variables are set in deployment platform
+- [ ] Backend API has proper CORS configuration
+- [ ] JWT secrets are only in backend environment
+
+## Quick Start
+
+1. **Setup Environment**:
 
    ```bash
-   # Make sure your backend is running on port 10000
-   curl http://localhost:10000/api/admin/cheater-summary
+   ./setup-env.sh
    ```
 
-2. **Test Admin Key Directly**:
+2. **Start Backend** (on port 3001):
 
    ```bash
-   # Test with your admin key
-   curl -H "x-admin-key: your-admin-key-here" \
-        http://localhost:10000/api/admin/cheater-summary
+   # Your backend server
+   npm start
    ```
 
-3. **Check Environment Variables**:
+3. **Start Frontend**:
+
    ```bash
-   # In your Next.js app, add this to debug
-   console.log('Environment check:', {
-     adminKey: process.env.ADMIN_KEY ? 'Set' : 'Not set',
-     publicKey: process.env.NEXT_PUBLIC_ADMIN_KEY ? 'Set' : 'Not set',
-     backendUrl: process.env.BACKEND_URL
-   });
+   npm run dev
    ```
 
-## 🤖 Automatic Monitoring Setup
+4. **Test**: Open http://localhost:3000
 
-The automatic monitoring feature will:
-
-1. **Scan every 5 minutes** for suspicious IPs
-2. **Cross-reference** with your voting database
-3. **Update results** automatically
-4. **Show real-time alerts** for new suspicious activity
-
-### To enable automatic monitoring:
-
-1. Set up your environment variables (see above)
-2. Go to the cheater detection dashboard
-3. Click "Start Auto-Monitoring" in the Vercel Data Importer section
-4. The system will automatically scan every 5 minutes
-
-## 📊 Expected Behavior
-
-Once properly configured, you should see:
-
-- ✅ Dashboard loads without "Unauthorized" errors
-- ✅ Summary statistics display correctly
-- ✅ Suspicious IPs table shows data
-- ✅ Auto-monitoring works every 5 minutes
-- ✅ IP details modal opens when clicking on IPs
-
-## 🛡️ Security Notes
-
-- **Never commit** `.env.local` to version control
-- **Use strong, unique** admin keys
-- **Rotate keys** regularly
-- **Restrict access** to the admin dashboard
-
-## 🆘 Still Having Issues?
-
-If you're still getting authentication errors:
-
-1. **Check your backend logs** for authentication errors
-2. **Verify the admin key** matches exactly between frontend and backend
-3. **Test the backend API** directly with curl or Postman
-4. **Check network connectivity** between frontend and backend
-
----
-
-**🎯 Once configured, you'll have a fully automated cheater detection system that monitors suspicious IPs every 5 minutes!**
+The application will now use the configured backend API endpoints securely.

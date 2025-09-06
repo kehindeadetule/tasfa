@@ -1,0 +1,17 @@
+name = "tasfa-frontend"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[env.production]
+name = "tasfa-frontend"
+
+[env.staging]
+name = "tasfa-frontend-staging"
+
+# Build configuration
+[build]
+command = "npm run pages:build"
+
+# Environment variables (set these in Cloudflare dashboard)
+# NEXT_PUBLIC_API_BASE_URL=https://your-backend-api.com
+# NEXT_PUBLIC_ENV=production

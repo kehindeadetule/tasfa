@@ -39,8 +39,7 @@ export class SecureApiClient {
       const response = await fetch(url.toString(), {
         ...options,
         headers,
-        // Add credentials for session persistence
-        credentials: "include",
+        // Note: credentials removed since we use JWT tokens, not sessions
         // Add timeout
         signal: AbortSignal.timeout(30000), // 30 second timeout
       });
@@ -71,6 +70,14 @@ export class SecureApiClient {
               "You have already voted for this category. Please wait 24 hours before voting again.",
             status: 403,
             code: "ALREADY_VOTED",
+          } as ApiError;
+        }
+
+        if (response.status === 401) {
+          throw {
+            message: data.message || "Authentication required",
+            status: 401,
+            code: "UNAUTHORIZED",
           } as ApiError;
         }
 
@@ -107,29 +114,137 @@ export class SecureApiClient {
     }
   }
 
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endpoint, { method: "GET" });
+  private getAuthHeaders(): Record<string, string> {
+    const token = localStorage.getItem("tasfa_auth_token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async get<T>(
+    endpoint: string,
+    requireAuth: boolean = true
+  ): Promise<ApiResponse<T>> {
+    const headers = requireAuth ? this.getAuthHeaders() : {};
+    return this.makeRequest<T>(endpoint, {
+      method: "GET",
+      headers,
+    });
+  }
+
+  async post<T>(
+    endpoint: string,
+    data?: any,
+    requireAuth: boolean = true
+  ): Promise<ApiResponse<T>> {
+    const headers = requireAuth ? this.getAuthHeaders() : {};
     return this.makeRequest<T>(endpoint, {
       method: "POST",
       body: data ? JSON.stringify(data) : undefined,
+      headers,
     });
   }
 
   async postFormData<T>(
     endpoint: string,
-    formData: FormData
+    formData: FormData,
+    requireAuth: boolean = true
   ): Promise<ApiResponse<T>> {
+    const headers = requireAuth ? this.getAuthHeaders() : {};
     return this.makeRequest<T>(endpoint, {
       method: "POST",
       body: formData,
       headers: {
         // Remove Content-Type to let browser set it with boundary
         "X-Requested-With": "XMLHttpRequest",
+        ...headers,
       },
     });
+  }
+
+  // Authentication methods
+  async requestSignupOTP(
+    phoneNumber: string,
+    password: string
+  ): Promise<ApiResponse> {
+    return this.post(
+      "/api/auth/signup/request-otp",
+      {
+        phoneNumber,
+        password,
+      },
+      false
+    );
+  }
+
+  async verifySignupOTP(
+    phoneNumber: string,
+    otp: string,
+    password: string
+  ): Promise<ApiResponse> {
+    return this.post(
+      "/api/auth/signup/verify-otp",
+      {
+        phoneNumber,
+        otp,
+        password,
+      },
+      false
+    );
+  }
+
+  async login(phoneNumber: string, password: string): Promise<ApiResponse> {
+    return this.post(
+      "/api/auth/login",
+      {
+        phoneNumber,
+        password,
+      },
+      false
+    );
+  }
+
+  async getProfile(): Promise<ApiResponse> {
+    return this.get("/api/auth/profile");
+  }
+
+  async verifyToken(): Promise<ApiResponse> {
+    return this.get("/api/auth/verify-token");
+  }
+
+  async logout(): Promise<ApiResponse> {
+    return this.post("/api/auth/logout");
+  }
+
+  // Secure voting methods
+  async getVoteCounts(): Promise<ApiResponse> {
+    return this.get("/api/secure-votes/counts");
+  }
+
+  async getMyVotingStatus(): Promise<ApiResponse> {
+    return this.get("/api/secure-votes/my-status");
+  }
+
+  async getMyVotingHistory(): Promise<ApiResponse> {
+    return this.get("/api/secure-votes/my-history");
+  }
+
+  async submitVote(
+    participantId: string,
+    awardCategory: string
+  ): Promise<ApiResponse> {
+    return this.post("/api/secure-votes/", {
+      participantId,
+      awardCategory,
+    });
+  }
+
+  async getCategoryParticipants(category: string): Promise<ApiResponse> {
+    return this.get(
+      `/api/secure-votes/category/${encodeURIComponent(category)}`
+    );
+  }
+
+  async getRecentVotes(): Promise<ApiResponse> {
+    return this.get("/api/secure-votes/recent", false);
   }
 }
 
@@ -147,6 +262,8 @@ export const handleApiError = (error: ApiError): string => {
       return "You're voting too quickly. Please wait a moment before trying again.";
     case "ALREADY_VOTED":
       return "You have already voted for this category. Please wait 24 hours before voting again.";
+    case "UNAUTHORIZED":
+      return "Please log in to continue.";
     case "SERVER_ERROR":
       return "Server error. Please try again later.";
     case "QUEUE_ERROR":
@@ -173,4 +290,14 @@ export const validateEmail = (email: string): boolean => {
 
 export const validateRequired = (value: string): boolean => {
   return value.trim().length > 0;
+};
+
+export const validatePhoneNumber = (phone: string): boolean => {
+  const cleanPhone = phone.replace(/\D/g, "");
+  const nigerianPhoneRegex = /^(234|0)?[789][01]\d{8}$/;
+  return nigerianPhoneRegex.test(cleanPhone);
+};
+
+export const validatePassword = (password: string): boolean => {
+  return password.length >= 6;
 };

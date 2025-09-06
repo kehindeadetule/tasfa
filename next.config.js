@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable static exports for Cloudflare Pages
+  output: 'export',
+  trailingSlash: true,
   images: {
+    unoptimized: true,
     domains: [
       "172.20.10.2", // Local development
       "tasfa-test.s3.amazonaws.com", // AWS S3 bucket for images
@@ -19,6 +23,11 @@ const nextConfig = {
         pathname: "/voting-uploads/**",
       },
     ],
+  },
+  // Environment variables
+  env: {
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV,
   },
   // Security headers
   async headers() {

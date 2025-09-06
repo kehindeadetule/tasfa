@@ -1,11 +1,14 @@
 // API Configuration
 const API_CONFIG = {
-  // Development: Local backend
-  development: "https://tasfa-be.onrender.com",
-  // Production: AWS Lambda API Gateway
-  production: "https://tasfa-be.onrender.com",
-  // Staging: AWS Lambda API Gateway (same as production for now)
-  staging: "https://tasfa-be.onrender.com",
+  // Development: Use environment variable or fallback to localhost
+  development:
+    process.env.NEXT_PUBLIC_API_BASE_URL || "https://tasfa-be.onrender.com",
+  // Production: Use environment variable or fallback to production URL
+  production:
+    process.env.NEXT_PUBLIC_API_BASE_URL || "https://tasfa-be.onrender.com",
+  // Staging: Use environment variable or fallback to staging URL
+  staging:
+    process.env.NEXT_PUBLIC_API_BASE_URL || "https://tasfa-be.onrender.com",
 };
 
 // Get the current environment
@@ -44,14 +47,14 @@ export const API_BASE_URL = API_CONFIG[getEnvironment()];
 
 // Export individual endpoint URLs
 export const API_ENDPOINTS = {
-  votes: `${API_BASE_URL}/api/votes`,
-  voteCounts: `${API_BASE_URL}/api/votes/counts`,
-  votingStatus: `${API_BASE_URL}/api/votes/voting-status`,
-  votingHistory: `${API_BASE_URL}/api/votes/voting-history`,
+  votes: `${API_BASE_URL}/api/secure-votes`,
+  voteCounts: `${API_BASE_URL}/api/secure-votes/counts`,
+  votingStatus: `${API_BASE_URL}/api/secure-votes/my-status`,
+  votingHistory: `${API_BASE_URL}/api/secure-votes/my-history`,
   category: (category: string) =>
-    `${API_BASE_URL}/api/votes/category/${category}`,
-  queueStatus: `${API_BASE_URL}/api/votes/queue-status`,
-  sessionDebug: `${API_BASE_URL}/api/votes/session-debug`,
+    `${API_BASE_URL}/api/secure-votes/category/${category}`,
+  queueStatus: `${API_BASE_URL}/api/secure-votes/queue-status`,
+  sessionDebug: `${API_BASE_URL}/api/secure-votes/session-debug`,
   health: `${API_BASE_URL}/health`,
 };
 

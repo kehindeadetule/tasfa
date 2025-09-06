@@ -8,6 +8,7 @@ import {
   hasVotedForCategory,
   clearExpiredVotingData,
 } from "@/utils/voteTimestampsUtils";
+import { isSecurityError } from "@/utils/securityUtils";
 
 interface VotingStatus {
   canVote: boolean;
@@ -134,10 +135,8 @@ export const useSimpleVoting = (categoryName: string) => {
 
       // Fetch both category participants and voting status in parallel
       const [participantsResult, votingStatusResult] = await Promise.all([
-        apiClient.get(
-          `/api/votes/category/${encodeURIComponent(categoryName)}`
-        ),
-        apiClient.get("/api/votes/voting-status"),
+        apiClient.getCategoryParticipants(categoryName),
+        apiClient.getMyVotingStatus(),
       ]);
 
       if (!participantsResult.success) {
@@ -230,12 +229,7 @@ export const useSimpleVoting = (categoryName: string) => {
           throw new Error("Invalid participant data");
         }
 
-        const result = await apiClient.post<VoteResponseData>("/api/votes", {
-          firstName: participant.firstName.trim(),
-          lastName: participant.lastName.trim(),
-          school: participant.school.trim(),
-          awardCategory: categoryName.trim(),
-        });
+        const result = await apiClient.submitVote(participantId, categoryName);
 
         if (result.success) {
           // Store voting data in localStorage with 24-hour expiration (for restriction only)

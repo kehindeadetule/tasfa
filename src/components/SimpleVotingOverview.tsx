@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient, handleApiError, ApiError } from "@/utils/secureApiClient";
-import {
-  getAllVotingData,
-  clearExpiredVotingData,
-} from "@/utils/voteTimestampsUtils";
+import { useAuth } from "@/hooks/useAuth";
+import { API_BASE_URL } from "@/config/api";
+import { useSecureVoting } from "@/hooks/useSecureVoting";
 
 interface VotingOverviewProps {}
 
@@ -34,59 +32,48 @@ interface GlobalVotingStatus {
 }
 
 export default function SimpleVotingOverview({}: VotingOverviewProps) {
-  const [votingStatus, setVotingStatus] = useState<GlobalVotingStatus | null>(
-    null
-  );
+  const { isAuthenticated, user, logout } = useAuth();
+  const [votingHistory, setVotingHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchVotingStatus = async () => {
+  const fetchVotingHistory = async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      setError("Authentication required");
+      return;
+    }
+
     try {
       setRefreshing(true);
       setError(null);
 
-      // Clear expired voting data first
-      clearExpiredVotingData();
+      const response = await fetch(
+        `${API_BASE_URL}/api/secure-votes/my-history`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("tasfa_auth_token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const result = await apiClient.get("/api/votes/voting-status");
-
-      if (result.success) {
-        const apiVotingStatus = result.data as GlobalVotingStatus;
-
-        // Get localStorage voting data
-        const localStorageVotingData = getAllVotingData();
-
-        // Debug logging
-        console.log("Voting Status Data:", {
-          apiVotingStatus,
-          localStorageVotingData,
-          voteTimestamps: apiVotingStatus.voteTimestamps,
-          votedCategories: apiVotingStatus.votedCategories,
-        });
-
-        // Merge localStorage data with API data
-        const mergedVotingStatus = {
-          ...apiVotingStatus,
-          votedCategories: [
-            ...new Set([
-              ...apiVotingStatus.votedCategories,
-              ...Object.keys(localStorageVotingData),
-            ]),
-          ],
-        };
-
-        setVotingStatus(mergedVotingStatus);
-        setLastUpdated(new Date());
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setVotingHistory(data.data.votes || []);
+          setLastUpdated(new Date());
+        } else {
+          throw new Error(data.message || "Failed to fetch voting history");
+        }
       } else {
-        throw new Error(result.message || "Failed to fetch voting status");
+        throw new Error("Failed to fetch voting history");
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error
-          ? handleApiError(err as ApiError)
-          : "An error occurred";
+        err instanceof Error ? err.message : "An error occurred";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -95,45 +82,60 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
   };
 
   useEffect(() => {
-    fetchVotingStatus();
+    if (isAuthenticated) {
+      fetchVotingHistory();
+    } else {
+      setLoading(false);
+    }
 
     // Add auto-refresh every 30 seconds
     const interval = setInterval(() => {
-      fetchVotingStatus();
-    }, 30000);
-
-    // Listen for localStorage changes (when votes are submitted)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key && e.key.startsWith("tasfa_vote_")) {
-        // Refresh when voting data changes
-        fetchVotingStatus();
+      if (isAuthenticated) {
+        fetchVotingHistory();
       }
-    };
+    }, 30000);
 
     // Listen for keyboard shortcut (Ctrl+R) to refresh
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "r") {
         e.preventDefault();
-        fetchVotingStatus();
+        if (isAuthenticated) {
+          fetchVotingHistory();
+        }
       }
     };
 
-    window.addEventListener("storage", handleStorageChange);
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            🔐 Authentication Required
+          </h3>
+          <p className="text-gray-600 text-sm">
+            Please log in with your phone number to view your voting progress
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#005B96] mx-auto"></div>
-          <p className="mt-2 text-sm text-gray-600">Loading voting status...</p>
+          <p className="mt-2 text-sm text-gray-600">
+            Loading voting history...
+          </p>
         </div>
       </div>
     );
@@ -144,10 +146,10 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="text-center">
           <p className="text-red-600 text-sm mb-2">
-            Error loading voting status
+            Error loading voting history
           </p>
           <button
-            onClick={fetchVotingStatus}
+            onClick={fetchVotingHistory}
             className="text-sm text-blue-600 hover:underline"
           >
             Retry
@@ -157,92 +159,53 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
     );
   }
 
-  if (!votingStatus) {
-    return null;
-  }
+  // Calculate voting statistics from history
+  const totalVotes = votingHistory.length;
+  const votedCategories = votingHistory.map((vote) => vote.category);
+  const uniqueCategories = [...new Set(votedCategories)];
 
-  // Use the new comprehensive structure for accurate counting
-  const voteTimestamps = votingStatus.voteTimestamps || {};
+  // Group votes by category
+  const votesByCategory = votingHistory.reduce((acc, vote) => {
+    if (!acc[vote.category]) {
+      acc[vote.category] = [];
+    }
+    acc[vote.category].push(vote);
+    return acc;
+  }, {} as { [category: string]: any[] });
 
-  // Get localStorage voting data as fallback
-  const localStorageVotingData = getAllVotingData();
-
-  // If API doesn't provide voteTimestamps, create a basic structure from localStorage
-  let effectiveVoteTimestamps = voteTimestamps;
-  if (
-    Object.keys(voteTimestamps).length === 0 &&
-    Object.keys(localStorageVotingData).length > 0
-  ) {
-    // Create basic voteTimestamps structure from localStorage data
-    effectiveVoteTimestamps = Object.keys(localStorageVotingData).reduce(
-      (acc, category) => {
-        acc[category] = {
-          votedAt: localStorageVotingData[category].timestamp,
-          nextVoteAt: new Date(
-            new Date(localStorageVotingData[category].timestamp).getTime() +
-              24 * 60 * 60 * 1000
-          ).toISOString(),
-          canVoteAgain: false,
-          status: "pending" as const,
-        };
-        return acc;
-      },
-      {} as { [category: string]: VoteTimestamp }
-    );
-  }
-
-  // Count available categories (status === "available")
-  const availableCount = Object.values(effectiveVoteTimestamps).filter(
-    (data) => data.status === "available"
-  ).length;
-
-  // Count pending categories (status === "pending")
-  const pendingCount = Object.values(effectiveVoteTimestamps).filter(
-    (data) => data.status === "pending"
-  ).length;
-
-  // Total categories - include both API and localStorage data
-  const totalCount = Math.max(
-    Object.keys(effectiveVoteTimestamps).length,
-    Object.keys(localStorageVotingData).length
-  );
-
-  // Get categories by status for display
-  const availableCategories = Object.keys(effectiveVoteTimestamps).filter(
-    (category) => effectiveVoteTimestamps[category].status === "available"
-  );
-
-  const pendingCategories = Object.keys(effectiveVoteTimestamps)
-    .filter(
-      (category) => effectiveVoteTimestamps[category].status === "pending"
-    )
-    .map((category) => ({
-      category,
-      timeRemaining: votingStatus.timeUntilNextVote[category] || 0,
-    }));
+  // Get recent votes (last 5)
+  const recentVotes = votingHistory.slice(0, 5);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="text-center mb-4">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-lg font-semibold text-gray-800">
-            🗳️ Your Voting Progress
+            🗳️ Your Voting History
           </h3>
-          <button
-            onClick={fetchVotingStatus}
-            disabled={refreshing}
-            className="text-sm text-blue-600 hover:text-blue-800 underline flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Refresh voting status"
-          >
-            <span className="text-xs">{refreshing ? "⟳" : "↻"}</span>
-            <span>{refreshing ? "Refreshing..." : "Refresh"}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={fetchVotingHistory}
+              disabled={refreshing}
+              className="text-sm text-blue-600 hover:text-blue-800 underline flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Refresh voting history"
+            >
+              <span className="text-xs">{refreshing ? "⟳" : "↻"}</span>
+              <span>{refreshing ? "Refreshing..." : "Refresh"}</span>
+            </button>
+            <button
+              onClick={logout}
+              className="text-sm text-red-600 hover:text-red-800 underline"
+            >
+              Logout
+            </button>
+          </div>
         </div>
         <p className="text-sm text-gray-600">
-          Track your voting journey across all categories
+          Logged in as: {user?.phoneNumber}
         </p>
         <p className="text-xs text-gray-500 mt-1">
-          Auto-refreshes every 30 seconds • Updates when you vote
+          Auto-refreshes every 30 seconds
           {lastUpdated && (
             <span className="block mt-1">
               Last updated: {lastUpdated.toLocaleTimeString()}
@@ -252,78 +215,83 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="text-center p-4 bg-orange-50 rounded-lg">
-          <div className="text-2xl font-bold text-orange-600">
-            {pendingCount}
-          </div>
-          <div className="text-sm text-orange-700">Pending</div>
+        <div className="text-center p-4 bg-green-50 rounded-lg">
+          <div className="text-2xl font-bold text-green-600">{totalVotes}</div>
+          <div className="text-sm text-green-700">Total Votes</div>
         </div>
         <div className="text-center p-4 bg-blue-50 rounded-lg">
           <div className="text-2xl font-bold text-blue-600">
-            {availableCount}
+            {uniqueCategories.length}
           </div>
-          <div className="text-sm text-blue-700">Available</div>
+          <div className="text-sm text-blue-700">Categories Voted</div>
         </div>
-        <div className="text-center p-4 bg-gray-50 rounded-lg">
-          <div className="text-2xl font-bold text-gray-600">{totalCount}</div>
-          <div className="text-sm text-gray-700">Total</div>
+        <div className="text-center p-4 bg-purple-50 rounded-lg">
+          <div className="text-2xl font-bold text-purple-600">
+            {user?.isVerified ? "✓" : "✗"}
+          </div>
+          <div className="text-sm text-purple-700">Verified</div>
         </div>
       </div>
 
       {/* Security Features Info */}
-      {/* <div className="mb-4 p-4 bg-green-50 rounded-lg border border-green-200">
+      <div className="mb-4 p-4 bg-green-50 rounded-lg border border-green-200">
         <h4 className="text-sm font-medium text-green-800 mb-2">
           🔒 Security Features Active
         </h4>
         <div className="text-xs text-green-700 space-y-1">
-          <div>• 1-minute cooldown between votes</div>
-          <div>• Session + IP binding prevents multiple tabs</div>
-          <div>• Maximum 5 votes per minute per IP</div>
+          <div>• Phone number verification required</div>
+          <div>• JWT token authentication</div>
+          <div>• Rate limiting on votes and OTP requests</div>
           <div>• 24-hour category lock after voting</div>
-          <div>• Session persistence across browser tabs</div>
+          <div>• Secure vote tracking by phone number</div>
         </div>
-      </div> */}
+      </div>
 
-      {pendingCount > 0 && (
+      {totalVotes > 0 && (
         <div className="mb-4">
           <h4 className="text-sm font-medium text-gray-700 mb-2">
-            ⏰ Categories Waiting for Next Vote
+            📊 Recent Voting Activity
           </h4>
-          <div className="flex flex-wrap gap-2">
-            {pendingCategories.slice(0, 5).map((pending: any) => (
-              <span
-                key={pending.category}
-                className="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full"
+          <div className="space-y-2">
+            {recentVotes.map((vote, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center p-2 bg-gray-50 rounded text-xs"
               >
-                {pending.category} ({pending.timeRemaining}h)
-              </span>
+                <span className="font-medium">{vote.category}</span>
+                <span className="text-gray-500">
+                  {new Date(vote.votedAt).toLocaleDateString()}
+                </span>
+              </div>
             ))}
-            {pendingCategories.length > 5 && (
-              <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                +{pendingCategories.length - 5} more
-              </span>
+            {totalVotes > 5 && (
+              <div className="text-center text-xs text-gray-500">
+                +{totalVotes - 5} more votes
+              </div>
             )}
           </div>
         </div>
       )}
 
-      {availableCount > 0 && (
+      {Object.keys(votesByCategory).length > 0 && (
         <div>
           <h4 className="text-sm font-medium text-gray-700 mb-2">
-            🎯 Categories Available for Voting
+            🏆 Categories You've Voted In
           </h4>
           <div className="flex flex-wrap gap-2">
-            {availableCategories.slice(0, 5).map((category: string) => (
-              <span
-                key={category}
-                className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
-              >
-                {category}
-              </span>
-            ))}
-            {availableCategories.length > 5 && (
+            {Object.keys(votesByCategory)
+              .slice(0, 5)
+              .map((category) => (
+                <span
+                  key={category}
+                  className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"
+                >
+                  {category}
+                </span>
+              ))}
+            {Object.keys(votesByCategory).length > 5 && (
               <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                +{availableCategories.length - 5} more
+                +{Object.keys(votesByCategory).length - 5} more
               </span>
             )}
           </div>
@@ -343,21 +311,16 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
             </summary>
             <div className="mt-2 p-3 bg-gray-50 rounded text-xs">
               <div>
-                <strong>API VoteTimestamps:</strong>{" "}
-                {Object.keys(voteTimestamps).length} categories
+                <strong>Total Votes:</strong> {totalVotes}
               </div>
               <div>
-                <strong>localStorage Data:</strong>{" "}
-                {Object.keys(localStorageVotingData).length} categories
+                <strong>Unique Categories:</strong> {uniqueCategories.length}
               </div>
               <div>
-                <strong>Effective VoteTimestamps:</strong>{" "}
-                {Object.keys(effectiveVoteTimestamps).length} categories
+                <strong>User Phone:</strong> {user?.phoneNumber}
               </div>
               <div>
-                <strong>Available:</strong> {availableCount} |{" "}
-                <strong>Pending:</strong> {pendingCount} |{" "}
-                <strong>Total:</strong> {totalCount}
+                <strong>Is Verified:</strong> {user?.isVerified ? "Yes" : "No"}
               </div>
             </div>
           </details>
