@@ -22,13 +22,6 @@ export const categorySlugToName: Record<string, string> = {
   "best-music-director": "Best Music Director",
   "best-media-student-male": "Best Media Student (Male)",
   "best-media-student-female": "Best Media Student (Female)",
-  "creative-art-institution-of-the-year":
-    "Creative Arts Institution of the Year",
-  "creative-art-institution-of-the-year-1st-runner-up":
-    "Creative Arts Institution of the Year (1st Runner-Up)",
-  "creative-art-institution-of-the-year-2nd-runner-up":
-    "Creative Arts Institution of the Year (2nd Runner-Up)",
-  "theatre-legend-of-the-year": "Theatre Legend of the Year",
 };
 
 export const categoryNameToSlug: Record<string, string> = Object.fromEntries(

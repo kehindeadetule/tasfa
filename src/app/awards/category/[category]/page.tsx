@@ -1,10 +1,11 @@
 "use client";
 
 import { toast } from "react-toastify";
-import { categorySlugToName } from "@/utils/categoryMapping";
+
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSecureVoting } from "@/hooks/useSecureVoting";
-import { useState } from "react";
+import { categorySlugToName } from "@/utils/categoryMapping";
 
 interface Participant {
   _id: string;
@@ -187,7 +188,7 @@ export default function CategoryPage({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {participants.map((participant) => (
+            {participants.map((participant: Participant) => (
               <div
                 key={participant._id}
                 className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
