@@ -47,6 +47,9 @@ const nextConfig = {
       "@": require("path").resolve(__dirname, "src"),
     };
 
+    // Disable webpack cache to avoid large cache files
+    config.cache = false;
+
     return config;
   },
 };
