@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable static export for now to fix dynamic routes
-  // output: 'export',
+  // Enable static exports for Cloudflare Pages
+  output: 'export',
   trailingSlash: true,
   images: {
     unoptimized: true,
@@ -28,6 +28,18 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
     NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV,
+  },
+  // Webpack configuration to help with module resolution
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    return config;
   },
 };
 
