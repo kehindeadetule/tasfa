@@ -32,6 +32,11 @@ const schoolLogos = [
   { logo: "/assets/school-logo/fceabk.jpg", alt: "FCEABK" },
   { logo: "/assets/school-logo/leadcity.png", alt: "Lead City" },
   { logo: "/assets/school-logo/oau.jpg", alt: "OAU" },
+  // {
+  //   logo: "/assets/school-logo/kwasu.png",
+  //   alt: "KWASU",
+  //   className: "w-[10px]",
+  // },
   { logo: "/assets/school-logo/oou.jpg", alt: "OOU" },
   { logo: "/assets/school-logo/redeemers.jpg", alt: "Redeemers" },
   { logo: "/assets/school-logo/bowen.png", alt: "Bowen" },
