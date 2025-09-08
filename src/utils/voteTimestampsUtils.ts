@@ -282,7 +282,6 @@ export function storeVotingData(
       `tasfa_vote_${categoryName}`,
       JSON.stringify(votingData)
     );
-    console.log(`Voting data stored for ${categoryName}`);
   } catch (error) {
     console.warn("Failed to store voting data:", error);
   }
@@ -310,7 +309,6 @@ export function getVotingData(
       } else {
         // Clean up expired data
         localStorage.removeItem(`tasfa_vote_${categoryName}`);
-        console.log(`Voting data expired for ${categoryName}`);
       }
     }
   } catch (error) {
@@ -386,7 +384,6 @@ export function clearExpiredVotingData(): void {
     // Remove expired keys
     keysToRemove.forEach((key) => {
       localStorage.removeItem(key);
-      console.log(`Removed expired voting data: ${key}`);
     });
   } catch (error) {
     console.warn("Failed to clear expired voting data:", error);
@@ -399,7 +396,6 @@ export function clearExpiredVotingData(): void {
 export function clearVotingData(categoryName: string): void {
   try {
     localStorage.removeItem(`tasfa_vote_${categoryName}`);
-    console.log(`Voting data cleared for ${categoryName}`);
   } catch (error) {
     console.warn("Failed to clear voting data:", error);
   }
@@ -422,8 +418,6 @@ export function clearAllVotingData(): void {
     keysToRemove.forEach((key) => {
       localStorage.removeItem(key);
     });
-
-    console.log("All voting data cleared");
   } catch (error) {
     console.warn("Failed to clear all voting data:", error);
   }
@@ -433,12 +427,8 @@ export function clearAllVotingData(): void {
  * Debug function to log all localStorage voting data
  */
 export function debugVotingData(): void {
-  console.log("=== localStorage Voting Data Debug ===");
-
   try {
     const votingData = getAllVotingData();
-
-    console.log("Voting Records:", votingData);
 
     // Log all tasfa-related localStorage keys
     const tasfaKeys = [];
@@ -448,7 +438,6 @@ export function debugVotingData(): void {
         tasfaKeys.push(key);
       }
     }
-    console.log("All TASFA localStorage keys:", tasfaKeys);
   } catch (error) {
     console.error("Error debugging voting data:", error);
   }
@@ -470,10 +459,7 @@ export function clearAllTasfaData(): void {
 
     keysToRemove.forEach((key) => {
       localStorage.removeItem(key);
-      console.log(`Removed: ${key}`);
     });
-
-    console.log("All TASFA localStorage data cleared");
   } catch (error) {
     console.warn("Failed to clear all TASFA data:", error);
   }
@@ -485,8 +471,6 @@ export function clearAllTasfaData(): void {
  */
 export function clearAllFrontendVotingData(): void {
   try {
-    console.log("Clearing all frontend voting data...");
-
     // Clear all voting states (voting_state_*)
     clearAllVotingStates();
 
@@ -495,9 +479,6 @@ export function clearAllFrontendVotingData(): void {
 
     // Clear all TASFA data (redundant but ensures everything is cleared)
     clearAllTasfaData();
-
-    console.log("✅ All frontend voting data cleared successfully!");
-    console.log("Users can now start voting fresh.");
   } catch (error) {
     console.error("Failed to clear all frontend voting data:", error);
   }

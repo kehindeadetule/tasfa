@@ -17,7 +17,6 @@ const clearAllVotingData = () => {
         localStorage.removeItem(key);
       }
     });
-    console.log("Cleared all voting localStorage data");
   } catch (error) {
     console.warn("Failed to clear voting localStorage:", error);
   }
@@ -65,8 +64,6 @@ interface UserVotingStatus {
 }
 
 export const useSecureVoting = (categoryName: string) => {
-  console.log("=== HOOK DEBUG ===");
-  console.log("Hook received categoryName:", categoryName);
   const { isAuthenticated, user } = useAuth();
   const [data, setData] = useState<CategoryData>({
     participants: [],
@@ -82,7 +79,6 @@ export const useSecureVoting = (categoryName: string) => {
   // Detect user changes and clear voting data when user switches
   useEffect(() => {
     if (user?.id && user.id !== currentUserId) {
-      console.log("User changed, clearing voting data");
       clearAllVotingData();
       setCurrentUserId(user.id);
       setData({
@@ -91,7 +87,6 @@ export const useSecureVoting = (categoryName: string) => {
       });
       setUserVotingStatus(null);
     } else if (!user && currentUserId) {
-      console.log("User logged out, clearing voting data");
       clearAllVotingData();
       setCurrentUserId(null);
       setData({
@@ -154,13 +149,6 @@ export const useSecureVoting = (categoryName: string) => {
           voteCategory === categoryName.toLowerCase() ||
           voteCategory === categoryName.replace(/\s+/g, "-").toLowerCase();
 
-        console.log(`Checking vote:`, {
-          voteCategory,
-          categoryName,
-          matches,
-          vote,
-        });
-
         return matches;
       })?.participantId;
 
@@ -171,36 +159,8 @@ export const useSecureVoting = (categoryName: string) => {
         const storedVotedId = localStorage.getItem(localStorageKey);
         if (storedVotedId) {
           votedParticipantId = storedVotedId;
-          console.log(
-            `Fallback: Found voted participant ID in localStorage:`,
-            votedParticipantId
-          );
         }
       }
-
-      // Debug: Log voting history structure
-      console.log("Voting History:", votingHistory);
-      console.log("History Votes:", historyVotes);
-      console.log("Looking for category:", categoryName);
-      console.log(
-        "History votes structure:",
-        historyVotes.map((vote: any) => ({
-          category: vote.category,
-          categoryId: vote.categoryId,
-          participantId: vote.participantId,
-          allKeys: Object.keys(vote),
-          fullVote: vote,
-        }))
-      );
-      console.log("Found voted participant ID:", votedParticipantId);
-      console.log("Search summary:", {
-        lookingFor: categoryName,
-        totalVotes: historyVotes.length,
-        foundMatch: !!votedParticipantId,
-        usedLocalStorage:
-          !votedParticipantId &&
-          localStorage.getItem(`tasfa_voted_${categoryName}`),
-      });
 
       // Process the voting limits response
       // The API client returns the raw response, not wrapped in a 'data' property
@@ -334,10 +294,6 @@ export const useSecureVoting = (categoryName: string) => {
           // Store voted participant ID in localStorage for persistence
           const localStorageKey = `tasfa_voted_${categoryName}`;
           localStorage.setItem(localStorageKey, votedParticipantId);
-          console.log(
-            `Stored voted participant ID in localStorage:`,
-            votedParticipantId
-          );
 
           // Update local state to reflect the vote
           setData((prevData) => ({

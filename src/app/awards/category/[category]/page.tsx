@@ -25,9 +25,6 @@ export default function CategoryPage({
   const slug = params.category;
   const categoryName = categorySlugToName[slug] || slug;
 
-  console.log("=== COMPONENT DEBUG ===");
-  console.log("Slug from params:", slug);
-  console.log("Category name:", categoryName);
   const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   const [disableVoteButton, setDisableVoteButton] = useState(false);

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config/api";
 
 interface User {
@@ -31,6 +32,7 @@ interface LoginResponse {
 }
 
 export const useAuth = () => {
+  const router = useRouter();
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     token: null,
@@ -142,7 +144,10 @@ export const useAuth = () => {
       isAuthenticated: false,
       isLoading: false,
     });
-  }, []);
+
+    // Use Next.js router for safer client-side navigation
+    router.push("/");
+  }, [router]);
 
   const refreshToken = useCallback(async (): Promise<boolean> => {
     try {
