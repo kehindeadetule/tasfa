@@ -281,7 +281,7 @@ export const handleApiError = (error: ApiError): string => {
     case "EMAIL_NOT_VERIFIED":
       return "Please verify your email address before voting";
     case "VOTING_LIMIT_EXCEEDED":
-      return `You can vote again in ${error?.remainingHours} hours`;
+      return `You can vote again later.`;
     case "RATE_LIMITED":
       return "Too many requests. Please try again later.";
     case "UNKNOWN_ERROR":

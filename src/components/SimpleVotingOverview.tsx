@@ -201,9 +201,7 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
             </button>
           </div>
         </div>
-        <p className="text-sm text-gray-600">
-          Logged in as: {user?.phoneNumber}
-        </p>
+        <p className="text-sm text-gray-600">Logged in as: {user?.email}</p>
         <p className="text-xs text-gray-500 mt-1">
           Auto-refreshes every 30 seconds
           {lastUpdated && (
@@ -317,7 +315,7 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
                 <strong>Unique Categories:</strong> {uniqueCategories.length}
               </div>
               <div>
-                <strong>User Phone:</strong> {user?.phoneNumber}
+                <strong>User Phone:</strong> {user?.email}
               </div>
               <div>
                 <strong>Is Verified:</strong> {user?.isVerified ? "Yes" : "No"}

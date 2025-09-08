@@ -132,3 +132,4 @@ export const useSecurity = (): UseSecurityReturn => {
     isSecurityError,
   };
 };
+

@@ -122,3 +122,4 @@ const SecurityModal: React.FC<SecurityModalProps> = ({
 };
 
 export default SecurityModal;
+
