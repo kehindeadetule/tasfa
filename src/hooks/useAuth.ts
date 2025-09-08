@@ -78,6 +78,19 @@ export const useAuth = () => {
   const login = useCallback(
     async (userData: User, token: string): Promise<LoginResponse> => {
       try {
+        // Clear any existing voting data to prevent cross-account contamination
+        const keys = Object.keys(localStorage);
+        keys.forEach((key) => {
+          if (
+            key.startsWith("tasfa_vote_") ||
+            key.startsWith("tasfa_voted_") ||
+            key.startsWith("voting_state_") ||
+            key.startsWith("tasfa_voting_")
+          ) {
+            localStorage.removeItem(key);
+          }
+        });
+
         // Store auth data in localStorage
         localStorage.setItem("tasfa_a_t", token);
         localStorage.setItem("emailUserData", JSON.stringify(userData));
@@ -110,10 +123,15 @@ export const useAuth = () => {
     localStorage.removeItem("tasfa_a_t");
     localStorage.removeItem("emailUserData");
 
-    // Clear voting data
+    // Clear ALL voting-related data to prevent cross-account contamination
     const keys = Object.keys(localStorage);
     keys.forEach((key) => {
-      if (key.startsWith("tasfa_vote_")) {
+      if (
+        key.startsWith("tasfa_vote_") ||
+        key.startsWith("tasfa_voted_") ||
+        key.startsWith("voting_state_") ||
+        key.startsWith("tasfa_voting_")
+      ) {
         localStorage.removeItem(key);
       }
     });

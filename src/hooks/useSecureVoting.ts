@@ -2,24 +2,29 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import { apiClient, handleApiError, ApiError } from "@/utils/secureApiClient";
 
-// Utility function to clear all voting-related localStorage data (except voted participant IDs)
+// Utility function to clear all voting-related localStorage data
 const clearAllVotingData = () => {
   try {
     const keys = Object.keys(localStorage);
     keys.forEach((key) => {
-      // Clear voting state data but preserve voted participant IDs
+      // Clear all voting-related data to ensure fresh state
       if (
         key.startsWith("voting_state_") ||
-        (key.startsWith("tasfa_vote_") && !key.startsWith("tasfa_voted_"))
+        key.startsWith("tasfa_vote_") ||
+        key.startsWith("tasfa_voted_") ||
+        key.startsWith("tasfa_voting_")
       ) {
         localStorage.removeItem(key);
       }
     });
-    console.log("Cleared voting state data (preserved voted participant IDs)");
+    console.log("Cleared all voting localStorage data");
   } catch (error) {
     console.warn("Failed to clear voting localStorage:", error);
   }
 };
+
+// Export the clear function for use in other components
+export const clearVotingData = clearAllVotingData;
 
 interface Participant {
   _id: string;
@@ -72,6 +77,30 @@ export const useSecureVoting = (categoryName: string) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userVotingStatus, setUserVotingStatus] =
     useState<UserVotingStatus | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Detect user changes and clear voting data when user switches
+  useEffect(() => {
+    if (user?.id && user.id !== currentUserId) {
+      console.log("User changed, clearing voting data");
+      clearAllVotingData();
+      setCurrentUserId(user.id);
+      setData({
+        participants: [],
+        votingStatus: { canVote: undefined },
+      });
+      setUserVotingStatus(null);
+    } else if (!user && currentUserId) {
+      console.log("User logged out, clearing voting data");
+      clearAllVotingData();
+      setCurrentUserId(null);
+      setData({
+        participants: [],
+        votingStatus: { canVote: undefined },
+      });
+      setUserVotingStatus(null);
+    }
+  }, [user?.id, currentUserId]);
 
   const fetchCategoryData = useCallback(async () => {
     if (!isAuthenticated) {
@@ -135,14 +164,18 @@ export const useSecureVoting = (categoryName: string) => {
         return matches;
       })?.participantId;
 
-      // Fallback: Check localStorage for voted participant ID
+      // Fallback: Check localStorage for voted participant ID only if API doesn't have it
+      // This prevents localStorage from overriding fresh API data
       if (!votedParticipantId) {
         const localStorageKey = `tasfa_voted_${categoryName}`;
-        votedParticipantId = localStorage.getItem(localStorageKey);
-        console.log(
-          `Fallback: Found voted participant ID in localStorage:`,
-          votedParticipantId
-        );
+        const storedVotedId = localStorage.getItem(localStorageKey);
+        if (storedVotedId) {
+          votedParticipantId = storedVotedId;
+          console.log(
+            `Fallback: Found voted participant ID in localStorage:`,
+            votedParticipantId
+          );
+        }
       }
 
       // Debug: Log voting history structure
@@ -224,16 +257,22 @@ export const useSecureVoting = (categoryName: string) => {
       // Clear all localStorage voting data to ensure real-time updates
       clearAllVotingData();
 
+      // Determine voting status with API data taking priority
+      const hasVotedFromAPI = !!votedParticipantId;
+      const finalCanVote = canVote && !hasVotedFromAPI;
+
       const votingStatus: VotingStatus = {
-        canVote,
+        canVote: finalCanVote,
         votedParticipantId,
         nextVoteTime,
         timeRemaining,
-        message: canVote
+        message: hasVotedFromAPI
+          ? "You have already voted for this category"
+          : canVote
           ? "You can vote for this category"
           : nextVoteTime && timeRemaining
           ? `You can vote again in ${Math.ceil(timeRemaining / 3600)} hours`
-          : "You have already voted for this category",
+          : "Voting not available for this category",
       };
 
       setData({
