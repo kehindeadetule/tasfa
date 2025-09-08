@@ -24,6 +24,10 @@ export default function CategoryPage({
 }) {
   const slug = params.category;
   const categoryName = categorySlugToName[slug] || slug;
+
+  console.log("=== COMPONENT DEBUG ===");
+  console.log("Slug from params:", slug);
+  console.log("Category name:", categoryName);
   const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   const [disableVoteButton, setDisableVoteButton] = useState(false);
@@ -60,7 +64,7 @@ export default function CategoryPage({
   };
 
   // Get the voted participant ID for highlighting
-  const votedParticipantId = votingStatus.votedParticipantId;
+  const votedParticipantId = votingStatus?.votedParticipantId;
 
   if (authLoading) {
     return (
@@ -79,7 +83,7 @@ export default function CategoryPage({
     return (
       <section className="min-h-screen flex justify-center items-center bg-gradient-to-b from-gray-50 to-white pt-24 pb-12">
         <div className="container mx-auto px-4 py-8">
-          <div className="max-w-md mx-auto w-full space-y-8">
+          <div className="max-w-md mx-auto w-full space-y-10">
             <div className="bg-white rounded-lg shadow-xl p-8 text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 🔐 Authentication Required
@@ -93,13 +97,7 @@ export default function CategoryPage({
                   href="/auth"
                   className="w-full bg-[#005B96] hover:bg-[#004080] text-white font-semibold py-3 px-6 rounded-lg transition-colors block text-center"
                 >
-                  Login / Sign Up
-                </a>
-                <a
-                  href="/voting"
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors block text-center"
-                >
-                  Go to Secure Voting
+                  Login | Sign Up
                 </a>
               </div>
             </div>
@@ -147,10 +145,36 @@ export default function CategoryPage({
           {categoryName}
         </h1>
 
-        {/* Voting Status */}
-        {!votingStatus.canVote && (
-          <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-            <div className="flex items-center">
+        {/* Voting Status - Can Vote */}
+        {votingStatus && votingStatus?.canVote && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
+            <div className="flex items-center justify-center">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-green-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-green-800">
+                  ✅ You can vote for this category now!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Voting Status - Cannot Vote */}
+        {votingStatus && !votingStatus?.canVote && (
+          <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg text-center">
+            <div className="flex items-center justify-center">
               <div className="flex-shrink-0">
                 <svg
                   className="h-5 w-5 text-orange-400"
@@ -188,10 +212,14 @@ export default function CategoryPage({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {participants.map((participant: Participant) => (
+            {participants?.map((participant: Participant) => (
               <div
                 key={participant._id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                className={`bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 ${
+                  votingStatus?.votedParticipantId === participant._id
+                    ? "ring-2 ring-green-500 ring-opacity-50"
+                    : ""
+                }`}
               >
                 <div className="relative h-80 md:h-80 w-full">
                   {participant.image ? (
@@ -208,6 +236,22 @@ export default function CategoryPage({
                       </div>
                     </div>
                   )}
+                  {/* Voted indicator overlay */}
+                  {votingStatus?.votedParticipantId === participant._id && (
+                    <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-2 shadow-lg">
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  )}
                 </div>
                 <div className="px-5 py-6 md:p-6">
                   <h2 className="text-lg md:text-xl font-semibold mb-2">
@@ -221,7 +265,7 @@ export default function CategoryPage({
                         {participant.voteCount}
                       </span>
                     </div>
-                    {votedParticipantId === participant._id ? (
+                    {votingStatus?.votedParticipantId === participant._id ? (
                       <span className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
                         ✓ Voted
                       </span>
@@ -230,14 +274,14 @@ export default function CategoryPage({
                         onClick={() => handleVote(participant)}
                         // disabled={true}
                         disabled={
-                          !votingStatus.canVote ||
-                          !!votingStatus.votedParticipantId ||
+                          !votingStatus?.canVote ||
+                          !!votingStatus?.votedParticipantId ||
                           disableVoteButton ||
                           isSubmitting
                         }
                         className={`px-6 py-2 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${
-                          !votingStatus.canVote ||
-                          votedParticipantId ||
+                          !votingStatus?.canVote ||
+                          votingStatus?.votedParticipantId ||
                           disableVoteButton ||
                           isSubmitting
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -246,16 +290,16 @@ export default function CategoryPage({
                         title={
                           isSubmitting
                             ? "Vote submission in progress..."
-                            : !votingStatus.canVote
-                            ? votingStatus.message || "Voting not available"
-                            : votedParticipantId
+                            : !votingStatus?.canVote
+                            ? votingStatus?.message || "Voting not available"
+                            : votingStatus?.votedParticipantId
                             ? "You have already voted in this category"
                             : "Click to vote"
                         }
                       >
                         {isSubmitting
                           ? "Submitting..."
-                          : !votingStatus.canVote || disableVoteButton
+                          : !votingStatus?.canVote || disableVoteButton
                           ? "⏰ Wait"
                           : "Vote"}
                       </button>

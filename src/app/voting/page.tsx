@@ -38,7 +38,7 @@ function VotingPageContent() {
                 href="/auth"
                 className="w-full bg-[#005B96] hover:bg-[#004080] text-white font-semibold py-3 px-6 rounded-lg transition-colors block text-center"
               >
-                Login / Sign Up
+                Login | Sign Up
               </a>
             </div>
           </div>

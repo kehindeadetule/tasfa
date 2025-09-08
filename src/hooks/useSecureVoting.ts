@@ -2,6 +2,25 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import { apiClient, handleApiError, ApiError } from "@/utils/secureApiClient";
 
+// Utility function to clear all voting-related localStorage data (except voted participant IDs)
+const clearAllVotingData = () => {
+  try {
+    const keys = Object.keys(localStorage);
+    keys.forEach((key) => {
+      // Clear voting state data but preserve voted participant IDs
+      if (
+        key.startsWith("voting_state_") ||
+        (key.startsWith("tasfa_vote_") && !key.startsWith("tasfa_voted_"))
+      ) {
+        localStorage.removeItem(key);
+      }
+    });
+    console.log("Cleared voting state data (preserved voted participant IDs)");
+  } catch (error) {
+    console.warn("Failed to clear voting localStorage:", error);
+  }
+};
+
 interface Participant {
   _id: string;
   firstName: string;
@@ -13,7 +32,7 @@ interface Participant {
 }
 
 interface VotingStatus {
-  canVote: boolean;
+  canVote: boolean | undefined;
   votedParticipantId?: string;
   nextVoteTime?: string;
   message?: string;
@@ -41,10 +60,12 @@ interface UserVotingStatus {
 }
 
 export const useSecureVoting = (categoryName: string) => {
+  console.log("=== HOOK DEBUG ===");
+  console.log("Hook received categoryName:", categoryName);
   const { isAuthenticated, user } = useAuth();
   const [data, setData] = useState<CategoryData>({
     participants: [],
-    votingStatus: { canVote: false },
+    votingStatus: { canVote: undefined },
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,11 +84,13 @@ export const useSecureVoting = (categoryName: string) => {
       setLoading(true);
       setError(null);
 
-      // Fetch participants and user voting status in parallel
-      const [participantsResult, statusResult] = await Promise.all([
-        apiClient.getCategoryParticipants(categoryName),
-        apiClient.getMyVotingStatus(),
-      ]);
+      // Fetch participants, voting limits, and voting history in parallel
+      const [participantsResult, votingLimitsResult, votingHistoryResult] =
+        await Promise.all([
+          apiClient.getCategoryParticipants(categoryName),
+          apiClient.getMyVotingStatus(), // This calls /api/email-voting/voting-limits
+          apiClient.getMyVotingHistory(), // This calls /api/email-voting/voting-history
+        ]);
 
       if (!participantsResult.success) {
         throw new Error(
@@ -75,30 +98,140 @@ export const useSecureVoting = (categoryName: string) => {
         );
       }
 
-      if (!statusResult.success) {
+      if (!votingLimitsResult.success) {
         throw new Error(
-          statusResult.message || "Failed to fetch voting status"
+          votingLimitsResult.message || "Failed to fetch voting limits"
         );
       }
 
-      const participants: Participant[] = participantsResult.data || [];
-      const status: UserVotingStatus = statusResult.data;
+      if (!votingHistoryResult.success) {
+        throw new Error(
+          votingHistoryResult.message || "Failed to fetch voting history"
+        );
+      }
 
-      setUserVotingStatus(status);
+      const participants: Participant[] =
+        participantsResult.data?.participants || [];
 
-      // Check if user can vote for this category
-      const canVote =
-        status.canVote && !status.votedCategories.includes(categoryName);
-      const nextVoteTime = status.nextVoteTimes[categoryName];
-      const timeRemaining = status.timeRemaining[categoryName];
+      // Process the voting history to find voted participant for this category
+      const votingHistory = (votingHistoryResult as any) || {};
+      const historyVotes = votingHistory.votes || [];
+      let votedParticipantId = historyVotes.find((vote: any) => {
+        // Based on vote response structure, prioritize categoryId
+        const voteCategory =
+          vote.categoryId || vote.category || vote.awardCategory;
+        const matches =
+          voteCategory === categoryName ||
+          voteCategory === categoryName.toLowerCase() ||
+          voteCategory === categoryName.replace(/\s+/g, "-").toLowerCase();
+
+        console.log(`Checking vote:`, {
+          voteCategory,
+          categoryName,
+          matches,
+          vote,
+        });
+
+        return matches;
+      })?.participantId;
+
+      // Fallback: Check localStorage for voted participant ID
+      if (!votedParticipantId) {
+        const localStorageKey = `tasfa_voted_${categoryName}`;
+        votedParticipantId = localStorage.getItem(localStorageKey);
+        console.log(
+          `Fallback: Found voted participant ID in localStorage:`,
+          votedParticipantId
+        );
+      }
+
+      // Debug: Log voting history structure
+      console.log("Voting History:", votingHistory);
+      console.log("History Votes:", historyVotes);
+      console.log("Looking for category:", categoryName);
+      console.log(
+        "History votes structure:",
+        historyVotes.map((vote: any) => ({
+          category: vote.category,
+          categoryId: vote.categoryId,
+          participantId: vote.participantId,
+          allKeys: Object.keys(vote),
+          fullVote: vote,
+        }))
+      );
+      console.log("Found voted participant ID:", votedParticipantId);
+      console.log("Search summary:", {
+        lookingFor: categoryName,
+        totalVotes: historyVotes.length,
+        foundMatch: !!votedParticipantId,
+        usedLocalStorage:
+          !votedParticipantId &&
+          localStorage.getItem(`tasfa_voted_${categoryName}`),
+      });
+
+      // Process the voting limits response
+      // The API client returns the raw response, not wrapped in a 'data' property
+      const votingLimits = (votingLimitsResult as any) || {};
+      const {
+        votingLimits: limits = {},
+        dailyVoteCount = 0,
+        lastVoteDate = null,
+      } = votingLimits;
+
+      // Use API response directly - no manual defaults
+      const categoryLimit = limits[categoryName];
+      const canVoteForCategory = categoryLimit
+        ? categoryLimit.canVoteAgain
+        : true; // Default to true if category not found (new category)
+
+      // Create user voting status from API response - no manual defaults
+      const userVotingStatus: UserVotingStatus = {
+        canVote: canVoteForCategory,
+        votedCategories: Object.keys(limits).filter(
+          (cat) => limits[cat]?.canVoteAgain === false
+        ),
+        nextVoteTimes: Object.keys(limits).reduce((acc, cat) => {
+          if (limits[cat]?.lastVoteTime) {
+            // Calculate next vote time (24 hours after last vote)
+            const lastVote = new Date(limits[cat].lastVoteTime);
+            const nextVote = new Date(lastVote.getTime() + 24 * 60 * 60 * 1000);
+            acc[cat] = nextVote.toISOString();
+          }
+          return acc;
+        }, {} as { [category: string]: string }),
+        timeRemaining: Object.keys(limits).reduce((acc, cat) => {
+          if (limits[cat]?.remainingHours) {
+            acc[cat] = limits[cat].remainingHours * 3600; // Convert hours to seconds
+          }
+          return acc;
+        }, {} as { [category: string]: number }),
+      };
+
+      setUserVotingStatus(userVotingStatus);
+
+      // Use API response directly - no manual calculations
+      const canVote = canVoteForCategory;
+
+      const nextVoteTime = categoryLimit?.lastVoteTime
+        ? new Date(
+            new Date(categoryLimit.lastVoteTime).getTime() + 24 * 60 * 60 * 1000
+          ).toISOString()
+        : undefined;
+      const timeRemaining = categoryLimit?.remainingHours
+        ? categoryLimit.remainingHours * 3600
+        : undefined;
+
+      // Clear all localStorage voting data to ensure real-time updates
+      clearAllVotingData();
 
       const votingStatus: VotingStatus = {
         canVote,
+        votedParticipantId,
         nextVoteTime,
         timeRemaining,
         message: canVote
           ? "You can vote for this category"
-          : nextVoteTime
+          : nextVoteTime && timeRemaining
           ? `You can vote again in ${Math.ceil(timeRemaining / 3600)} hours`
           : "You have already voted for this category",
       };
@@ -133,11 +266,11 @@ export const useSecureVoting = (categoryName: string) => {
       }
 
       // Check if user can vote for this category
-      if (!data.votingStatus.canVote) {
+      if (!data.votingStatus?.canVote) {
         return {
           success: false,
           message:
-            data.votingStatus.message ||
+            data.votingStatus?.message ||
             "You cannot vote for this category at this time",
         };
       }
@@ -155,12 +288,24 @@ export const useSecureVoting = (categoryName: string) => {
         const result = await apiClient.submitVote(participantId, categoryName);
 
         if (result.success) {
+          // Extract participantId from vote response
+          const votedParticipantId =
+            (result as any).vote?.participantId || participantId;
+
+          // Store voted participant ID in localStorage for persistence
+          const localStorageKey = `tasfa_voted_${categoryName}`;
+          localStorage.setItem(localStorageKey, votedParticipantId);
+          console.log(
+            `Stored voted participant ID in localStorage:`,
+            votedParticipantId
+          );
+
           // Update local state to reflect the vote
           setData((prevData) => ({
             ...prevData,
             votingStatus: {
               canVote: false,
-              votedParticipantId: participantId,
+              votedParticipantId: votedParticipantId,
               nextVoteTime: new Date(
                 Date.now() + 24 * 60 * 60 * 1000
               ).toISOString(),
@@ -168,8 +313,10 @@ export const useSecureVoting = (categoryName: string) => {
               message:
                 "You have already voted for this category. You can vote again in 24 hours.",
             },
-            participants: prevData.participants.map((p) =>
-              p._id === participantId ? { ...p, voteCount: p.voteCount + 1 } : p
+            participants: prevData?.participants?.map((p) =>
+              p._id === votedParticipantId
+                ? { ...p, voteCount: p.voteCount + 1 }
+                : p
             ),
           }));
 

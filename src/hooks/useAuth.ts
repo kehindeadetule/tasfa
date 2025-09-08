@@ -2,9 +2,18 @@ import { useState, useEffect, useCallback } from "react";
 import { API_BASE_URL } from "@/config/api";
 
 interface User {
-  phoneNumber: string;
+  id: string;
+  email: string;
   isVerified: boolean;
   createdAt: string;
+  isActive?: boolean;
+  lastLoginAt?: string;
+  securityFlags?: {
+    isFakeEmail: boolean;
+    isBotEmail: boolean;
+    riskScore: number;
+    flaggedReasons: string[];
+  };
 }
 
 interface AuthState {
@@ -33,8 +42,8 @@ export const useAuth = () => {
   useEffect(() => {
     const initializeAuth = () => {
       try {
-        const token = localStorage.getItem("tasfa_auth_token");
-        const userData = localStorage.getItem("tasfa_user_data");
+        const token = localStorage.getItem("tasfa_a_t");
+        const userData = localStorage.getItem("emailUserData");
 
         if (token && userData) {
           const user = JSON.parse(userData);
@@ -67,17 +76,11 @@ export const useAuth = () => {
   }, []);
 
   const login = useCallback(
-    async (phoneNumber: string, token: string): Promise<LoginResponse> => {
+    async (userData: User, token: string): Promise<LoginResponse> => {
       try {
         // Store auth data in localStorage
-        const userData = {
-          phoneNumber,
-          isVerified: true,
-          createdAt: new Date().toISOString(),
-        };
-
-        localStorage.setItem("tasfa_auth_token", token);
-        localStorage.setItem("tasfa_user_data", JSON.stringify(userData));
+        localStorage.setItem("tasfa_a_t", token);
+        localStorage.setItem("emailUserData", JSON.stringify(userData));
 
         setAuthState({
           user: userData,
@@ -104,8 +107,8 @@ export const useAuth = () => {
 
   const logout = useCallback(() => {
     // Clear localStorage
-    localStorage.removeItem("tasfa_auth_token");
-    localStorage.removeItem("tasfa_user_data");
+    localStorage.removeItem("tasfa_a_t");
+    localStorage.removeItem("emailUserData");
 
     // Clear voting data
     const keys = Object.keys(localStorage);
@@ -125,10 +128,10 @@ export const useAuth = () => {
 
   const refreshToken = useCallback(async (): Promise<boolean> => {
     try {
-      const token = localStorage.getItem("tasfa_auth_token");
+      const token = localStorage.getItem("tasfa_a_t");
       if (!token) return false;
 
-      const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+      const response = await fetch(`${API_BASE_URL}/api/email-auth/refresh`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -139,7 +142,7 @@ export const useAuth = () => {
       const data = await response.json();
 
       if (data.success && data.token) {
-        localStorage.setItem("tasfa_auth_token", data.token);
+        localStorage.setItem("tasfa_a_t", data.token);
         setAuthState((prev) => ({
           ...prev,
           token: data.token,
@@ -157,7 +160,7 @@ export const useAuth = () => {
   }, [logout]);
 
   const getAuthHeaders = useCallback(() => {
-    const token = authState.token || localStorage.getItem("tasfa_auth_token");
+    const token = authState.token || localStorage.getItem("tasfa_a_t");
     return token ? { Authorization: `Bearer ${token}` } : {};
   }, [authState.token]);
 
@@ -174,7 +177,7 @@ export const useAuth = () => {
   // Check token validity on mount and periodically
   useEffect(() => {
     const checkTokenValidity = () => {
-      const token = localStorage.getItem("tasfa_auth_token");
+      const token = localStorage.getItem("tasfa_a_t");
       if (token && isTokenExpired(token)) {
         refreshToken();
       }

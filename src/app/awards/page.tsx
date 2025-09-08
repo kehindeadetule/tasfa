@@ -63,12 +63,6 @@ const categories = {
     "Best Media Student (Male)",
     "Best Media Student (Female)",
   ],
-  institutional: [
-    "Creative Arts Institution of the Year",
-    "Creative Arts Institution of the Year (1st Runner-Up)",
-    "Creative Arts Institution of the Year (2nd Runner-Up)",
-  ],
-  honorary: ["Theatre Legend of the Year"],
 };
 
 export default function AwardsPage() {

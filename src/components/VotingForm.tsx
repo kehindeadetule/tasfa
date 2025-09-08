@@ -317,26 +317,6 @@ const VotingFormContent: React.FC = () => {
                     Best Media Student (Female)
                   </option>
                 </optgroup>
-
-                {/* Institutional Categories */}
-                <optgroup label="Institutional Categories">
-                  <option value="Creative Art Institution of the Year">
-                    Creative Art Institution of the Year
-                  </option>
-                  <option value="Creative Art Institution of the Year (1st Runner-Up)">
-                    Creative Art Institution of the Year (1st Runner-Up)
-                  </option>
-                  <option value="Creative Art Institution of the Year (2nd Runner-Up)">
-                    Creative Art Institution of the Year (2nd Runner-Up)
-                  </option>
-                </optgroup>
-
-                {/* Honorary Categories */}
-                <optgroup label="Honorary Categories">
-                  <option value="Theatre Legend of the Year">
-                    Theatre Legend of the Year
-                  </option>
-                </optgroup>
               </select>
             </div>
 

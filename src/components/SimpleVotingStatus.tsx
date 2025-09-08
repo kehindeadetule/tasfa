@@ -1,10 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  getVotingData,
-  hasVotedForCategory,
-} from "@/utils/voteTimestampsUtils";
 
 interface VotingStatus {
   canVote: boolean;
@@ -37,24 +33,8 @@ export default function SimpleVotingStatus({
 }: SimpleVotingStatusProps) {
   const [timeLeft, setTimeLeft] = useState<string>("");
 
-  // Get voting status from localStorage
-  const localStorageVotingData = getVotingData(categoryName);
-  const hasVotedInStorage = hasVotedForCategory(categoryName);
-
-  // Use localStorage data if available, otherwise use props
-  const effectiveVotingStatus =
-    hasVotedInStorage && localStorageVotingData
-      ? {
-          canVote: false,
-          votedParticipantId: localStorageVotingData.participantId,
-          nextVoteTime: new Date(
-            new Date(localStorageVotingData.timestamp).getTime() +
-              24 * 60 * 60 * 1000
-          ).toISOString(),
-          message:
-            "You have already voted for this category. Please wait 24 hours before voting again.",
-        }
-      : votingStatus;
+  // Use only API response for real-time voting status
+  const effectiveVotingStatus = votingStatus || { canVote: false };
 
   // Simple countdown timer that only shows if backend provides nextVoteTime
   useEffect(() => {
@@ -86,7 +66,7 @@ export default function SimpleVotingStatus({
     return () => clearInterval(interval);
   }, [effectiveVotingStatus.nextVoteTime]);
 
-  if (effectiveVotingStatus.canVote) {
+  if (effectiveVotingStatus?.canVote) {
     return (
       <div className="max-w-2xl mx-auto mb-8">
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">

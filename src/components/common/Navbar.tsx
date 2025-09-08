@@ -27,7 +27,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 bg-white z-50 py-4 px-4 md:px-0">
+      <nav className="fixed top-0 left-0 right-0 bg-white z-50 py-4 px-4 md:px-3">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
@@ -42,7 +42,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center justify-center flex-grow mx-8">
-            <div className="flex space-x-10">
+            <div className="flex space-x-20">
               <div className="relative group">
                 <div className="relative">
                   <button
@@ -110,16 +110,8 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               {isAuthenticated ? (
                 <>
-                  <Link
-                    href="/voting"
-                    className="bg-[#005B96] text-white text-sm px-5 py-2 rounded-full font-medium hover:bg-[#004080] transition-colors"
-                  >
-                    Vote Now
-                  </Link>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">
-                      {user?.phoneNumber}
-                    </span>
+                    <span className="text-sm text-gray-600">{user?.email}</span>
                     <button
                       onClick={logout}
                       className="text-sm text-red-600 hover:text-red-800 underline"
@@ -133,7 +125,7 @@ export default function Navbar() {
                   href="/auth"
                   className="bg-[#005B96] text-white text-sm px-5 py-2 rounded-full font-medium hover:bg-[#004080] transition-colors"
                 >
-                  Login / Sign Up
+                  Login | Sign Up
                 </Link>
               )}
               <Link
@@ -224,18 +216,9 @@ export default function Navbar() {
 
               {isAuthenticated ? (
                 <>
-                  <Link
-                    href="/voting"
-                    className={`text-white text-lg font-medium hover:text-[#016CEE] ${
-                      isActive("/voting") ? "!text-[#005B96] font-semibold" : ""
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Vote Now
-                  </Link>
                   <div className="text-white text-sm">
                     <div className="text-gray-300">Logged in as:</div>
-                    <div className="font-medium">{user?.phoneNumber}</div>
+                    <div className="font-medium">{user?.email}</div>
                     <button
                       onClick={() => {
                         logout();
@@ -253,7 +236,7 @@ export default function Navbar() {
                   className="text-white text-lg font-medium hover:text-[#016CEE]"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Login / Sign Up
+                  Login | Sign Up
                 </Link>
               )}
 

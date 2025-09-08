@@ -12,14 +12,14 @@ interface UnifiedAuthFormProps {
 }
 
 const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
-  redirectTo = "/voting-form",
+  redirectTo = "/awards",
 }) => {
   const router = useRouter();
   const { login } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [countdown, setCountdown] = useState(0);
@@ -33,30 +33,37 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
     }
   }, [countdown]);
 
-  const validatePhoneNumber = (phone: string) => {
-    const cleanPhone = phone.replace(/\D/g, "");
-    const nigerianPhoneRegex = /^(234|0)?[789][01]\d{8}$/;
-    return nigerianPhoneRegex.test(cleanPhone);
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const validatePassword = (password: string) => {
     return password.length >= 6;
   };
 
-  const normalizePhoneNumber = (phone: string) => {
-    const cleanPhone = phone.replace(/\D/g, "");
-    if (cleanPhone.startsWith("234")) {
-      return `+${cleanPhone}`;
-    } else if (cleanPhone.startsWith("0")) {
-      return `+234${cleanPhone.slice(1)}`;
-    } else {
-      return `+234${cleanPhone}`;
+  const handleApiError = (error: any) => {
+    switch (error.code) {
+      case "FAKE_EMAIL_DETECTED":
+        return "Temporary email addresses are not allowed";
+      case "BOT_EMAIL_DETECTED":
+        return "Suspicious email pattern detected";
+      case "DUPLICATE_EMAIL":
+        return "Email already used recently. Please use a different email or wait 24 hours.";
+      case "EMAIL_NOT_VERIFIED":
+        return "Please verify your email address before voting";
+      case "VOTING_LIMIT_EXCEEDED":
+        return `You can vote again in ${error.remainingHours} hours`;
+      case "RATE_LIMITED":
+        return "Too many requests. Please try again later.";
+      default:
+        return error.error || "An error occurred";
     }
   };
 
   const handleRequestOTP = async () => {
-    if (!validatePhoneNumber(phoneNumber)) {
-      toast.error("Please enter a valid Nigerian phone number");
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
@@ -67,16 +74,15 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
 
     setLoading(true);
     try {
-      const normalizedPhone = normalizePhoneNumber(phoneNumber);
       const response = await fetch(
-        `${API_BASE_URL}/api/auth/signup/request-otp`,
+        `${API_BASE_URL}/api/email-auth/signup/request-otp`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            phoneNumber: normalizedPhone,
+            email: email,
             password: password,
           }),
         }
@@ -85,11 +91,12 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
       const data = await response.json();
 
       if (data.success) {
-        toast.success("Verification code sent to your phone!");
+        toast.success("Verification code sent to your email!");
         setOtpSent(true);
         setCountdown(60);
       } else {
-        toast.error(data.message || "Failed to send verification code");
+        const errorMessage = handleApiError(data);
+        toast.error(errorMessage);
       }
     } catch (error) {
       toast.error("Network error. Please try again.");
@@ -106,16 +113,15 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
 
     setLoading(true);
     try {
-      const normalizedPhone = normalizePhoneNumber(phoneNumber);
       const response = await fetch(
-        `${API_BASE_URL}/api/auth/signup/verify-otp`,
+        `${API_BASE_URL}/api/email-auth/signup/verify-otp`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            phoneNumber: normalizedPhone,
+            email: email,
             otp: otp,
             password: password,
           }),
@@ -126,10 +132,11 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
 
       if (data.success) {
         toast.success("Account created successfully!");
-        await login(normalizedPhone, data.token);
+        await login(data.user, data.token);
         router.push(redirectTo);
       } else {
-        toast.error(data.message || "Invalid verification code");
+        const errorMessage = handleApiError(data);
+        toast.error(errorMessage);
       }
     } catch (error) {
       toast.error("Network error. Please try again.");
@@ -139,8 +146,8 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
   };
 
   const handleLogin = async () => {
-    if (!validatePhoneNumber(phoneNumber)) {
-      toast.error("Please enter a valid Nigerian phone number");
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
@@ -151,14 +158,13 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
 
     setLoading(true);
     try {
-      const normalizedPhone = normalizePhoneNumber(phoneNumber);
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/email-auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          phoneNumber: normalizedPhone,
+          email: email,
           password: password,
         }),
       });
@@ -167,10 +173,11 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
 
       if (data.success) {
         toast.success("Login successful!");
-        await login(normalizedPhone, data.token);
+        await login(data.user, data.token);
         router.push(redirectTo);
       } else {
-        toast.error(data.message || "Invalid phone number or password");
+        const errorMessage = handleApiError(data);
+        toast.error(errorMessage);
       }
     } catch (error) {
       toast.error("Network error. Please try again.");
@@ -185,7 +192,7 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
   };
 
   const resetForm = () => {
-    setPhoneNumber("");
+    setEmail("");
     setPassword("");
     setOtp("");
     setOtpSent(false);
@@ -236,40 +243,35 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
             </h2>
             <p className="text-gray-600">
               {activeTab === "login"
-                ? "Enter your phone number and password to continue"
-                : "Enter your phone number and password to get started"}
+                ? "Enter your email and password to continue"
+                : "Enter your email and password to get started"}
             </p>
           </div>
 
-          {/* Phone Number Input */}
+          {/* Email Input */}
           <div className="mb-6">
             <label
-              htmlFor="phoneNumber"
+              htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Phone Number *
+              Email Address *
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-gray-500 sm:text-sm">🇳🇬 +234</span>
-              </div>
-              <input
-                type="tel"
-                id="phoneNumber"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="801 234 5678"
-                className={`w-full pl-20 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                  phoneNumber && !validatePhoneNumber(phoneNumber)
-                    ? "border-red-300 focus:ring-red-500"
-                    : "border-gray-300"
-                }`}
-                required
-              />
-            </div>
-            {phoneNumber && !validatePhoneNumber(phoneNumber) && (
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your.email@example.com"
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                email && !validateEmail(email)
+                  ? "border-red-300 focus:ring-red-500"
+                  : "border-gray-300"
+              }`}
+              required
+            />
+            {email && !validateEmail(email) && (
               <p className="mt-1 text-sm text-red-600">
-                Please enter a valid Nigerian phone number
+                Please enter a valid email address
               </p>
             )}
           </div>
@@ -370,7 +372,7 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
                 required
               />
               <p className="mt-1 text-xs text-gray-500">
-                Enter the 6-digit code sent to your phone
+                Enter the 6-digit code sent to your email
               </p>
             </div>
           )}
@@ -382,14 +384,14 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
                 onClick={handleLogin}
                 disabled={
                   loading ||
-                  !validatePhoneNumber(phoneNumber) ||
+                  !validateEmail(email) ||
                   !validatePassword(password)
                 }
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition-colors ${
                   loading ||
-                  !validatePhoneNumber(phoneNumber) ||
+                  !validateEmail(email) ||
                   !validatePassword(password)
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-[#005B96] hover:bg-[#004080] cursor-pointer"
@@ -404,14 +406,14 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
                     onClick={handleRequestOTP}
                     disabled={
                       loading ||
-                      !validatePhoneNumber(phoneNumber) ||
+                      !validateEmail(email) ||
                       !validatePassword(password)
                     }
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition-colors ${
                       loading ||
-                      !validatePhoneNumber(phoneNumber) ||
+                      !validateEmail(email) ||
                       !validatePassword(password)
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-[#005B96] hover:bg-[#004080] cursor-pointer"
@@ -463,17 +465,18 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
           )}
 
           {/* Security Notice */}
-          {/* <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
             <h4 className="text-sm font-medium text-green-800 mb-2">
               🔒 Security Features
             </h4>
             <div className="text-xs text-green-700 space-y-1">
-              <div>• Phone number verification for new accounts</div>
+              <div>• Email verification for new accounts</div>
               <div>• Secure password authentication</div>
+              <div>• Fake email detection & blocking</div>
               <div>• Rate limiting protection</div>
               <div>• 24-hour rolling window voting</div>
             </div>
-          </div> */}
+          </div>
         </motion.div>
       </div>
     </div>

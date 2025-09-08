@@ -152,8 +152,10 @@ export const useSimpleVoting = (categoryName: string) => {
       }
 
       // Extract participants from backend (vote counts come from backend)
-      const participants: Participant[] = Array.isArray(participantsResult.data)
-        ? participantsResult.data
+      const participants: Participant[] = Array.isArray(
+        participantsResult.data?.participants
+      )
+        ? participantsResult.data.participants
         : [];
 
       // Get voting status from localStorage first, then fallback to API
@@ -243,7 +245,7 @@ export const useSimpleVoting = (categoryName: string) => {
             // Update the participant's vote count with estimated value
             setData((prevData) => ({
               ...prevData,
-              participants: prevData.participants.map((p) =>
+              participants: prevData?.participants?.map((p) =>
                 p._id === participantId
                   ? { ...p, voteCount: p.voteCount + 1 }
                   : p

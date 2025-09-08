@@ -115,7 +115,7 @@ export class SecureApiClient {
   }
 
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem("tasfa_auth_token");
+    const token = localStorage.getItem("tasfa_a_t");
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
@@ -160,15 +160,15 @@ export class SecureApiClient {
     });
   }
 
-  // Authentication methods
+  // Email Authentication methods
   async requestSignupOTP(
-    phoneNumber: string,
+    email: string,
     password: string
   ): Promise<ApiResponse> {
     return this.post(
-      "/api/auth/signup/request-otp",
+      "/api/email-auth/signup/request-otp",
       {
-        phoneNumber,
+        email,
         password,
       },
       false
@@ -176,14 +176,14 @@ export class SecureApiClient {
   }
 
   async verifySignupOTP(
-    phoneNumber: string,
+    email: string,
     otp: string,
     password: string
   ): Promise<ApiResponse> {
     return this.post(
-      "/api/auth/signup/verify-otp",
+      "/api/email-auth/signup/verify-otp",
       {
-        phoneNumber,
+        email,
         otp,
         password,
       },
@@ -191,11 +191,11 @@ export class SecureApiClient {
     );
   }
 
-  async login(phoneNumber: string, password: string): Promise<ApiResponse> {
+  async login(email: string, password: string): Promise<ApiResponse> {
     return this.post(
-      "/api/auth/login",
+      "/api/email-auth/login",
       {
-        phoneNumber,
+        email,
         password,
       },
       false
@@ -203,48 +203,52 @@ export class SecureApiClient {
   }
 
   async getProfile(): Promise<ApiResponse> {
-    return this.get("/api/auth/profile");
+    return this.get("/api/email-voting/profile");
   }
 
   async verifyToken(): Promise<ApiResponse> {
-    return this.get("/api/auth/verify-token");
+    return this.get("/api/email-auth/verify-token");
   }
 
   async logout(): Promise<ApiResponse> {
-    return this.post("/api/auth/logout");
+    return this.post("/api/email-auth/logout");
   }
 
-  // Secure voting methods
+  // Email voting methods
   async getVoteCounts(): Promise<ApiResponse> {
-    return this.get("/api/secure-votes/counts");
+    return this.get("/api/email-voting/counts");
   }
 
   async getMyVotingStatus(): Promise<ApiResponse> {
-    return this.get("/api/secure-votes/my-status");
+    return this.get("/api/email-voting/voting-limits");
   }
 
   async getMyVotingHistory(): Promise<ApiResponse> {
-    return this.get("/api/secure-votes/my-history");
+    return this.get("/api/email-voting/voting-history");
   }
 
   async submitVote(
     participantId: string,
     awardCategory: string
   ): Promise<ApiResponse> {
-    return this.post("/api/secure-votes/", {
+    return this.post("/api/email-voting/vote", {
       participantId,
-      awardCategory,
+      categoryId: awardCategory,
     });
   }
 
   async getCategoryParticipants(category: string): Promise<ApiResponse> {
     return this.get(
-      `/api/secure-votes/category/${encodeURIComponent(category)}`
+      `/api/email-voting/category/${encodeURIComponent(category)}`
     );
   }
 
   async getRecentVotes(): Promise<ApiResponse> {
-    return this.get("/api/secure-votes/recent", false);
+    return this.get("/api/email-voting/recent", false);
+  }
+
+  async checkVotingPermission(categoryId: string): Promise<ApiResponse> {
+    return this.get(`/api/email-voting/can-vote/${categoryId}`);
   }
 }
 
@@ -268,6 +272,18 @@ export const handleApiError = (error: ApiError): string => {
       return "Server error. Please try again later.";
     case "QUEUE_ERROR":
       return "Vote processing is temporarily unavailable. Please try again in a moment.";
+    case "FAKE_EMAIL_DETECTED":
+      return "Temporary email addresses are not allowed";
+    case "BOT_EMAIL_DETECTED":
+      return "Suspicious email pattern detected";
+    case "DUPLICATE_EMAIL":
+      return "Email already used recently. Please use a different email or wait 24 hours.";
+    case "EMAIL_NOT_VERIFIED":
+      return "Please verify your email address before voting";
+    case "VOTING_LIMIT_EXCEEDED":
+      return `You can vote again in ${error?.remainingHours} hours`;
+    case "RATE_LIMITED":
+      return "Too many requests. Please try again later.";
     case "UNKNOWN_ERROR":
       return "An unexpected error occurred. Please try again.";
     default:

@@ -124,8 +124,7 @@ const SecureVotingInterface: React.FC<SecureVotingInterfaceProps> = ({
             </div>
             <div className="text-right">
               <div className="text-sm text-gray-600 mb-1">
-                Logged in as:{" "}
-                <span className="font-medium">{user?.phoneNumber}</span>
+                Logged in as: <span className="font-medium">{user?.email}</span>
               </div>
               <button
                 onClick={logout}
@@ -147,7 +146,7 @@ const SecureVotingInterface: React.FC<SecureVotingInterfaceProps> = ({
               </div>
               <div className="bg-blue-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-blue-600">
-                  {userVotingStatus.canVote ? "Yes" : "No"}
+                  {userVotingStatus?.canVote ? "Yes" : "No"}
                 </div>
                 <div className="text-sm text-blue-700">Can Vote</div>
               </div>
@@ -169,7 +168,7 @@ const SecureVotingInterface: React.FC<SecureVotingInterfaceProps> = ({
           )}
 
           {/* Voting Status */}
-          {!votingStatus.canVote && (
+          {votingStatus && !votingStatus?.canVote && (
             <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -268,7 +267,7 @@ const SecureVotingInterface: React.FC<SecureVotingInterfaceProps> = ({
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {participants.map((participant) => (
+            {participants?.map((participant) => (
               <motion.div
                 key={participant._id}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -309,11 +308,11 @@ const SecureVotingInterface: React.FC<SecureVotingInterfaceProps> = ({
 
                   <motion.button
                     onClick={() => handleVote(participant._id)}
-                    disabled={!votingStatus.canVote || isSubmitting}
+                    disabled={!votingStatus?.canVote || isSubmitting}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`w-full py-2 px-4 rounded-lg font-semibold text-white transition-colors ${
-                      !votingStatus.canVote || isSubmitting
+                      !votingStatus?.canVote || isSubmitting
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-[#005B96] hover:bg-[#004080] cursor-pointer"
                     }`}
