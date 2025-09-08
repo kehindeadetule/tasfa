@@ -206,7 +206,12 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
           Auto-refreshes every 30 seconds
           {lastUpdated && (
             <span className="block mt-1">
-              Last updated: {lastUpdated.toLocaleTimeString()}
+              Last updated:{" "}
+              {lastUpdated.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              })}
             </span>
           )}
         </p>

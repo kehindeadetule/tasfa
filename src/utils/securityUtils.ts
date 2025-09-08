@@ -108,7 +108,17 @@ export function showIPBlockedError(data: SecurityError): void {
     ${data.timeRemaining ? `Time Remaining: ${data.timeRemaining} hours` : ""}
     ${
       data.details?.lastVoteTime
-        ? `Last Vote: ${new Date(data.details.lastVoteTime).toLocaleString()}`
+        ? `Last Vote: ${new Date(data.details.lastVoteTime).toLocaleString(
+            "en-US",
+            {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+              month: "2-digit",
+              day: "2-digit",
+              year: "numeric",
+            }
+          )}`
         : ""
     }
     
@@ -337,4 +347,3 @@ export async function secureApiCall<T>(
     throw new Error("An unexpected error occurred");
   }
 }
-

@@ -196,7 +196,17 @@ export default function CategoryPage({
                 {votingStatus.nextVoteTime && (
                   <p className="text-xs text-orange-600 mt-1">
                     Next vote available:{" "}
-                    {new Date(votingStatus.nextVoteTime).toLocaleString()}
+                    {new Date(votingStatus.nextVoteTime).toLocaleString(
+                      "en-US",
+                      {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                        month: "2-digit",
+                        day: "2-digit",
+                        year: "numeric",
+                      }
+                    )}
                   </p>
                 )}
               </div>
