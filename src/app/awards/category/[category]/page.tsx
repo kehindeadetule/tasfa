@@ -279,13 +279,13 @@ export default function CategoryPage({
                     ) : (
                       <button
                         onClick={() => handleVote(participant)}
-                        disabled={true}
-                        // disabled={
-                        //   !votingStatus?.canVote ||
-                        //   !!votingStatus?.votedParticipantId ||
-                        //   disableVoteButton ||
-                        //   isSubmitting
-                        // }
+                        // disabled={true}
+                        disabled={
+                          !votingStatus?.canVote ||
+                          !!votingStatus?.votedParticipantId ||
+                          disableVoteButton ||
+                          isSubmitting
+                        }
                         className={`px-6 py-2 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${
                           !votingStatus?.canVote ||
                           votingStatus?.votedParticipantId ||
