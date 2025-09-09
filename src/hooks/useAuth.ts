@@ -49,6 +49,22 @@ export const useAuth = () => {
 
         if (token && userData) {
           const user = JSON.parse(userData);
+
+          // Check if user is not verified and logout immediately
+          if (!user.isVerified) {
+            console.warn("User is not verified, logging out automatically");
+            // Clear localStorage
+            localStorage.removeItem("tasfa_a_t");
+            localStorage.removeItem("emailUserData");
+            setAuthState({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              isLoading: false,
+            });
+            return;
+          }
+
           setAuthState({
             user,
             token,
@@ -197,7 +213,7 @@ export const useAuth = () => {
     }
   }, []);
 
-  // Check token validity on mount and periodically
+  // Check token validity and user verification on mount and periodically
   useEffect(() => {
     const checkTokenValidity = () => {
       const token = localStorage.getItem("tasfa_a_t");
@@ -206,14 +222,36 @@ export const useAuth = () => {
       }
     };
 
+    const checkUserVerification = () => {
+      // Check if user is authenticated but not verified
+      if (
+        authState.isAuthenticated &&
+        authState.user &&
+        !authState.user.isVerified
+      ) {
+        console.warn("User is not verified, logging out automatically");
+        logout();
+      }
+    };
+
     // Check immediately
     checkTokenValidity();
+    checkUserVerification();
 
     // Check every 5 minutes
-    const interval = setInterval(checkTokenValidity, 5 * 60 * 1000);
+    const interval = setInterval(() => {
+      checkTokenValidity();
+      checkUserVerification();
+    }, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [isTokenExpired, refreshToken]);
+  }, [
+    isTokenExpired,
+    refreshToken,
+    authState.isAuthenticated,
+    authState.user,
+    logout,
+  ]);
 
   return {
     ...authState,

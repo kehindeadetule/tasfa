@@ -57,7 +57,9 @@ const UnifiedAuthForm: React.FC<UnifiedAuthFormProps> = ({
       case "RATE_LIMITED":
         return "Too many requests. Please try again later.";
       default:
-        return error.error || "An error occurred";
+        return (
+          error.error || "An error occurred, please logout and login again"
+        );
     }
   };
 

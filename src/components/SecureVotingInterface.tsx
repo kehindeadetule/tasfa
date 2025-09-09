@@ -88,6 +88,40 @@ const SecureVotingInterface: React.FC<SecureVotingInterfaceProps> = ({
     );
   }
 
+  // Check if user is not verified
+  if (user && !user.isVerified) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8 mt-24 flex items-center justify-center">
+        <div className="max-w-md mx-auto w-full space-y-8">
+          <div className="bg-white rounded-lg shadow-xl p-8 text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              📧 Email Verification Required
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Your email address needs to be verified before you can access the
+              voting system. Please check your email for the verification code
+              and complete the verification process.
+            </p>
+            <div className="space-y-4">
+              <button
+                onClick={logout}
+                className="w-full bg-[#005B96] hover:bg-[#004080] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              >
+                Logout & Verify Email
+              </button>
+              <a
+                href="/auth"
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors block text-center"
+              >
+                Go to Login
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8 mt-24 flex items-center justify-center">

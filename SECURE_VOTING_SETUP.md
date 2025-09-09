@@ -2,22 +2,22 @@
 
 ## Overview
 
-This document describes the new secure phone-based authentication and voting system that replaces the previous session/IP-based voting system. The new system provides enhanced security through phone number verification and JWT token authentication.
+This document describes the new secure phone-based authentication and voting system that replaces the previous session/IP-based voting system. The new system provides enhanced security through Email Address verification and JWT token authentication.
 
 ## Key Features
 
 ### 🔐 Authentication System
 
-- **Phone Number Verification**: Users must verify their phone number via SMS OTP
+- **Email Address Verification**: Users must verify their Email Address via SMS OTP
 - **JWT Token Authentication**: Secure token-based authentication with 24-hour expiration
 - **Rate Limiting**: Prevents abuse with configurable rate limits
 - **Session Management**: Automatic token refresh and secure logout
 
 ### 🗳️ Voting System
 
-- **Phone-Based Voting**: Votes are tied to verified phone numbers instead of IP/session
+- **Phone-Based Voting**: Votes are tied to verified Email Addresss instead of IP/session
 - **24-Hour Category Lock**: Users can only vote once per category every 24 hours
-- **Secure Vote Tracking**: All votes are recorded with phone number, timestamp, and metadata
+- **Secure Vote Tracking**: All votes are recorded with Email Address, timestamp, and metadata
 - **Real-time Status**: Users can view their voting history and status
 
 ### 🛡️ Security Measures
@@ -46,7 +46,7 @@ Content-Type: application/json
 
 **Rate Limits:**
 
-- 3 OTP requests per phone number per hour
+- 3 OTP requests per Email Address per hour
 - 10 OTP requests per IP per hour
 
 #### Verify OTP
@@ -63,7 +63,7 @@ Content-Type: application/json
 
 **Rate Limits:**
 
-- 5 verification attempts per phone number per hour
+- 5 verification attempts per Email Address per hour
 - 20 verification attempts per IP per hour
 
 #### Refresh Token
@@ -93,8 +93,8 @@ Content-Type: application/json
 
 **Rate Limits:**
 
-- 1 vote per phone number per category per 24 hours
-- 5 votes per phone number per hour
+- 1 vote per Email Address per category per 24 hours
+- 5 votes per Email Address per hour
 - 10 votes per IP per hour
 
 #### Get Voting History
@@ -110,7 +110,7 @@ Authorization: Bearer <token>
 
 #### PhoneAuthForm
 
-- Handles phone number input and OTP verification
+- Handles Email Address input and OTP verification
 - Supports both signup and login modes
 - Includes rate limiting and error handling
 
@@ -152,13 +152,13 @@ Authorization: Bearer <token>
 
 ### Rate Limiting
 
-- **OTP Requests**: 3 per phone number, 10 per IP per hour
-- **OTP Verification**: 5 per phone number, 20 per IP per hour
+- **OTP Requests**: 3 per Email Address, 10 per IP per hour
+- **OTP Verification**: 5 per Email Address, 20 per IP per hour
 - **Voting**: 1 per category per 24 hours, 5 per hour per phone, 10 per hour per IP
 
 ### Input Validation
 
-- Phone numbers must be valid Nigerian numbers (+234 format)
+- Email Addresss must be valid Nigerian numbers (+234 format)
 - OTP codes must be exactly 6 digits
 - All text inputs are sanitized and length-limited
 - File uploads are validated for type and size
@@ -181,7 +181,7 @@ NODE_ENV=production
 
 ### For Users
 
-1. **Sign Up/Login**: Enter your Nigerian phone number
+1. **Sign Up/Login**: Enter your Nigerian Email Address
 2. **Verify Phone**: Enter the 6-digit OTP sent via SMS
 3. **Vote**: Select your preferred candidate in each category
 4. **View History**: Check your voting progress and history
@@ -201,7 +201,7 @@ The new system completely replaces the old session/IP-based voting system:
 
 ### Breaking Changes
 
-- All users must re-authenticate with phone numbers
+- All users must re-authenticate with Email Addresss
 - Voting history is reset (old votes are not migrated)
 - New API endpoints replace old ones
 - Authentication is now required for all voting operations

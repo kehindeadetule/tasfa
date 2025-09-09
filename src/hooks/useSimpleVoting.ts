@@ -191,7 +191,7 @@ export const useSimpleVoting = (categoryName: string) => {
       const errorMessage =
         err instanceof Error
           ? handleApiError(err as ApiError)
-          : "An error occurred";
+          : "An error occurred, please logout and login again";
       setError(errorMessage);
     } finally {
       setLoading(false);

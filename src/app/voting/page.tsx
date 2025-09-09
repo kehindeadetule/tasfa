@@ -30,7 +30,7 @@ function VotingPageContent() {
               🔐 Authentication Required
             </h2>
             <p className="text-gray-600 mb-6">
-              Please log in with your phone number and password to access the
+              Please log in with your Email Address and password to access the
               voting system
             </p>
             <div className="space-y-4">

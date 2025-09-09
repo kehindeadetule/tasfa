@@ -73,7 +73,9 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "An error occurred";
+        err instanceof Error
+          ? err.message
+          : "An error occurred, please logout and login again";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -121,8 +123,40 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
             🔐 Authentication Required
           </h3>
           <p className="text-gray-600 text-sm">
-            Please log in with your phone number to view your voting progress
+            Please log in with your Email Address to view your voting progress
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if user is not verified
+  if (user && !user.isVerified) {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            📧 Email Verification Required
+          </h3>
+          <p className="text-gray-600 text-sm mb-4">
+            Your email address needs to be verified before you can view your
+            voting progress. Please check your email for the verification code
+            and complete the verification process.
+          </p>
+          <div className="space-y-2">
+            <button
+              onClick={logout}
+              className="w-full bg-[#005B96] hover:bg-[#004080] text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
+            >
+              Logout & Verify Email
+            </button>
+            <a
+              href="/auth"
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors block text-center text-sm"
+            >
+              Go to Login
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -242,11 +276,11 @@ export default function SimpleVotingOverview({}: VotingOverviewProps) {
           🔒 Security Features Active
         </h4>
         <div className="text-xs text-green-700 space-y-1">
-          <div>• Phone number verification required</div>
+          <div>• Email Address verification required</div>
           <div>• JWT token authentication</div>
           <div>• Rate limiting on votes and OTP requests</div>
           <div>• 24-hour category lock after voting</div>
-          <div>• Secure vote tracking by phone number</div>
+          <div>• Secure vote tracking by Email Address</div>
         </div>
       </div>
 

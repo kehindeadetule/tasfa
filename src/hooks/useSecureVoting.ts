@@ -25,6 +25,26 @@ const clearAllVotingData = () => {
 // Export the clear function for use in other components
 export const clearVotingData = clearAllVotingData;
 
+// Helper function to check for USER_NOT_FOUND and 404 errors and trigger logout
+const handleUserNotFoundError = (error: any, logout: () => void) => {
+  if (
+    error?.code === "USER_NOT_FOUND" ||
+    error?.code === "NOT_FOUND" ||
+    error?.status === 404 ||
+    error?.message?.includes("User not found") ||
+    error?.message?.includes("Resource not found") ||
+    (error?.response && error.response.data?.code === "USER_NOT_FOUND") ||
+    (error?.response && error.response.status === 404)
+  ) {
+    console.warn(
+      "User not found or 404 error detected, logging out automatically"
+    );
+    logout();
+    return true;
+  }
+  return false;
+};
+
 interface Participant {
   _id: string;
   firstName: string;
@@ -64,7 +84,7 @@ interface UserVotingStatus {
 }
 
 export const useSecureVoting = (categoryName: string) => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const [data, setData] = useState<CategoryData>({
     participants: [],
     votingStatus: { canVote: undefined },
@@ -117,21 +137,37 @@ export const useSecureVoting = (categoryName: string) => {
         ]);
 
       if (!participantsResult.success) {
-        throw new Error(
-          participantsResult.message || "Failed to fetch category participants"
-        );
+        // Preserve the original error structure for proper error handling
+        throw {
+          message:
+            participantsResult.message ||
+            "Failed to fetch category participants",
+          code: participantsResult.code,
+          error: participantsResult.error,
+          status: participantsResult.status,
+        };
       }
 
       if (!votingLimitsResult.success) {
-        throw new Error(
-          votingLimitsResult.message || "Failed to fetch voting limits"
-        );
+        // Preserve the original error structure for proper error handling
+        throw {
+          message:
+            votingLimitsResult.message || "Failed to fetch voting limits",
+          code: votingLimitsResult.code,
+          error: votingLimitsResult.error,
+          status: votingLimitsResult.status,
+        };
       }
 
       if (!votingHistoryResult.success) {
-        throw new Error(
-          votingHistoryResult.message || "Failed to fetch voting history"
-        );
+        // Preserve the original error structure for proper error handling
+        throw {
+          message:
+            votingHistoryResult.message || "Failed to fetch voting history",
+          code: votingHistoryResult.code,
+          error: votingHistoryResult.error,
+          status: votingHistoryResult.status,
+        };
       }
 
       const participants: Participant[] =
@@ -240,13 +276,20 @@ export const useSecureVoting = (categoryName: string) => {
         votingStatus,
       });
     } catch (err) {
+      // Check for USER_NOT_FOUND or 404 error and trigger logout
+      if (handleUserNotFoundError(err, logout)) {
+        return; // Exit early if logout was triggered
+      }
+
       const errorMessage =
-        err instanceof Error ? err.message : "An error occurred";
+        err instanceof Error
+          ? err.message
+          : "An error occurred, please logout and login againnn";
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [categoryName, isAuthenticated]);
+  }, [categoryName, isAuthenticated, logout]);
 
   const submitVote = useCallback(
     async (participantId: string): Promise<VoteResponse> => {
