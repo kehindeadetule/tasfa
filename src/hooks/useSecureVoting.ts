@@ -251,15 +251,19 @@ export const useSecureVoting = (categoryName: string) => {
         : undefined;
 
       // Clear all localStorage voting data to ensure real-time updates
-      clearAllVotingData();
+      // If user can vote again, clear any localStorage data that might interfere
+      if (canVote) {
+        clearAllVotingData();
+      }
 
       // Determine voting status with API data taking priority
-      const hasVotedFromAPI = !!votedParticipantId;
-      const finalCanVote = canVote && !hasVotedFromAPI;
+      // If API says canVoteAgain is true, ignore previous vote history
+      const hasVotedFromAPI = canVote ? false : !!votedParticipantId;
+      const finalCanVote = canVote;
 
       const votingStatus: VotingStatus = {
         canVote: finalCanVote,
-        votedParticipantId,
+        votedParticipantId: finalCanVote ? undefined : votedParticipantId,
         nextVoteTime,
         timeRemaining,
         message: hasVotedFromAPI
