@@ -206,6 +206,21 @@ const EventRegistrationForm: React.FC = () => {
         toast.success(
           "Registration successful! You will receive a confirmation email shortly."
         );
+        // Show success message with link to check status
+        setTimeout(() => {
+          toast.info(
+            <div>
+              <p>Check your registration status at:</p>
+              <a
+                href="/registration-status"
+                className="text-blue-600 underline hover:text-blue-800"
+              >
+                /registration-status
+              </a>
+            </div>,
+            { autoClose: 10000 }
+          );
+        }, 2000);
         router.push("/");
       } else {
         toast.error(data.message || "Registration failed. Please try again.");

@@ -111,6 +111,16 @@ export default function Navbar() {
               >
                 Register
               </Link>
+              <Link
+                href="/registration-status"
+                className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors ${
+                  isActive("/registration-status")
+                    ? "font-semibold text-[#005B96]"
+                    : ""
+                }`}
+              >
+                Check Status
+              </Link>
             </div>
           </div>
 
@@ -118,6 +128,12 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               {isAuthenticated ? (
                 <>
+                  <Link
+                    href="/admin/registrations"
+                    className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  >
+                    Admin
+                  </Link>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-600">{user?.email}</span>
                     <button
@@ -230,9 +246,27 @@ export default function Navbar() {
               >
                 Register
               </Link>
+              <Link
+                href="/registration-status"
+                className={`text-white text-lg hover:text-[#016CEE] transition-colors ${
+                  isActive("/registration-status")
+                    ? "font-semibold text-[#005B96]"
+                    : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Check Status
+              </Link>
 
               {isAuthenticated ? (
                 <>
+                  <Link
+                    href="/admin/registrations"
+                    className="text-white text-lg font-medium hover:text-[#016CEE]"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Admin Dashboard
+                  </Link>
                   <div className="text-white text-sm">
                     <div className="text-gray-300">Logged in as:</div>
                     <div className="font-medium">{user?.email}</div>
