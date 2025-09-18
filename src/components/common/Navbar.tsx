@@ -128,12 +128,6 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               {isAuthenticated ? (
                 <>
-                  <Link
-                    href="/admin/registrations"
-                    className="text-sm text-blue-600 hover:text-blue-800 underline"
-                  >
-                    Admin
-                  </Link>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-600">{user?.email}</span>
                     <button
