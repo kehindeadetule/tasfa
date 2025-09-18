@@ -103,6 +103,14 @@ export default function Navbar() {
               >
                 Judges
               </Link>
+              <Link
+                href="/register"
+                className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors ${
+                  isActive("/register") ? "font-semibold text-[#005B96]" : ""
+                }`}
+              >
+                Register
+              </Link>
             </div>
           </div>
 
@@ -212,6 +220,15 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Judges
+              </Link>
+              <Link
+                href="/register"
+                className={`text-white text-lg hover:text-[#016CEE] transition-colors ${
+                  isActive("/register") ? "font-semibold text-[#005B96]" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Register
               </Link>
 
               {isAuthenticated ? (

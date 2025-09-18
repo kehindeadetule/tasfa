@@ -127,7 +127,7 @@ export default function AwardsPage() {
                         Category #{index + 1}
                       </span>
                       <span className="text-xs text-[#005B96] font-medium">
-                        Vote Now
+                        Voting Closed
                       </span>
                     </div>
                   </Link>

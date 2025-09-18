@@ -52,6 +52,7 @@ With a keen interest in theatre safety design and compliance, Tuoyo combines cre
 Tuoyo currently serves as the Ogun State Chairman of the National Association of Nigerian Theatre Arts Practitioners (NANTAP), where he champions initiatives to advance theatre practice, improve working conditions, and promote safe, inclusive performance spaces.
 `,
   },
+
   {
     id: "bunmi",
     name: "Bunmi Adewale",
@@ -62,6 +63,28 @@ In film and television, Bunmi has served as First Assistant Director and Product
 Beyond performance and production, Bunmi is an experienced resource person and consultant, having facilitated workshops, curriculum design, arts/academic projects, and Theatre for Development (TFD) programs focused on public enlightenment and social advocacy.
 Bunmi holds a B.A. and M.A. in Dramatic Arts from Obafemi Awolowo University, Ile-Ife, and is currently pursuing a Ph.D. in Dramatic Arts at the same institution.
 Over the years, Bunmi has worked with a wide range of reputable organizations including Baneo Productions, La Campaigne Resort, Blue Seal Advertising, Ark Resources Entertainment, Taijo Wonujabe, National Troupe of Nigeria, Art of Life Foundation, Africa Magic Original Films (MNET), Lufodo Productions, Beeta Arts Foundation, A.C.E Productions, Makinde Adeniran Productions, Ascension Productions, Duke of Shomolu Productions, and TRAIL Productions.`,
+  },
+
+  {
+    id: "efe",
+    name: "EFE MAYFORD ORHORHA",
+    title: "Fellow of Theatre Arts & Cultural Ambassador",
+    image: "/assets/judges/efe.jpg",
+    fullBio: `Efe Mayford Orhorha is a versatile and accomplished stage and screen performer with over two decades of active participation in Nigeria’s creative industry. Raised in a family deeply rooted in the performing arts, Efe was introduced early to the world of make-believe by her parents, the late Roxy and Felicia Mayford—pioneers of the Nigerian movie industry, now known as Nollywood.
+Her father, Roxy Mayford, was a celebrated comedian, actor, cabaret dancer, and showbiz impresario who starred in numerous English and Yoruba films, as well as producing popular radio and television programmes. Her mother, Felicia Mayford, was an award-winning costumier and make-up artist who worked on over 30 major film productions. This strong artistic foundation shaped Efe’s path in the performing arts.
+
+Efe studied Public Administration at the University of Abuja .She received professional theatre training under Chuck Mike and  the renowned Performance Studio Workshop(PSW). Over the years, she has built a reputation as not only a talented actress but also a skilled production manager, show host, events manager, and arts administrator
+
+Her diverse credits span stage, film, and television, with appearances in productions such as Glamour Girls I, Miss Angel, Lonely Pain, Scruples, Living for Tomorrow, Aseapo Mi, Family Ties, Shadows, GRA Women, A Raisin in the Sun, Crack in the Wall, Love Beyond the Scourge, Efunsetan Aniwura, Oya, The King Must Dance Naked, The Divorce, Tinsel, Nigeria the Beautiful, Marriage of Anansewa, Wives Revolt, Otaelo, Kakadu, My Siblings and I, Eve, Unbroken, Riona, Olu Akengbua, Covenant, Naija Xmas, Death and the King’s Horseman, Blood Sisters, My Name is Nisan,  Our Brother’s Wedding, the scars beneath, Moremi Ajasoro, Between Walls, coupled together, To kill a monkey, Flip among others.
+
+Over the years, she has established herself as a dynamic and dependable force in the performing arts, seemingly blending creativity with professionalism. She has contributed to productions that celebrate Nigeria's rich cultural heritage while also engaging with contemporary themes that resonate with diverse audiences.
+
+Beyond performance,Efe has demonstrated remarkable skill in leadership, organisation and collaboration. A full member of the National Association of Nigerian Theatre Arts Practitioners (NANTAP), Efe has served as Director of Finance and Interim Vice Chairman of the Association, demonstrating her leadership and organisational experience.
+
+In recognition of her outstanding contributions to the arts and entertainment in Nigeria, she was decorated with the prestigious Fellow of Theatre Arts (FTA) award in February 2025, one of the highest recognitions of excellence within the Nigerian theatre and creative space. This award underscores her influence, professionalism, and dedication to nurturing the next generation of artists while also consolidating her place as a leading figure in the industry.
+
+Through her work Efe Mayford Orhorha continues to inspire, advocate and innovate- affirming her reputation as not only a performer but also a cultural ambassador and leader in Nigeria's creative landscape.
+`,
   },
 ];
 

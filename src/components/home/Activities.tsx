@@ -93,10 +93,10 @@ export default function Advantage() {
         <AnimatedSection animation="fadeIn" delay={0.9}>
           <div className="flex justify-center w-full mx-auto mt-15">
             <Link
-              href="/awards"
+              href="/register"
               className="bg-[#005B96] md:text-lg text-center text-base hover:bg-[#344a6e] text-white py-2.5 px-20 rounded-full"
             >
-              Vote Now
+              Register Now
             </Link>
           </div>
         </AnimatedSection>

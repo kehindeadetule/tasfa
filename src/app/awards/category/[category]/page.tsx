@@ -86,7 +86,7 @@ export default function CategoryPage({
                 🔐 Authentication Required
               </h2>
               <p className="text-gray-600 mb-6">
-                Please log in with your Email Address and password to vote for{" "}
+                Please log in with your Email Address and password to view{" "}
                 {categoryName}
               </p>
               <div className="space-y-4">
