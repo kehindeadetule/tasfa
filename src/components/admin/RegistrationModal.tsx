@@ -15,8 +15,6 @@ interface Registration {
   gender: string;
   occupation: string;
   organization: string;
-  daysAttending: string[];
-  accommodationReservation: string;
   status: "pending" | "confirmed" | "cancelled";
   emailConfirmed: boolean;
   checkedIn: boolean;
@@ -288,48 +286,6 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       <p className="mt-1 text-sm text-gray-900">
                         {registration.organization}
                       </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Event Information */}
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                    Event Information
-                  </h4>
-
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Days Attending
-                      </label>
-                      <div className="mt-1 flex flex-wrap gap-2">
-                        {registration.daysAttending.map((day, index) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                          >
-                            📅 {day}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Accommodation
-                      </label>
-                      <div className="mt-1">
-                        {registration.accommodationReservation === "yes" ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                            🏨 Needs Accommodation
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            🏠 Own Accommodation
-                          </span>
-                        )}
-                      </div>
                     </div>
                   </div>
                 </div>

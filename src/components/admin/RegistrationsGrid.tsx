@@ -14,8 +14,6 @@ interface Registration {
   gender: string;
   occupation: string;
   organization: string;
-  daysAttending: string[];
-  accommodationReservation: string;
   status: "pending" | "confirmed" | "cancelled";
   emailConfirmed: boolean;
   checkedIn: boolean;
@@ -186,22 +184,6 @@ const RegistrationsGrid: React.FC<RegistrationsGridProps> = ({
               <span className="w-4 h-4 mr-2">💼</span>
               <span className="truncate">{registration.occupation}</span>
             </div>
-            <div className="flex items-center">
-              <span className="w-4 h-4 mr-2">📅</span>
-              <span>
-                {registration.daysAttending.length === 1
-                  ? registration.daysAttending[0]
-                  : `${registration.daysAttending.length} days`}
-              </span>
-            </div>
-            {registration.accommodationReservation === "yes" && (
-              <div className="flex items-center">
-                <span className="w-4 h-4 mr-2">🏨</span>
-                <span className="text-orange-600 font-medium">
-                  Needs Accommodation
-                </span>
-              </div>
-            )}
           </div>
 
           {/* Footer */}

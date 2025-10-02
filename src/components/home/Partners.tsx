@@ -10,16 +10,21 @@ const partners = [
     className: "bg-[#005B96]",
   },
   { logo: "/assets/client-logo/sonata.png", alt: "Sonata" },
+  { logo: "/assets/client-logo/lagosfringe.png", alt: "Lagos Fringe" },
+
   { logo: "/assets/client-logo/nantap.png", alt: "Nantap" },
   { logo: "/assets/client-logo/pawstudio.jpeg", alt: "Paw Studios" },
   { logo: "/assets/client-logo/sonata.png", alt: "Sonata" },
+  { logo: "/assets/client-logo/lagosfringe.png", alt: "Lagos Fringe" },
   { logo: "/assets/client-logo/nantap.png", alt: "Nantap" },
   { logo: "/assets/client-logo/pawstudio.jpeg", alt: "Paw Studios" },
   { logo: "/assets/client-logo/sonata.png", alt: "Sonata" },
+  { logo: "/assets/client-logo/lagosfringe.png", alt: "Lagos Fringe" },
   { logo: "/assets/client-logo/pawstudio.jpeg", alt: "Paw Studios" },
   { logo: "/assets/client-logo/nantap.png", alt: "Nantap" },
   { logo: "/assets/client-logo/pawstudio.jpeg", alt: "Paw Studios" },
   { logo: "/assets/client-logo/sonata.png", alt: "Sonata" },
+  { logo: "/assets/client-logo/lagosfringe.png", alt: "Lagos Fringe" },
 ];
 
 const schoolLogos = [

@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable static exports for Cloudflare Pages
-  output: "export",
+  // Enable static exports for Cloudflare Pages (only in production)
+  ...(process.env.NODE_ENV === "production" && {
+    output: "export",
+    distDir: "out",
+  }),
   trailingSlash: true,
-  distDir: "out",
   images: {
     unoptimized: true,
     domains: [

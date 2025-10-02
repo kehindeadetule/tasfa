@@ -8,7 +8,7 @@ interface FilterOptions {
   limit: number;
   status?: string;
   emailConfirmed?: boolean;
-  accommodationReservation?: string;
+  // accommodationReservation?: string;
   search?: string;
   sortBy: string;
   sortOrder: "asc" | "desc";
@@ -46,11 +46,11 @@ const RegistrationFilters: React.FC<RegistrationFiltersProps> = ({
     });
   };
 
-  const handleAccommodationChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    onFilterChange({ accommodationReservation: e.target.value || undefined });
-  };
+  // const handleAccommodationChange = (
+  //   e: React.ChangeEvent<HTMLSelectElement>
+  // ) => {
+  //   onFilterChange({ accommodationReservation: e.target.value || undefined });
+  // };
 
   const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onFilterChange({ sortBy: e.target.value });
@@ -68,7 +68,7 @@ const RegistrationFilters: React.FC<RegistrationFiltersProps> = ({
     onFilterChange({
       status: undefined,
       emailConfirmed: undefined,
-      accommodationReservation: undefined,
+      // accommodationReservation: undefined,
       search: undefined,
       sortBy: "createdAt",
       sortOrder: "desc",
@@ -132,7 +132,7 @@ const RegistrationFilters: React.FC<RegistrationFiltersProps> = ({
             <option value="true">Email Confirmed</option>
             <option value="false">Email Not Confirmed</option>
           </select>
-
+          {/* 
           <select
             value={filters.accommodationReservation || ""}
             onChange={handleAccommodationChange}
@@ -141,7 +141,7 @@ const RegistrationFilters: React.FC<RegistrationFiltersProps> = ({
             <option value="">All Accommodation</option>
             <option value="yes">Needs Accommodation</option>
             <option value="no">No Accommodation</option>
-          </select>
+          </select> */}
         </div>
 
         {/* Actions */}

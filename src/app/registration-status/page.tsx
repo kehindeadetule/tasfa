@@ -11,8 +11,8 @@ interface RegistrationStatus {
   email: string;
   status: string;
   emailConfirmed: boolean;
-  daysAttending: string[];
-  accommodationReservation: string;
+  // daysAttending: string[];
+  // accommodationReservation: string;
   createdAt: string;
 }
 
@@ -216,7 +216,7 @@ export default function RegistrationStatusPage() {
                     </span>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Days Attending
                     </label>
@@ -247,7 +247,7 @@ export default function RegistrationStatusPage() {
                         ? "🏨 Needs Accommodation"
                         : "🏠 Own Accommodation"}
                     </span>
-                  </div>
+                  </div> */}
 
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -281,7 +281,6 @@ export default function RegistrationStatusPage() {
                         • You will receive event details closer to the event
                         date
                       </div>
-                      <div>• You can now vote for your favorite nominees</div>
                     </>
                   )}
                   <div>• Contact us if you have any questions</div>

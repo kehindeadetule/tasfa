@@ -14,8 +14,6 @@ interface RegistrationFormData {
   gender: string;
   occupation: string;
   organization: string;
-  daysAttending: string[];
-  accommodationReservation: string;
 }
 
 const EventRegistrationForm: React.FC = () => {
@@ -30,8 +28,6 @@ const EventRegistrationForm: React.FC = () => {
     gender: "",
     occupation: "",
     organization: "",
-    daysAttending: [],
-    accommodationReservation: "",
   });
 
   const [errors, setErrors] = useState<
@@ -77,15 +73,6 @@ const EventRegistrationForm: React.FC = () => {
 
     if (!formData.organization.trim()) {
       newErrors.organization = "Organization is required";
-    }
-
-    if (formData.daysAttending.length === 0) {
-      newErrors.daysAttending = "Please select at least one day";
-    }
-
-    if (!formData.accommodationReservation) {
-      newErrors.accommodationReservation =
-        "Please select accommodation preference";
     }
 
     setErrors(newErrors);
@@ -142,28 +129,6 @@ const EventRegistrationForm: React.FC = () => {
     }
   };
 
-  const handleDaysChange = (day: string) => {
-    setFormData((prev) => {
-      const newDays = prev.daysAttending.includes(day)
-        ? prev.daysAttending.filter((d) => d !== day)
-        : [...prev.daysAttending, day];
-
-      return {
-        ...prev,
-        daysAttending: newDays,
-      };
-    });
-
-    // Clear error when user selects a day
-    if (errors.daysAttending) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.daysAttending;
-        return newErrors;
-      });
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -182,14 +147,6 @@ const EventRegistrationForm: React.FC = () => {
       submitData.append("gender", formData.gender);
       submitData.append("occupation", formData.occupation);
       submitData.append("organization", formData.organization);
-      submitData.append(
-        "daysAttending",
-        JSON.stringify(formData.daysAttending)
-      );
-      submitData.append(
-        "accommodationReservation",
-        formData.accommodationReservation
-      );
 
       if (formData.image) {
         submitData.append("image", formData.image);
@@ -232,13 +189,6 @@ const EventRegistrationForm: React.FC = () => {
       setLoading(false);
     }
   };
-
-  const daysOptions = [
-    { value: "Day 1", label: "Day 1" },
-    { value: "Day 2", label: "Day 2" },
-    { value: "Day 3", label: "Day 3" },
-    { value: "All Days", label: "All Days" },
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -462,74 +412,6 @@ const EventRegistrationForm: React.FC = () => {
               )}
             </div>
 
-            {/* Days Attending */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Days Attending *
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                {daysOptions.map((day) => (
-                  <label
-                    key={day.value}
-                    className="flex items-center space-x-2 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.daysAttending.includes(day.value)}
-                      onChange={() => handleDaysChange(day.value)}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">{day.label}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.daysAttending && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.daysAttending}
-                </p>
-              )}
-            </div>
-
-            {/* Accommodation Reservation */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Accommodation Reservation *
-              </label>
-              <div className="space-y-2">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="accommodationReservation"
-                    value="yes"
-                    checked={formData.accommodationReservation === "yes"}
-                    onChange={handleInputChange}
-                    className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">
-                    Yes, I need accommodation
-                  </span>
-                </label>
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="accommodationReservation"
-                    value="no"
-                    checked={formData.accommodationReservation === "no"}
-                    onChange={handleInputChange}
-                    className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">
-                    No, I have my own accommodation
-                  </span>
-                </label>
-              </div>
-              {errors.accommodationReservation && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.accommodationReservation}
-                </p>
-              )}
-            </div>
-
             {/* Submit Button */}
             <motion.button
               type="submit"
@@ -559,10 +441,6 @@ const EventRegistrationForm: React.FC = () => {
               <div>
                 • Event details and schedule will be sent closer to the event
                 date
-              </div>
-              <div>
-                • For accommodation requests, additional details will be
-                provided
               </div>
               <div>
                 • Contact us if you need to make any changes to your

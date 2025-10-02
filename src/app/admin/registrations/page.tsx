@@ -19,8 +19,8 @@ interface Registration {
   gender: string;
   occupation: string;
   organization: string;
-  daysAttending: string[];
-  accommodationReservation: string;
+  // daysAttending: string[];
+  // accommodationReservation: string;
   status: "pending" | "confirmed" | "cancelled";
   emailConfirmed: boolean;
   checkedIn: boolean;
@@ -51,7 +51,7 @@ interface FilterOptions {
   limit: number;
   status?: string;
   emailConfirmed?: boolean;
-  accommodationReservation?: string;
+  // accommodationReservation?: string;
   search?: string;
   sortBy: string;
   sortOrder: "asc" | "desc";
@@ -201,11 +201,11 @@ export default function AdminRegistrationsPage() {
       if (filters.status) queryParams.append("status", filters.status);
       if (filters.emailConfirmed !== undefined)
         queryParams.append("emailConfirmed", filters.emailConfirmed.toString());
-      if (filters.accommodationReservation)
-        queryParams.append(
-          "accommodationReservation",
-          filters.accommodationReservation
-        );
+      // if (filters.accommodationReservation)
+      //   queryParams.append(
+      //     "accommodationReservation",
+      //     filters.accommodationReservation
+      //   );
 
       const response = await fetch(
         `${API_BASE_URL}/api/admin/event-registrations/export/csv?${queryParams.toString()}`,
