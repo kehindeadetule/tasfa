@@ -99,7 +99,7 @@ export default function RegistrationStatusPage() {
         >
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-2">
               Check Registration Status
             </h1>
             <p className="text-gray-600">
@@ -109,7 +109,7 @@ export default function RegistrationStatusPage() {
 
           {/* Search Form */}
           <form onSubmit={handleCheckStatus} className="mb-8">
-            <div className="flex gap-4">
+            <div className="md:flex gap-4">
               <div className="flex-1">
                 <input
                   type="email"
@@ -123,7 +123,7 @@ export default function RegistrationStatusPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`px-6 py-3 rounded-lg font-semibold text-white transition-colors ${
+                className={`px-6 py-3 rounded-lg w-full md:w-auto mt-2 md:mt-0 font-semibold text-white transition-colors ${
                   loading
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
@@ -160,7 +160,7 @@ export default function RegistrationStatusPage() {
             >
               <div className="text-center">
                 <div className="text-green-500 text-4xl mb-2">✅</div>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-2xl md:text-3xl font-semibold text-gray-900">
                   Registration Found
                 </h2>
               </div>
