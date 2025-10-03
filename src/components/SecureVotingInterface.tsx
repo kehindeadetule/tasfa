@@ -358,7 +358,7 @@ const SecureVotingInterface: React.FC<SecureVotingInterfaceProps> = ({
             ))}
           </div>
 
-          {participants.length === 0 && (
+          {participants?.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">
                 No participants found for this category
