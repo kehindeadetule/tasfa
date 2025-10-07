@@ -80,11 +80,9 @@ export default function Advantage() {
             <AnimatedSection animation="fadeInUp" delay={0.8}>
               <div>
                 <h3 className="md:text-2xl text-lg font-medium text-[#1B1464] mb-2">
-                  Festival
+                  Award Presentation Ceremony
                 </h3>
-                <p className="text-gray-700">
-                  October 16th – October 19th, 2025
-                </p>
+                <p className="text-gray-700">November 22nd, 2025</p>
               </div>
             </AnimatedSection>
           </div>
