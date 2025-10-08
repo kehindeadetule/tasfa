@@ -133,7 +133,7 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  {!isEditing ? (
+                  {/* {!isEditing ? (
                     <button
                       onClick={() => setIsEditing(true)}
                       className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -156,7 +156,7 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({
                         Cancel
                       </button>
                     </div>
-                  )}
+                  )} */}
                   <button
                     onClick={onClose}
                     className="text-gray-400 hover:text-gray-600 focus:outline-none"
@@ -229,7 +229,7 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({
                         <p className="text-sm text-gray-900">
                           {registration.email}
                         </p>
-                        <span
+                        {/* <span
                           className={`ml-2 px-2 py-1 text-xs rounded-full ${
                             registration.emailConfirmed
                               ? "bg-green-100 text-green-800"
@@ -239,7 +239,7 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({
                           {registration.emailConfirmed
                             ? "✅ Confirmed"
                             : "⏳ Pending"}
-                        </span>
+                        </span> */}
                       </div>
                     </div>
 
@@ -291,7 +291,7 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 </div>
 
                 {/* Admin Information */}
-                <div className="space-y-4">
+                {/* <div className="space-y-4">
                   <h4 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
                     Admin Information
                   </h4>
@@ -390,7 +390,7 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({
                       )}
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               {/* Timestamps */}

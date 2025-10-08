@@ -111,7 +111,7 @@ export default function Navbar() {
               >
                 Register
               </Link>
-              <Link
+              {/* <Link
                 href="/registration-status"
                 className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors ${
                   isActive("/registration-status")
@@ -120,7 +120,7 @@ export default function Navbar() {
                 }`}
               >
                 Check Status
-              </Link>
+              </Link> */}
             </div>
           </div>
 
@@ -240,7 +240,7 @@ export default function Navbar() {
               >
                 Register
               </Link>
-              <Link
+              {/* <Link
                 href="/registration-status"
                 className={`text-white text-lg hover:text-[#016CEE] transition-colors ${
                   isActive("/registration-status")
@@ -250,7 +250,7 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Check Status
-              </Link>
+              </Link> */}
 
               {isAuthenticated ? (
                 <>

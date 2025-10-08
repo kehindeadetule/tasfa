@@ -7,8 +7,8 @@ This document provides the exact API specifications needed to implement the back
 The Event Registration system requires 3 main endpoints:
 
 1. **POST** `/api/event-registration` - Create new registration
-2. **GET** `/api/event-registration/confirm/:token` - Confirm registration via email
-3. **GET** `/api/event-registration/status/:email` - Check registration status
+<!-- 2. **GET** `/api/event-registration/confirm/:token` - Confirm registration via email (DISABLED) -->
+2. **GET** `/api/event-registration/status/:email` - Check registration status
 
 ## Database Schema
 
@@ -35,9 +35,9 @@ The Event Registration system requires 3 main endpoints:
 
   // System Fields
   status: String (enum: ["pending", "confirmed", "cancelled"], default: "pending"),
-  emailConfirmed: Boolean (default: false),
-  confirmationToken: String (auto-generated, unique),
-  confirmationTokenExpires: Date (24 hours from creation),
+  // emailConfirmed: Boolean (default: false),
+  // confirmationToken: String (auto-generated, unique),
+  // confirmationTokenExpires: Date (24 hours from creation),
 
   // Admin Fields
   adminNotes: String (max 500 chars, optional),
@@ -93,12 +93,13 @@ The Event Registration system requires 3 main endpoints:
 ```json
 {
   "success": true,
-  "message": "Registration successful! Please check your email to confirm your registration.",
+  "message": "Registration successful!",
+  // "message": "Registration successful! Please check your email to confirm your registration.",
   "data": {
     "registrationId": "ABC12345",
     "email": "john@example.com",
-    "status": "pending",
-    "emailSent": true
+    "status": "pending"
+    // "emailSent": true
   }
 }
 ```
@@ -116,17 +117,19 @@ The Event Registration system requires 3 main endpoints:
 **Backend Implementation Notes:**
 
 1. Generate unique `registrationId` (e.g., random string + timestamp)
-2. Create `confirmationToken` (crypto.randomBytes(32).toString('hex'))
-3. Set `confirmationTokenExpires` to 24 hours from now
-4. Upload image to S3 if provided
-5. Send confirmation email with token
-6. Return success response
+<!-- 2. Create `confirmationToken` (crypto.randomBytes(32).toString('hex')) -->
+<!-- 3. Set `confirmationTokenExpires` to 24 hours from now -->
+2. Upload image to S3 if provided
+<!-- 5. Send confirmation email with token -->
+3. Return success response
 
 ---
 
-### 2. Email Confirmation
+<!-- ### 2. Email Confirmation
 
 #### GET `/api/event-registration/confirm/:token`
+
+**COMMENTED OUT - EMAIL CONFIRMATION DISABLED**
 
 **URL Parameters:**
 
@@ -170,6 +173,8 @@ The Event Registration system requires 3 main endpoints:
 - Token expired: "Confirmation token has expired"
 - Already confirmed: "Registration already confirmed"
 
+-->
+
 ---
 
 ### 3. Registration Status Check
@@ -186,14 +191,14 @@ The Event Registration system requires 3 main endpoints:
 {
   "success": true,
   "data": {
-    "registrationId": "ABC12345",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "status": "confirmed",
-    "emailConfirmed": true,
-    "daysAttending": ["Day 1", "Day 2"],
-    "accommodationReservation": "yes",
-    "createdAt": "2024-01-15T10:30:00.000Z"
+  "registrationId": "ABC12345",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "status": "confirmed",
+  // "emailConfirmed": true,
+  "daysAttending": ["Day 1", "Day 2"],
+  "accommodationReservation": "yes",
+  "createdAt": "2024-01-15T10:30:00.000Z"
   }
 }
 ```
@@ -270,9 +275,11 @@ interface ConfirmationData {
 
 ---
 
-## Email Template Requirements
+<!-- ## Email Template Requirements
 
 ### Confirmation Email
+
+**COMMENTED OUT - EMAIL CONFIRMATION DISABLED**
 
 **Subject:** "Confirm Your TASFA Event Registration"
 
@@ -316,6 +323,8 @@ interface ConfirmationData {
   </body>
 </html>
 ```
+
+-->
 
 ---
 
@@ -371,7 +380,7 @@ interface ConfirmationData {
 
 - Registration: 5 attempts per IP per hour
 - Status Check: 20 requests per IP per hour
-- Confirmation: 10 attempts per IP per hour
+<!-- - Confirmation: 10 attempts per IP per hour (DISABLED) -->
 
 ### Input Validation
 
@@ -381,12 +390,14 @@ interface ConfirmationData {
 - Validate phone number format
 - Validate enum values
 
-### Token Security
+<!-- ### Token Security (DISABLED - EMAIL CONFIRMATION DISABLED)
 
 - Generate cryptographically secure tokens
 - Set reasonable expiration times (24 hours)
 - Invalidate tokens after use
 - Don't expose tokens in error messages
+
+-->
 
 ---
 

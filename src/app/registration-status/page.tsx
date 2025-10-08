@@ -199,7 +199,7 @@ export default function RegistrationStatusPage() {
                     </p>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Email Confirmation
                     </label>
@@ -214,7 +214,7 @@ export default function RegistrationStatusPage() {
                         ? "✅ Confirmed"
                         : "⏳ Pending"}
                     </span>
-                  </div>
+                  </div> */}
 
                   {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -261,7 +261,7 @@ export default function RegistrationStatusPage() {
               </div>
 
               {/* Next Steps */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 className="text-sm font-medium text-blue-800 mb-2">
                   📧 Next Steps
                 </h4>
@@ -285,7 +285,7 @@ export default function RegistrationStatusPage() {
                   )}
                   <div>• Contact us if you have any questions</div>
                 </div>
-              </div>
+              </div> */}
             </motion.div>
           )}
         </motion.div>

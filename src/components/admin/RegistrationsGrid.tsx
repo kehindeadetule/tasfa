@@ -136,11 +136,11 @@ const RegistrationsGrid: React.FC<RegistrationsGridProps> = ({
                   {registration.name.charAt(0).toUpperCase()}
                 </div>
               )}
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
+              {/* <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
                 <span className="text-xs">
                   {registration.emailConfirmed ? "📧" : "⏳"}
                 </span>
-              </div>
+              </div> */}
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-semibold text-gray-900 truncate">
@@ -153,8 +153,8 @@ const RegistrationsGrid: React.FC<RegistrationsGridProps> = ({
           </div>
 
           {/* Status Badge */}
-          <div className="flex items-center justify-between mb-4">
-            <span
+          <div className="flex items-center justify-between ">
+            {/* <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
                 registration.status
               )}`}
@@ -162,7 +162,7 @@ const RegistrationsGrid: React.FC<RegistrationsGridProps> = ({
               <span className="mr-1">{getStatusIcon(registration.status)}</span>
               {registration.status.charAt(0).toUpperCase() +
                 registration.status.slice(1)}
-            </span>
+            </span> */}
             {registration.checkedIn && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                 📋 Checked In

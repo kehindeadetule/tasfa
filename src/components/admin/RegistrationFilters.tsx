@@ -108,7 +108,7 @@ const RegistrationFilters: React.FC<RegistrationFiltersProps> = ({
 
         {/* Quick Filters */}
         <div className="flex flex-wrap gap-2">
-          <select
+          {/* <select
             value={filters.status || ""}
             onChange={handleStatusChange}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -117,9 +117,9 @@ const RegistrationFilters: React.FC<RegistrationFiltersProps> = ({
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
             <option value="cancelled">Cancelled</option>
-          </select>
+          </select> */}
 
-          <select
+          {/* <select
             value={
               filters.emailConfirmed === undefined
                 ? ""
@@ -131,7 +131,7 @@ const RegistrationFilters: React.FC<RegistrationFiltersProps> = ({
             <option value="">All Email Status</option>
             <option value="true">Email Confirmed</option>
             <option value="false">Email Not Confirmed</option>
-          </select>
+          </select> */}
           {/* 
           <select
             value={filters.accommodationReservation || ""}
