@@ -20,6 +20,7 @@ const EventRegistrationForm: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [consent, setConsent] = useState(false);
   const [formData, setFormData] = useState<RegistrationFormData>({
     name: "",
     email: "",
@@ -147,6 +148,7 @@ const EventRegistrationForm: React.FC = () => {
       submitData.append("gender", formData.gender);
       submitData.append("occupation", formData.occupation);
       submitData.append("organization", formData.organization);
+      submitData.append("consent", "true");
 
       if (formData.image) {
         submitData.append("image", formData.image);
@@ -295,7 +297,7 @@ const EventRegistrationForm: React.FC = () => {
             </div>
 
             {/* Image Upload */}
-            <div>
+            {/* <div>
               <label
                 htmlFor="image"
                 className="block text-sm font-medium text-gray-700 mb-2"
@@ -324,7 +326,7 @@ const EventRegistrationForm: React.FC = () => {
                 Optional. Maximum file size: 5MB. Supported formats: JPG, PNG,
                 GIF
               </p>
-            </div>
+            </div> */}
 
             {/* Gender */}
             <div>
@@ -413,14 +415,74 @@ const EventRegistrationForm: React.FC = () => {
               )}
             </div>
 
+            {/* consent */}
+            <div className="border rounded-lg p-3">
+              <p className="text-sm">
+                ✅{" "}
+                <strong className="mb-2">
+                  Participant Agreement By ticking this box, I confirm that:
+                </strong>
+                <ul className="space-y-3">
+                  <li>
+                    ~ I understand that participation in the Theatre Arts
+                    Students Festival and Awards (TASFA) 2025 is voluntary and
+                    may involve certain risks, including injury, illness, or
+                    property loss, which I willingly assume.
+                  </li>
+                  <li>
+                    ~ I release and discharge the Organizer (1560 Productions),
+                    and its partners, from all claims or liabilities arising
+                    from my participation or attendance at the event.
+                  </li>
+                  <li>
+                    ~ I agree to indemnify and hold harmless the Organizer, and
+                    its partners, against any damages, losses, or expenses
+                    resulting from my actions or omissions during the event.
+                  </li>
+                  <li>
+                    ~ In case of a medical emergency, I authorize the Organizer,
+                    and its partners, to arrange medical treatment for me and
+                    accept full responsibility for any related costs.
+                  </li>
+                  <li>
+                    ~ I grant the Organizer, and its partners, the right to
+                    capture and use my image, name, and voice in any media for
+                    promotional or lawful purposes without further approval or
+                    compensation.
+                  </li>
+                  <li>
+                    ~ I acknowledge that this agreement is governed by the laws
+                    of the Federal Republic of Nigeria and that any disputes
+                    shall be subject to the jurisdiction of the courts in Lagos
+                    State.
+                  </li>
+                  <li>
+                    ~ I affirm that I am 18 years of age or older, have read and
+                    understood this agreement, and voluntarily accept all its
+                    terms.
+                  </li>
+                </ul>
+              </p>
+            </div>
+            <p className="text-sm">
+              <input
+                type="checkbox"
+                className="mr-2"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+              />
+              I have read and agree to the Participant Indemnity, Release of
+              Liability, and Media Consent Agreement.
+            </p>
+
             {/* Submit Button */}
             <motion.button
               type="submit"
-              disabled={loading}
+              disabled={loading || !consent}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition-colors ${
-                loading
+                loading || !consent
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-[#005B96] hover:bg-[#004080] cursor-pointer"
               }`}
