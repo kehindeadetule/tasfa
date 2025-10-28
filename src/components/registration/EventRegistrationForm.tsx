@@ -418,9 +418,8 @@ const EventRegistrationForm: React.FC = () => {
             {/* consent */}
             <div className="border rounded-lg p-3">
               <p className="text-sm">
-                ✅{" "}
-                <strong className="mb-2">
-                  Participant Agreement By ticking this box, I confirm that:
+                <strong className="mb-2 block text-center">
+                  Participant Agreement
                 </strong>
                 <ul className="space-y-3">
                   <li>
@@ -490,27 +489,6 @@ const EventRegistrationForm: React.FC = () => {
               {loading ? "Registering..." : "Register for Event"}
             </motion.button>
           </form>
-
-          {/* Additional Information */}
-          <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h4 className="text-sm font-medium text-blue-800 mb-2">
-              📋 Registration Information
-            </h4>
-            <div className="text-xs text-blue-700 space-y-1">
-              {/* <div>
-                • You will receive a confirmation email after successful
-                registration
-              </div> */}
-              <div>
-                • Event details and schedule will be sent closer to the event
-                date
-              </div>
-              <div>
-                • Contact us if you need to make any changes to your
-                registration
-              </div>
-            </div>
-          </div>
         </motion.div>
       </div>
     </div>
