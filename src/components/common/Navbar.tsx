@@ -21,6 +21,10 @@ export default function Navbar() {
     if (path === "/about") {
       return pathname.startsWith("/about");
     }
+    // For gallery section, check if pathname starts with /gallery to handle nested routes
+    if (path === "/gallery") {
+      return pathname.startsWith("/gallery");
+    }
     // For other paths, use exact matching
     return pathname === path;
   };
@@ -46,7 +50,7 @@ export default function Navbar() {
               <div className="relative group">
                 <div className="relative">
                   <button
-                    className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors ${
+                    className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors whitespace-nowrap ${
                       isActive("/about") ? "font-semibold text-[#005B96]" : ""
                     }`}
                     onClick={() => setIsAboutDropdownOpen(!isAboutDropdownOpen)}
@@ -54,7 +58,7 @@ export default function Navbar() {
                     About Us
                   </button>
                   {isAboutDropdownOpen && (
-                    <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                    <div className="absolute left-0 mt-2 w-48 bg-white rounded-md whitespace-nowrap shadow-lg py-1 z-50">
                       <Link
                         href="/about"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -104,13 +108,22 @@ export default function Navbar() {
                 Judges
               </Link>
               <Link
+                href="/gallery"
+                className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors ${
+                  isActive("/gallery") ? "font-semibold text-[#005B96]" : ""
+                }`}
+              >
+                Gallery
+              </Link>
+
+              {/* <Link
                 href="/register"
                 className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors ${
                   isActive("/register") ? "font-semibold text-[#005B96]" : ""
                 }`}
               >
                 Register
-              </Link>
+              </Link> */}
               {/* <Link
                 href="/registration-status"
                 className={`text-[#00244F] text-lg hover:text-[#016CEE] transition-colors ${
@@ -128,6 +141,18 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               {isAuthenticated ? (
                 <>
+                  <Link
+                    href="/admin/registrations"
+                    className="text-sm text-[#005B96] hover:text-[#016CEE] font-medium underline"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/admin/gallery"
+                    className="text-sm text-[#005B96] hover:text-[#016CEE] font-medium underline"
+                  >
+                    Gallery
+                  </Link>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-600">{user?.email}</span>
                     <button
@@ -206,7 +231,7 @@ export default function Navbar() {
             <nav className="flex flex-col mt-32 space-y-10 px-8">
               <Link
                 href="/about"
-                className={`text-white text-lg font-medium hover:text-[#016CEE] ${
+                className={`text-white text-lg font-medium hover:text-[#016CEE] whitespace-nowrap ${
                   isActive("/about") ? "!text-[#005B96] font-semibold" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -230,6 +255,15 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Judges
+              </Link>
+              <Link
+                href="/gallery"
+                className={`text-white text-lg hover:text-[#016CEE] transition-colors ${
+                  isActive("/gallery") ? "font-semibold text-[#005B96]" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Gallery
               </Link>
               <Link
                 href="/register"
@@ -260,6 +294,13 @@ export default function Navbar() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Admin Dashboard
+                  </Link>
+                  <Link
+                    href="/admin/gallery"
+                    className="text-white text-lg font-medium hover:text-[#016CEE]"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Manage Gallery
                   </Link>
                   <div className="text-white text-sm">
                     <div className="text-gray-300">Logged in as:</div>
