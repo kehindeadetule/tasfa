@@ -62,11 +62,9 @@ export default function ImageUploader({ festivalYear }: ImageUploaderProps) {
     try {
       const formData = new FormData();
 
-      // Map festival year + category to backend category format
-      // Example: "2025-performance" or "2026-awards" (lowercase)
-      const backendCategory = `${festivalYear}-${selectedCategory
-        .replace(/\s+/g, "-")
-        .toLowerCase()}`;
+      // Map festival year to backend category format
+      // Using "general" as default category
+      const backendCategory = `${festivalYear}-general`;
       formData.append("category", backendCategory);
 
       selectedFiles.forEach((file) => {
@@ -103,7 +101,7 @@ export default function ImageUploader({ festivalYear }: ImageUploaderProps) {
   return (
     <div className="space-y-6">
       {/* Category Selection */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-xl shadow-sm p-4 sm:p-6"
@@ -128,7 +126,7 @@ export default function ImageUploader({ festivalYear }: ImageUploaderProps) {
             ))}
           </div>
         </div>
-      </motion.div>
+      </motion.div> */}
 
       {/* File Upload Area */}
       <motion.div

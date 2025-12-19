@@ -134,7 +134,7 @@ export default function ImageGrid({ festivalYear, onBack }: ImageGridProps) {
       </motion.div>
 
       {/* Category Filter - Scrollable on mobile */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -155,7 +155,7 @@ export default function ImageGrid({ festivalYear, onBack }: ImageGridProps) {
             </button>
           ))}
         </div>
-      </motion.div>
+      </motion.div> */}
 
       {/* Loading State */}
       {isLoading ? (
@@ -186,18 +186,8 @@ export default function ImageGrid({ festivalYear, onBack }: ImageGridProps) {
             No Images Found
           </h3>
           <p className="text-sm sm:text-base text-gray-500 mb-4">
-            {selectedCategory === "All"
-              ? "No images available for this festival yet"
-              : `No images in "${selectedCategory}" category`}
+            No images available for this festival yet
           </p>
-          {selectedCategory !== "All" && (
-            <button
-              onClick={() => setSelectedCategory("All")}
-              className="inline-flex items-center px-4 py-2 bg-[#005B96] text-white rounded-lg text-sm font-medium hover:bg-[#004080] transition-colors"
-            >
-              View All Images
-            </button>
-          )}
         </div>
       ) : (
         /* Image Grid */
@@ -216,9 +206,9 @@ export default function ImageGrid({ festivalYear, onBack }: ImageGridProps) {
                 />
 
                 {/* Category Badge */}
-                <div className="absolute top-2 sm:top-4 left-2 sm:left-4 px-2 sm:px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-[#00244F] z-10">
+                {/* <div className="absolute top-2 sm:top-4 left-2 sm:left-4 px-2 sm:px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-[#00244F] z-10">
                   {image.category}
-                </div>
+                </div> */}
 
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
@@ -296,9 +286,9 @@ export default function ImageGrid({ festivalYear, onBack }: ImageGridProps) {
                 <p className="text-base sm:text-lg font-medium truncate px-4">
                   {selectedImage.alt}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                {/* <p className="text-xs sm:text-sm text-gray-400 mt-1">
                   Category: {selectedImage.category}
-                </p>
+                </p> */}
               </div>
             </motion.div>
           </motion.div>

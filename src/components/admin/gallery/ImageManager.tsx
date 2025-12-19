@@ -158,7 +158,7 @@ export default function ImageManager({ festivalYear }: ImageManagerProps) {
         </div>
 
         {/* Category Filter - Scrollable on mobile */}
-        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+        {/* <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
           <div className="flex gap-2 sm:gap-3 min-w-max sm:min-w-0 sm:flex-wrap pb-2 sm:pb-0">
             {categories.map((category) => (
               <button
@@ -174,7 +174,7 @@ export default function ImageManager({ festivalYear }: ImageManagerProps) {
               </button>
             ))}
           </div>
-        </div>
+        </div> */}
       </motion.div>
 
       {/* Images Grid */}
@@ -206,18 +206,8 @@ export default function ImageManager({ festivalYear }: ImageManagerProps) {
             No Images Found
           </h3>
           <p className="text-sm sm:text-base text-gray-500 mb-4">
-            {selectedCategory === "All"
-              ? "Upload images to get started"
-              : `No images in "${selectedCategory}" category`}
+            Upload images to get started
           </p>
-          {selectedCategory !== "All" && (
-            <button
-              onClick={() => setSelectedCategory("All")}
-              className="inline-flex items-center px-4 py-2 bg-[#005B96] text-white rounded-lg text-sm font-medium hover:bg-[#004080] transition-colors"
-            >
-              View All Images
-            </button>
-          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -274,9 +264,9 @@ export default function ImageManager({ festivalYear }: ImageManagerProps) {
                 </div>
 
                 {/* Category Badge */}
-                <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-[#00244F] pointer-events-none z-10">
+                {/* <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-[#00244F] pointer-events-none z-10">
                   {image.displayCategory}
-                </div>
+                </div> */}
               </div>
 
               {/* Image Info & Actions */}
@@ -393,11 +383,11 @@ export default function ImageManager({ festivalYear }: ImageManagerProps) {
                   {selectedImage.filename}
                 </h3>
                 <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-gray-300">
-                  <div>
+                  {/* <div>
                     <span className="text-gray-400">Category:</span>{" "}
                     {(selectedImage as any).displayCategory ||
                       selectedImage.category}
-                  </div>
+                  </div> */}
                   <div>
                     <span className="text-gray-400">Size:</span>{" "}
                     {(selectedImage.size / 1024 / 1024).toFixed(2)} MB
