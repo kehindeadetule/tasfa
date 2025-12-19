@@ -282,14 +282,14 @@ export default function ImageGrid({ festivalYear, onBack }: ImageGridProps) {
               </div>
 
               {/* Image Info */}
-              <div className="mt-3 sm:mt-4 text-white text-center">
+              {/* <div className="mt-3 sm:mt-4 text-white text-center">
                 <p className="text-base sm:text-lg font-medium truncate px-4">
                   {selectedImage.alt}
                 </p>
-                {/* <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                <p className="text-xs sm:text-sm text-gray-400 mt-1">
                   Category: {selectedImage.category}
-                </p> */}
-              </div>
+                </p>
+              </div> */}
             </motion.div>
           </motion.div>
         )}
