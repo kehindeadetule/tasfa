@@ -24,6 +24,19 @@ export default function ImageGrid({ festivalYear, onBack }: ImageGridProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (selectedImage) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [selectedImage]);
+
   const categories = [
     "All",
     "Performance",
@@ -202,7 +215,7 @@ export default function ImageGrid({ festivalYear, onBack }: ImageGridProps) {
                 <img
                   src={image.url}
                   alt={image.alt}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
 
                 {/* Category Badge */}
@@ -241,55 +254,45 @@ export default function ImageGrid({ festivalYear, onBack }: ImageGridProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 sm:p-6"
+            className="fixed inset-0 bg-black z-50 flex items-center justify-center overflow-hidden p-4 sm:p-6"
             onClick={() => setSelectedImage(null)}
           >
+            {/* Close Button - Outside the image container */}
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-6 right-2 sm:top-6 sm:right-6 text-white hover:text-gray-300 transition-colors z-20 p-2 bg-black/50 rounded-full hover:bg-black/70"
+            >
+              <svg
+                className="w-6 h-6 sm:w-8 sm:h-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 25 }}
-              className="relative max-w-6xl w-full"
+              className="relative max-w-7xl max-h-full w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="absolute top-8 right-0 text-white hover:text-gray-300 transition-colors z-10 p-2"
-              >
-                <svg
-                  className="w-6 h-6 sm:w-8 sm:h-8"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-
               {/* Image Container */}
-              <div className="relative aspect-[4/3] sm:aspect-[16/10] rounded-lg sm:rounded-xl overflow-hidden ">
+              <div className="relative w-full h-full rounded-none sm:rounded-xl overflow-hidden">
                 <img
                   src={selectedImage.url}
                   alt={selectedImage.alt}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain max-h-[90vh]"
                 />
               </div>
-
-              {/* Image Info */}
-              {/* <div className="mt-3 sm:mt-4 text-white text-center">
-                <p className="text-base sm:text-lg font-medium truncate px-4">
-                  {selectedImage.alt}
-                </p>
-                <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                  Category: {selectedImage.category}
-                </p>
-              </div> */}
             </motion.div>
           </motion.div>
         )}

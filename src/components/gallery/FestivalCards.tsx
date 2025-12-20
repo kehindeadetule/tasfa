@@ -11,7 +11,7 @@ interface FestivalCardsProps {
 const festivals = [
   {
     year: "2025",
-    title: "TASFA 2025 Festival",
+    title: "TASFA 2025",
     description: "Celebrating and awarding the first festival",
     image: "/assets/festival-2025.jpg",
     available: true,
@@ -23,7 +23,7 @@ const festivals = [
   },
   {
     year: "2026",
-    title: "TASFA 2026 Festival",
+    title: "TASFA 2026",
     description: "Coming soon - Stay tuned for an unforgettable celebration",
     image: "/assets/festival-2026.jpg",
     available: false,
@@ -43,27 +43,20 @@ export default function FestivalCards({
     const fetchStats = async () => {
       try {
         // Fetch all data in parallel
-        const [imagesResponse, categoriesResponse, registrationsResponse] =
+        const [imagesResponse, categoriesResponse, nomineesResponse] =
           await Promise.all([
             fetch(`${API_BASE_URL}/api/gallery/images?limit=1000`),
             fetch(`${API_BASE_URL}/api/voting-form/categories`),
-            fetch(`${API_BASE_URL}/api/admin/event-registrations`, {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("tasfa_a_t")}`,
-              },
-            }).catch(() => null), // Don't fail if not authenticated
+            fetch(`${API_BASE_URL}/api/voting-form/submissions`),
           ]);
 
         const imagesData = await imagesResponse.json();
         const categoriesData = await categoriesResponse.json();
+        const nomineesData = await nomineesResponse.json();
 
-        let totalParticipants = 0;
-        if (registrationsResponse && registrationsResponse.ok) {
-          const regData = await registrationsResponse.json();
-          totalParticipants =
-            regData.success && regData.data.statistics
-              ? regData.data.statistics.total
-              : 0;
+        let totalNominees = 0;
+        if (nomineesData.success && typeof nomineesData.count === "number") {
+          totalNominees = nomineesData.count;
         }
 
         if (imagesData.success) {
@@ -81,7 +74,7 @@ export default function FestivalCards({
             "2025": {
               photos: year2025Images.length,
               categories: totalCategories,
-              participants: totalParticipants,
+              participants: totalNominees,
             },
           });
         }
@@ -213,7 +206,7 @@ export default function FestivalCards({
                             +
                           </p>
                           <p className="text-xs sm:text-sm text-gray-300 mt-1">
-                            Participants
+                            Nominees
                           </p>
                         </div>
                       </div>
