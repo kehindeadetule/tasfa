@@ -139,7 +139,7 @@ export default function Navbar() {
 
           <div className="flex-shrink-0">
             <div className="hidden md:flex items-center space-x-4">
-              {isAuthenticated ? (
+              {/* {isAuthenticated ? (
                 <>
                   <Link
                     href="/admin/registrations"
@@ -170,10 +170,10 @@ export default function Navbar() {
                 >
                   Login | Sign Up
                 </Link>
-              )}
+              )} */}
               <Link
                 href="#contact"
-                className="border-[2px] border-gray-300 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:border-none px-5 py-2 rounded-full font-medium transition-colors"
+                className="border-[2px] border-gray-300 text-sm text-gray-600 hover:bg-[#005B96] hover:text-white hover:border-none px-5 py-2 rounded-full font-medium transition-colors"
               >
                 Contact Us
               </Link>
