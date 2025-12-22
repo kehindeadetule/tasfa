@@ -179,7 +179,7 @@ export default function FestivalCards({
                     </div>
 
                     {/* Stats */}
-                    {festival.stats && (
+                    {/* {festival.stats && (
                       <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-white/20">
                         <div className="text-center">
                           <p className="text-2xl sm:text-3xl font-bold text-[#FFD200]">
@@ -210,7 +210,7 @@ export default function FestivalCards({
                           </p>
                         </div>
                       </div>
-                    )}
+                    )} */}
 
                     {/* Call to Action */}
                     {festival.available && (
