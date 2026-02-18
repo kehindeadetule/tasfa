@@ -58,8 +58,8 @@ export default function CategoryPageUI({ category }: CategoryPageUIProps) {
       setLoading(true);
       const response = await fetch(
         `${API_BASE_URL}/api/email-voting/category/${encodeURIComponent(
-          category
-        )}`
+          category,
+        )}`,
       );
       const data = await response.json();
 
@@ -221,12 +221,12 @@ export default function CategoryPageUI({ category }: CategoryPageUIProps) {
                   {(participant.isWinner || participant.isFinalist) && (
                     <div className="absolute top-3 left-3 flex flex-col gap-1.5">
                       {participant.isWinner && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-lg">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-green-500 text-white shadow-lg">
                           Winner
                         </span>
                       )}
                       {participant.isFinalist && !participant.isWinner && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-400 text-yellow-900 shadow-lg">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-400 text-black shadow-lg">
                           Finalist
                         </span>
                       )}
