@@ -13,6 +13,8 @@ interface Submission {
   awardCategory: string;
   image?: string;
   voteCount: number;
+  isFinalist: boolean;
+  isWinner: boolean;
   createdAt: string;
 }
 
@@ -39,6 +41,7 @@ const SubmissionsGrid: React.FC = () => {
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchCategories();
@@ -185,6 +188,42 @@ const SubmissionsGrid: React.FC = () => {
       school: "",
       awardCategory: "",
     });
+  };
+
+  const handleToggleStatus = async (
+    id: string,
+    field: "isFinalist" | "isWinner",
+    currentValue: boolean
+  ) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/voting-form/submissions/${id}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ [field]: !currentValue }),
+        }
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success(
+          `${field === "isFinalist" ? "Finalist" : "Winner"} status updated`
+        );
+        // Update local state
+        setSubmissions((prev) =>
+          prev.map((s) =>
+            s._id === id ? { ...s, [field]: !currentValue } : s
+          )
+        );
+      } else {
+        toast.error(data.error || "Failed to update status");
+      }
+    } catch (error) {
+      toast.error("Failed to update status");
+    }
   };
 
   const downloadParticipantsCSV = async () => {
@@ -463,30 +502,58 @@ const SubmissionsGrid: React.FC = () => {
             </div>
           </div>
 
-          <div className="mb-6">
-            <label
-              htmlFor="categoryFilter"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Filter by Category
-            </label>
-            <select
-              id="categoryFilter"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full md:w-64 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category, index) => (
-                <option key={index} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+          <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+            <div>
+              <label
+                htmlFor="categoryFilter"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Filter by Category
+              </label>
+              <select
+                id="categoryFilter"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full md:w-64 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              >
+                <option value="">All Categories</option>
+                {categories.map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="searchQuery"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Search by Name or School
+              </label>
+              <input
+                id="searchQuery"
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name or school..."
+                className="w-full md:w-80 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {submissions.map((submission, index) => (
+            {submissions
+              .filter((submission) => {
+                if (!searchQuery.trim()) return true;
+                const query = searchQuery.toLowerCase();
+                const fullName = `${submission.firstName} ${submission.lastName}`.toLowerCase();
+                return (
+                  fullName.includes(query) ||
+                  submission.school.toLowerCase().includes(query)
+                );
+              })
+              .map((submission, index) => (
               <motion.div
                 key={submission._id}
                 initial={{ opacity: 0, y: 20 }}
@@ -523,10 +590,20 @@ const SubmissionsGrid: React.FC = () => {
                       {submission.lastName.charAt(0)}
                     </span>
                   </div>
-                  <div className="absolute top-2 right-2">
+                  <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {submission.voteCount} votes
                     </span>
+                    {submission.isFinalist && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-400 text-yellow-900">
+                        Finalist
+                      </span>
+                    )}
+                    {submission.isWinner && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-500 text-white">
+                        Winner
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -545,6 +622,46 @@ const SubmissionsGrid: React.FC = () => {
                   <p className="text-xs text-gray-500 mb-3">
                     Submitted: {formatDate(submission.createdAt)}
                   </p>
+
+                  {/* Finalist / Winner Toggles */}
+                  <div className="flex space-x-2 mb-3">
+                    <button
+                      onClick={() =>
+                        handleToggleStatus(
+                          submission._id,
+                          "isFinalist",
+                          submission.isFinalist
+                        )
+                      }
+                      className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                        submission.isFinalist
+                          ? "bg-yellow-400 text-yellow-900"
+                          : "bg-gray-100 text-gray-600 hover:bg-yellow-100"
+                      }`}
+                    >
+                      {submission.isFinalist
+                        ? "Finalist ✓"
+                        : "Set Finalist"}
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleToggleStatus(
+                          submission._id,
+                          "isWinner",
+                          submission.isWinner
+                        )
+                      }
+                      className={`flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                        submission.isWinner
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-green-100"
+                      }`}
+                    >
+                      {submission.isWinner
+                        ? "Winner ✓"
+                        : "Set Winner"}
+                    </button>
+                  </div>
 
                   {/* Action Buttons */}
                   <div className="flex space-x-2 pt-2 border-t border-gray-100">

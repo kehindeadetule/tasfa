@@ -14,6 +14,8 @@ interface Participant {
   school: string;
   awardCategory: string;
   voteCount: number;
+  isFinalist?: boolean;
+  isWinner?: boolean;
   image?: string;
 }
 
@@ -215,7 +217,21 @@ export default function CategoryPageUI({ category }: CategoryPageUIProps) {
                       </div>
                     </div>
                   )}
-                  {/* Voted indicator overlay */}
+                  {/* Finalist / Winner Tags */}
+                  {(participant.isWinner || participant.isFinalist) && (
+                    <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+                      {participant.isWinner && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-lg">
+                          Winner
+                        </span>
+                      )}
+                      {participant.isFinalist && !participant.isWinner && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-400 text-yellow-900 shadow-lg">
+                          Finalist
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="px-5 py-6 md:p-4">
                   <h2 className="text-lg md:text-xl font-semibold mb-2">
